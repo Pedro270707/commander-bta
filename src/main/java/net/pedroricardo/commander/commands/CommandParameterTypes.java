@@ -1,8 +1,8 @@
 package net.pedroricardo.commander.commands;
 
-public class CommandParameters {
-    public static final CommanderCommandParameter FLOAT_COORDINATES = new FloatCoordinatesParameter();
-    public static final CommanderCommandParameter INTEGER_COORDINATES = new IntegerCoordinatesParameter();
+public class CommandParameterTypes {
+    public static final CommanderCommandParameterType FLOAT_COORDINATES = new FloatCoordinatesParameterType();
+    public static final CommanderCommandParameterType INTEGER_COORDINATES = new IntegerCoordinatesParameterType();
 //    INTEGER("int", 1),
 //    FLOAT("float", 1),
 //    DOUBLE("double", 1),
@@ -17,7 +17,7 @@ public class CommandParameters {
     private final String id;
     private final int numberOfExpectedParameters;
 
-    CommandParameters(String id, int numberOfExpectedParameters) {
+    CommandParameterTypes(String id, int numberOfExpectedParameters) {
         this.id = id;
         this.numberOfExpectedParameters = numberOfExpectedParameters;
     }

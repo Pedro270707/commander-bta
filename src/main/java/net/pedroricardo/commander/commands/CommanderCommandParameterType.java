@@ -4,10 +4,10 @@ import net.minecraft.client.Minecraft;
 
 import java.util.List;
 
-public abstract class CommanderCommandParameter {
+public abstract class CommanderCommandParameterType {
     private final int expectedParameters;
 
-    public CommanderCommandParameter(int expectedParameters) {
+    public CommanderCommandParameterType(int expectedParameters) {
         this.expectedParameters = expectedParameters;
     }
 

@@ -1,6 +1,6 @@
 package net.pedroricardo.commander;
 
-import net.pedroricardo.commander.commands.CommanderCommandParameter;
+import net.pedroricardo.commander.commands.CommanderCommandParameterType;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -33,8 +33,8 @@ public class CommandParameterParser {
         return ListHelper.join(parametersBeforeIndex, " ").length();
     }
 
-    public static int getLocalIndex(List<CommanderCommandParameter> parameters, int index) {
-        for (CommanderCommandParameter item : parameters) {
+    public static int getLocalIndex(List<CommanderCommandParameterType> parameters, int index) {
+        for (CommanderCommandParameterType item : parameters) {
             for (int i = 0; i < item.getExpectedParameters(); i++) {
                 if (index == 0) return i;
                 else index -= 1;
@@ -44,8 +44,8 @@ public class CommandParameterParser {
     }
 
     @Nullable
-    public static CommanderCommandParameter getParameterFromIndex(List<CommanderCommandParameter> parameters, int index) {
-        for (CommanderCommandParameter item : parameters) {
+    public static CommanderCommandParameterType getParameterFromIndex(List<CommanderCommandParameterType> parameters, int index) {
+        for (CommanderCommandParameterType item : parameters) {
             for (int i = 0; i < item.getExpectedParameters(); i++) {
                 if (index == 0) return item;
                 else index -= 1;

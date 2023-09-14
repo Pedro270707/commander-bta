@@ -4,7 +4,7 @@ import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
 import net.pedroricardo.commander.commands.CommanderCommand;
-import net.pedroricardo.commander.commands.CommandParameters;
+import net.pedroricardo.commander.commands.CommandParameterTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import turniplabs.halplibe.helper.CommandHelper;
@@ -35,7 +35,7 @@ public class Commander implements ModInitializer {
             public void sendCommandSyntax(CommandHandler commandHandler, CommandSender commandSender) {
 
             }
-        }.withParameter(CommandParameters.FLOAT_COORDINATES));
+        }.withParameter(CommandParameterTypes.FLOAT_COORDINATES));
         CommandHelper.createCommand(new CommanderCommand("testCommand2") {
             @Override
             public boolean execute(CommandHandler commandHandler, CommandSender commandSender, String[] strings) {
@@ -51,6 +51,6 @@ public class Commander implements ModInitializer {
             public void sendCommandSyntax(CommandHandler commandHandler, CommandSender commandSender) {
 
             }
-        }.withParameter(CommandParameters.INTEGER_COORDINATES));
+        }.withParameter(CommandParameterTypes.INTEGER_COORDINATES));
     }
 }

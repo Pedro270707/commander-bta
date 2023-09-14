@@ -5,8 +5,8 @@ import net.minecraft.client.Minecraft;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IntegerCoordinatesParameter extends CommanderCommandParameter {
-    public IntegerCoordinatesParameter() {
+public class IntegerCoordinatesParameterType extends CommanderCommandParameterType {
+    public IntegerCoordinatesParameterType() {
         super(3);
     }
 

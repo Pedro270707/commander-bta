@@ -6,7 +6,7 @@ import java.util.List;
 public class CommanderGuiManager {
     public static int commandIndex = 0;
     public static String tablessMessage = "";
-    public static int cursor = -1;
+    public static int tablessCursor = -1;
     public static List<String> suggestions = new ArrayList<>();
     public static String currentError = "";
     public static int scroll = 0;
