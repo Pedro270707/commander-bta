@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.pedroricardo.commander.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "ShowCommandSuggestionsMixin",
+    "ShowCommandSuggestionsMixin$GuiScreenAccessor",
+    "ShowCommandSuggestionsMixin$TextFieldEditorAccessor"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
