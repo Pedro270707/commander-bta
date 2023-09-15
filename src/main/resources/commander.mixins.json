@@ -6,7 +6,8 @@
   "mixins": [
     "ShowCommandSuggestionsMixin",
     "ShowCommandSuggestionsMixin$GuiScreenAccessor",
-    "ShowCommandSuggestionsMixin$TextFieldEditorAccessor"
+    "ShowCommandSuggestionsMixin$TextFieldEditorAccessor",
+    "StatNameAccessor"
   ],
   "client": [
   ],

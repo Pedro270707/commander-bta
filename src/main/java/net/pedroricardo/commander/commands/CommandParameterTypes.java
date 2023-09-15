@@ -1,8 +1,13 @@
 package net.pedroricardo.commander.commands;
 
+import net.pedroricardo.commander.commands.parametertypes.*;
+
 public class CommandParameterTypes {
-    public static final CommanderCommandParameterType FLOAT_COORDINATES = new FloatCoordinatesParameterType();
-    public static final CommanderCommandParameterType INTEGER_COORDINATES = new IntegerCoordinatesParameterType();
+    public static final CommandParameterType FLOAT_COORDINATES = new FloatCoordinatesParameterType();
+    public static final CommandParameterType INTEGER_COORDINATES = new IntegerCoordinatesParameterType();
+    public static final CommandParameterType BLOCK = new BlockParameterType();
+    public static final CommandParameterType ITEM = new ItemParameterType();
+    public static final CommandParameterType ACHIEVEMENT = new AchievementParameterType();
 //    INTEGER("int", 1),
 //    FLOAT("float", 1),
 //    DOUBLE("double", 1),

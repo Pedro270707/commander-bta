@@ -52,5 +52,23 @@ public class Commander implements ModInitializer {
 
             }
         }.withParameter(CommandParameterTypes.INTEGER_COORDINATES));
+        CommandHelper.createCommand(new CommanderCommand("testCommand3") {
+            @Override
+            public boolean execute(CommandHandler commandHandler, CommandSender commandSender, String[] strings) {
+                return false;
+            }
+
+            @Override
+            public boolean opRequired(String[] strings) {
+                return false;
+            }
+
+            @Override
+            public void sendCommandSyntax(CommandHandler commandHandler, CommandSender commandSender) {
+
+            }
+        }.withParameter(CommandParameterTypes.BLOCK)
+                .withParameter(CommandParameterTypes.ITEM)
+                .withParameter(CommandParameterTypes.ACHIEVEMENT));
     }
 }

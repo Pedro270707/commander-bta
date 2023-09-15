@@ -1,13 +1,14 @@
-package net.pedroricardo.commander.commands;
+package net.pedroricardo.commander.commands.parametertypes;
 
 import net.minecraft.client.Minecraft;
+import net.pedroricardo.commander.commands.CommandParameterTypeLike;
 
 import java.util.List;
 
-public abstract class CommanderCommandParameterType {
+public abstract class CommandParameterType extends CommandParameterTypeLike {
     private final int expectedParameters;
 
-    public CommanderCommandParameterType(int expectedParameters) {
+    public CommandParameterType(int expectedParameters) {
         this.expectedParameters = expectedParameters;
     }
 

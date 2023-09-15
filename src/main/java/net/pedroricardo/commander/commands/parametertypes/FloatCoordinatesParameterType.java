@@ -1,4 +1,4 @@
-package net.pedroricardo.commander.commands;
+package net.pedroricardo.commander.commands.parametertypes;
 
 import net.minecraft.client.Minecraft;
 
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class FloatCoordinatesParameterType extends CommanderCommandParameterType {
+public class FloatCoordinatesParameterType extends CommandParameterType {
     public FloatCoordinatesParameterType() {
         super(3);
     }
