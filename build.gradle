@@ -65,6 +65,9 @@ repositories {
 		}
 		metadataSources { artifact() }
 	}
+	maven {
+		url "https://libraries.minecraft.net"
+	}
 	ivy {
 		url = "https://github.com/MartinSVK12"
 		patternLayout {
@@ -87,6 +90,8 @@ dependencies {
 	modImplementation "com.github.Turnip-Labs:bta-halplibe:${project.halplibe_version}"
 
 	modImplementation "ModMenu:ModMenu:2.0.0"
+
+	implementation 'com.mojang:brigadier:1.0.18'
 
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
 	implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.16.0"

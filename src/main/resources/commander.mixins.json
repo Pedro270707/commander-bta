@@ -4,6 +4,10 @@
   "package": "net.pedroricardo.commander.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "PreferCommanderCommandNetServerHandlerMixin",
+    "PreferCommanderCommandNetServerHandlerMixin$NetServerHandlerAccessor",
+    "PreferCommanderCommandPlayerSPMixin",
+    "PreferCommanderCommandPlayerSPMixin$EntityPlayerSPAccessor",
     "ShowCommandSuggestionsMixin",
     "ShowCommandSuggestionsMixin$GuiScreenAccessor",
     "ShowCommandSuggestionsMixin$TextFieldEditorAccessor",

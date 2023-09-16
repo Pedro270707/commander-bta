@@ -1,10 +1,15 @@
 package net.pedroricardo.commander;
 
+import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
-import net.pedroricardo.commander.commands.CommanderCommand;
-import net.pedroricardo.commander.commands.CommandParameterTypes;
+import net.pedroricardo.commander.commands.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import turniplabs.halplibe.helper.CommandHelper;
@@ -20,55 +25,6 @@ public class Commander implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("Commander initialized.");
-        CommandHelper.createCommand(new CommanderCommand("testCommand1") {
-            @Override
-            public boolean execute(CommandHandler commandHandler, CommandSender commandSender, String[] strings) {
-                return false;
-            }
-
-            @Override
-            public boolean opRequired(String[] strings) {
-                return false;
-            }
-
-            @Override
-            public void sendCommandSyntax(CommandHandler commandHandler, CommandSender commandSender) {
-
-            }
-        }.withParameter(CommandParameterTypes.FLOAT_COORDINATES));
-        CommandHelper.createCommand(new CommanderCommand("testCommand2") {
-            @Override
-            public boolean execute(CommandHandler commandHandler, CommandSender commandSender, String[] strings) {
-                return false;
-            }
-
-            @Override
-            public boolean opRequired(String[] strings) {
-                return false;
-            }
-
-            @Override
-            public void sendCommandSyntax(CommandHandler commandHandler, CommandSender commandSender) {
-
-            }
-        }.withParameter(CommandParameterTypes.INTEGER_COORDINATES));
-        CommandHelper.createCommand(new CommanderCommand("testCommand3") {
-            @Override
-            public boolean execute(CommandHandler commandHandler, CommandSender commandSender, String[] strings) {
-                return false;
-            }
-
-            @Override
-            public boolean opRequired(String[] strings) {
-                return false;
-            }
-
-            @Override
-            public void sendCommandSyntax(CommandHandler commandHandler, CommandSender commandSender) {
-
-            }
-        }.withParameter(CommandParameterTypes.BLOCK)
-                .withParameter(CommandParameterTypes.ITEM)
-                .withParameter(CommandParameterTypes.ACHIEVEMENT));
+        CommanderCommandManager.init();
     }
 }

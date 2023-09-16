@@ -1,4 +1,1 @@
-commands.commander.available_commands=Available commands:
-commands.commander.teleport.invalid_location=Invalid location
-commands.commander.invalid_selector=Invalid selector
-commands.commander.no_commands_available=No commands available
+commands.commander.achievement.invalid_achievement=Invalid achievement: %s

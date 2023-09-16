@@ -5,8 +5,6 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.text.TextFieldEditor;
 import net.minecraft.client.render.FontRenderer;
-import net.pedroricardo.commander.CommandParameterParser;
-import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.gui.GuiChatSuggestions;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -41,9 +39,11 @@ public class ShowCommandSuggestionsMixin {
 
     @Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiChat;drawString(Lnet/minecraft/client/render/FontRenderer;Ljava/lang/String;III)V", ordinal = 0, shift = At.Shift.BEFORE))
     private void drawSuggestionPreview(int x, int y, float renderPartialTicks, CallbackInfo ci) {
-        int parameterInCursorIndex = CommandParameterParser.getParameterInCursorIndex(this.suggestionsGui.getMessage(), this.suggestionsGui.getCursor());
-        int leftMargin = CommanderHelper.getLeftMarginForSuggestionsWithParameterIndex(((GuiScreenAccessor)((GuiChat)(Object)this)).fontRenderer(), this.suggestionsGui.getMessage(), parameterInCursorIndex) + 3;
-        if (!this.suggestionsGui.getSuggestions().isEmpty() && this.suggestionsGui.getCommandIndex() == -1 && parameterInCursorIndex == CommanderHelper.getCommandParameterList(this.suggestionsGui.getMessage()).size() - 1) ((GuiScreenAccessor)((GuiChat)(Object)this)).fontRenderer().drawStringWithShadow("§8" + this.suggestionsGui.getSuggestions().get(0), leftMargin + 1, ((GuiChat)(Object)this).height - 12, 0xE0E0E0);
+        //if (!this.suggestionsGui.getSuggestions().isEmpty() && this.suggestionsGui.getSuggestions().get(0).)
+
+        //int parameterInCursorIndex = CommandParameterParser.getParameterInCursorIndex(this.suggestionsGui.getMessage(), this.suggestionsGui.getCursor());
+        //int leftMargin = CommanderHelper.getLeftMarginForSuggestionsWithParameterIndex(((GuiScreenAccessor)((GuiChat)(Object)this)).fontRenderer(), this.suggestionsGui.getMessage(), parameterInCursorIndex) + 3;
+        //if (!this.suggestionsGui.getSuggestions().isEmpty() && this.suggestionsGui.getCommandIndex() == -1 && parameterInCursorIndex == CommanderHelper.getCommandParameterList(this.suggestionsGui.getMessage()).size() - 1) ((GuiScreenAccessor)((GuiChat)(Object)this)).fontRenderer().drawStringWithShadow("§8" + this.suggestionsGui.getSuggestions().get(0), leftMargin + 1, ((GuiChat)(Object)this).height - 12, 0xE0E0E0);
     }
 
     @Inject(method = "drawScreen", at = @At("TAIL"))
@@ -52,7 +52,7 @@ public class ShowCommandSuggestionsMixin {
     }
 
     @Inject(method = "keyTyped", at = @At("RETURN"))
-    public void keyTyped(char c, int key, int mouseX, int mouseY, CallbackInfo ci) {
+    private void keyTyped(char c, int key, int mouseX, int mouseY, CallbackInfo ci) {
         this.suggestionsGui.keyTyped(c, key);
     }
 
