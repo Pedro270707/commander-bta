@@ -236,4 +236,8 @@ public class GuiChatSuggestions extends Gui {
     public int getCursor() {
         return this.tablessCursor;
     }
+
+    public @Nullable ParseResults<CommanderCommandSource> getParseResults() {
+        return this.parseResults;
+    }
 }

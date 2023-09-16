@@ -20,13 +20,7 @@ public class AchievementArgumentType implements ArgumentType<Achievement> {
 
     @Override
     public Achievement parse(StringReader reader) throws CommandSyntaxException {
-        int i = reader.getCursor();
-
-        while(reader.canRead() && isCharValid(reader.peek())) {
-            reader.skip();
-        }
-
-        final String string = reader.getString().substring(i, reader.getCursor());
+        final String string = reader.readString();
 
         for (Achievement achievement : AchievementList.achievementList) {
             if (((StatNameAccessor)achievement).statName().equals(string)) {
