@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.core.achievement.Achievement;
-import net.pedroricardo.commander.commands.parameters.AchievementArgumentType;
+import net.pedroricardo.commander.commands.arguments.AchievementArgumentType;
 
 import java.util.ArrayList;
 import java.util.List;

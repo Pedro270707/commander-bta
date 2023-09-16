@@ -1,4 +1,4 @@
-package net.pedroricardo.commander.commands.parameters;
+package net.pedroricardo.commander.commands.arguments;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
