@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommanderHelper {
-    public static List<Suggestion> getLegacySuggestionList(Minecraft mc, String message, int cursor, List<Suggestion> currentSuggestions) {
+    public static List<Suggestion> getLegacySuggestionList(String message, int cursor) {
         List<Suggestion> list = new ArrayList<>();
         String textBeforeCursor = message.substring(0, cursor);
         if (textBeforeCursor.contains("/")) {

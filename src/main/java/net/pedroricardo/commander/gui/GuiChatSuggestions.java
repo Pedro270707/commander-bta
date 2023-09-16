@@ -34,7 +34,6 @@ public class GuiChatSuggestions extends Gui {
     private int commandIndex = -1;
     private String tablessMessage;
     private int tablessCursor;
-    private String currentError = "";
     private List<Suggestion> suggestions = new ArrayList<>();
     private int scroll = 0;
     
@@ -135,7 +134,7 @@ public class GuiChatSuggestions extends Gui {
         if (this.pendingSuggestions != null && this.pendingSuggestions.isDone()) {
             Suggestions suggestions = this.pendingSuggestions.join();
             this.suggestions.addAll(suggestions.getList());
-            this.suggestions.addAll(CommanderHelper.getLegacySuggestionList(this.mc, this.tablessMessage, this.tablessCursor, this.suggestions));
+            this.suggestions.addAll(CommanderHelper.getLegacySuggestionList(this.tablessMessage, this.tablessCursor));
         }
     }
 
@@ -187,17 +186,14 @@ public class GuiChatSuggestions extends Gui {
         this.commandIndex = -1;
         this.tablessMessage = this.chat.getText();
         this.tablessCursor = this.editor.getCursor();
-        this.currentError = "";
         this.suggestions = new ArrayList<>();
         this.scroll = 0;
     }
 
-    public boolean scroll(int amount) {
+    public void scroll(int amount) {
         if (this.scroll + amount >= 0 && this.scroll + amount <= this.suggestions.size() - Commander.maxSuggestions) {
             this.scroll += amount;
-            return true;
         }
-        return false;
     }
 
     public void cycleThroughSuggestions() {
