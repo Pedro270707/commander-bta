@@ -99,33 +99,34 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public void keyTyped(char c, int key) {
-        if (key != 15) {
-            this.resetAllManagerVariables();
-            String text = this.editor.getText();
-            int cursor = this.editor.getCursor();
-            if (this.parseResults != null && !this.parseResults.getReader().getString().equals(text)) {
-                this.parseResults = null;
-            }
-
-            StringReader stringReader = new StringReader(text);
-            boolean bl = stringReader.canRead() && stringReader.peek() == '/';
-            if (bl) {
-                stringReader.skip();
-                CommandDispatcher<CommanderCommandSource> dispatcher = CommanderCommandManager.getDispatcher();
-                if (this.parseResults == null) {
-                    this.parseResults = dispatcher.parse(stringReader, this.commandSource);
-                }
-                if (cursor >= 1) {
-                    this.pendingSuggestions = dispatcher.getCompletionSuggestions(this.parseResults, cursor);
-                    this.pendingSuggestions.thenRun(() -> {
-                        if (this.pendingSuggestions.isDone()) {
-                            this.updateSuggestions();
-                        }
-                    });
-                }
-            }
-        } else {
+        if (key == 15) {
             this.cycleThroughSuggestions();
+            return;
+        }
+
+        this.resetAllManagerVariables();
+        String text = this.editor.getText();
+        int cursor = this.editor.getCursor();
+        if (this.parseResults != null && !this.parseResults.getReader().getString().equals(text)) {
+            this.parseResults = null;
+        }
+
+        StringReader stringReader = new StringReader(text);
+        boolean bl = stringReader.canRead() && stringReader.peek() == '/';
+        if (bl) {
+            stringReader.skip();
+            CommandDispatcher<CommanderCommandSource> dispatcher = CommanderCommandManager.getDispatcher();
+            if (this.parseResults == null) {
+                this.parseResults = dispatcher.parse(stringReader, this.commandSource);
+            }
+            if (cursor >= 1) {
+                this.pendingSuggestions = dispatcher.getCompletionSuggestions(this.parseResults, cursor);
+                this.pendingSuggestions.thenRun(() -> {
+                    if (this.pendingSuggestions.isDone()) {
+                        this.updateSuggestions();
+                    }
+                });
+            }
         }
     }
 
@@ -235,5 +236,9 @@ public class GuiChatSuggestions extends Gui {
 
     public @Nullable ParseResults<CommanderCommandSource> getParseResults() {
         return this.parseResults;
+    }
+
+    public CommanderCommandSource getCommandSource() {
+        return this.commandSource;
     }
 }
