@@ -1,4 +1,4 @@
-package net.pedroricardo.commander.commands;
+package net.pedroricardo.commander.content;
 
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;

@@ -1,4 +1,4 @@
-package net.pedroricardo.commander.commands.arguments;
+package net.pedroricardo.commander.content.arguments;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -14,7 +14,7 @@ import net.pedroricardo.commander.mixin.StatNameAccessor;
 import java.util.concurrent.CompletableFuture;
 
 public class AchievementArgumentType implements ArgumentType<Achievement> {
-    public static ArgumentType<Achievement> achievementParameter() {
+    public static ArgumentType<Achievement> achievement() {
         return new AchievementArgumentType();
     }
 

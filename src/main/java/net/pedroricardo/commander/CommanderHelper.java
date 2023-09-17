@@ -2,14 +2,9 @@ package net.pedroricardo.commander;
 
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.render.FontRenderer;
-import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.net.command.Command;
 import net.minecraft.core.net.command.Commands;
-import net.minecraft.core.util.collection.Pair;
-import net.pedroricardo.commander.commands.CommanderCommandManager;
-import org.jetbrains.annotations.Nullable;
+import net.pedroricardo.commander.content.CommanderCommandManager;
 
 import java.util.ArrayList;
 import java.util.List;

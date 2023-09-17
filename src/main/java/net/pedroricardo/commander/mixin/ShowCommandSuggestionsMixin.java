@@ -5,7 +5,7 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
-import com.mojang.brigadier.context.SuggestionContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.client.Minecraft;
@@ -15,8 +15,8 @@ import net.minecraft.client.gui.text.TextFieldEditor;
 import net.minecraft.client.render.FontRenderer;
 import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.GuiHelper;
-import net.pedroricardo.commander.commands.CommanderCommandManager;
-import net.pedroricardo.commander.commands.CommanderCommandSource;
+import net.pedroricardo.commander.content.CommanderCommandManager;
+import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.gui.GuiChatSuggestions;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -59,7 +59,7 @@ public class ShowCommandSuggestionsMixin {
         this.ARGUMENT_STYLES.add("§3");
         this.ARGUMENT_STYLES.add("§4");
         this.ARGUMENT_STYLES.add("§5");
-        this.ARGUMENT_STYLES.add("§a");
+        this.ARGUMENT_STYLES.add("§6");
         this.ARGUMENT_STYLES.add("§1");
     }
 
@@ -67,6 +67,7 @@ public class ShowCommandSuggestionsMixin {
     private void drawSuggestionPreview(int x, int y, float renderPartialTicks, CallbackInfo ci) {
         int mouseX = GuiHelper.getScaledMouseX(((GuiScreenAccessor)((GuiChat)(Object)this)).mc());
         int mouseY = GuiHelper.getScaledMouseY(((GuiScreenAccessor)((GuiChat)(Object)this)).mc()) - 1;
+
         if (!this.suggestionsGui.getSuggestions().isEmpty()
                 && this.suggestionsGui.getParseResults() != null
                 && (this.suggestionsGui.getCursor() == this.suggestionsGui.getParseResults().getReader().getString().trim().length()
@@ -74,7 +75,10 @@ public class ShowCommandSuggestionsMixin {
             Suggestion suggestionToRender;
             if (this.suggestionsGui.isHoveringOverSuggestions(mouseX, mouseY)) {
                 suggestionToRender = this.suggestionsGui.getSuggestions().get(this.suggestionsGui.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY));
-            } else suggestionToRender = this.suggestionsGui.getSuggestions().get(0);
+            } else {
+                suggestionToRender = this.suggestionsGui.getSuggestions().get(0);
+            }
+
             if (suggestionToRender.getText().startsWith(((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor().getText().substring(suggestionToRender.getRange().getStart()))) {
                 int leftMargin = 3 + ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().getStringWidth(this.suggestionsGui.getMessage().substring(0, suggestionToRender.getRange().getStart()));
                 ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().drawStringWithShadow("§8" + suggestionToRender.getText(), leftMargin + 1, ((GuiChat) (Object) this).height - 12, 0xE0E0E0);

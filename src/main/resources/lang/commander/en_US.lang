@@ -1,1 +1,2 @@
 commands.commander.achievement.invalid_achievement=Invalid achievement: %s
+commands.commander.achievement.invalid_entity=Invalid entity: %s

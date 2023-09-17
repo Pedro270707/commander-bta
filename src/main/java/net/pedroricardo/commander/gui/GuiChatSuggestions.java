@@ -11,9 +11,9 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.text.TextFieldEditor;
 import net.minecraft.client.render.FontRenderer;
 import net.pedroricardo.commander.*;
-import net.pedroricardo.commander.commands.CommanderClientCommandSource;
-import net.pedroricardo.commander.commands.CommanderCommandManager;
-import net.pedroricardo.commander.commands.CommanderCommandSource;
+import net.pedroricardo.commander.content.CommanderClientCommandSource;
+import net.pedroricardo.commander.content.CommanderCommandManager;
+import net.pedroricardo.commander.content.CommanderCommandSource;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
@@ -50,9 +50,13 @@ public class GuiChatSuggestions extends Gui {
     public void drawScreen() {
         if (!this.suggestions.isEmpty()) {
             this.renderSuggestions(this.fontRenderer, this.tablessMessage, this.tablessCursor);
-        } else if (this.parseResults != null && !this.parseResults.getExceptions().isEmpty()) {
-            for (Exception e : this.parseResults.getExceptions().values()) {
-                this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + e.getMessage());
+        } else if (this.parseResults != null) {
+            if (!this.parseResults.getExceptions().isEmpty()) {
+                for (Exception e : this.parseResults.getExceptions().values()) {
+                    this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + e.getMessage());
+                }
+            } else if (CommanderCommandManager.getParseException(this.parseResults) != null) {
+                this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + CommanderCommandManager.getParseException(this.parseResults).getMessage());
             }
         }
     }
