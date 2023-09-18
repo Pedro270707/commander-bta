@@ -8,6 +8,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.GuiTooltip;
 import net.minecraft.client.gui.text.TextFieldEditor;
 import net.minecraft.client.render.FontRenderer;
 import net.pedroricardo.commander.*;
@@ -36,6 +37,7 @@ public class GuiChatSuggestions extends Gui {
     private int tablessCursor;
     private List<Suggestion> suggestions = new ArrayList<>();
     private int scroll = 0;
+    GuiTooltip tooltip;
     
     public GuiChatSuggestions(Minecraft mc, TextFieldEditor textFieldEditor, GuiChat chat) {
         this.mc = mc;
@@ -45,6 +47,7 @@ public class GuiChatSuggestions extends Gui {
         this.chat = chat;
         this.tablessMessage = this.chat.getText();
         this.tablessCursor = this.editor.getCursor();
+        this.tooltip = new GuiTooltip(this.mc);
     }
 
     public void drawScreen() {
@@ -52,11 +55,13 @@ public class GuiChatSuggestions extends Gui {
             this.renderSuggestions(this.fontRenderer, this.tablessMessage, this.tablessCursor);
         } else if (this.parseResults != null) {
             if (!this.parseResults.getExceptions().isEmpty()) {
+                int i = 0;
                 for (Exception e : this.parseResults.getExceptions().values()) {
-                    this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + e.getMessage());
+                    this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + e.getMessage(), i);
+                    i++;
                 }
             } else if (CommanderCommandManager.getParseException(this.parseResults) != null) {
-                this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + CommanderCommandManager.getParseException(this.parseResults).getMessage());
+                this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + CommanderCommandManager.getParseException(this.parseResults).getMessage(), 0);
             }
         }
     }
@@ -91,10 +96,14 @@ public class GuiChatSuggestions extends Gui {
             }
             fontRenderer.drawStringWithShadow(colorCode + suggestionText, leftMargin + 1, height - suggestionHeight, 0xE0E0E0);
         }
+
+        if (this.isHoveringOverSuggestions(mouseX, mouseY) && this.suggestions.get(this.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY)).getTooltip() != null) {
+            this.tooltip.render(this.suggestions.get(this.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY)).getTooltip().getString(), mouseX, mouseY, 0, 0);
+        }
     }
 
-    private void renderSingleSuggestionLine(FontRenderer fontRenderer, String text) {
-        int height = this.mc.resolution.scaledHeight;
+    private void renderSingleSuggestionLine(FontRenderer fontRenderer, String text, int index) {
+        int height = this.mc.resolution.scaledHeight - index * 12;
         int leftMargin = 2;
         int stringWidth = fontRenderer.getStringWidth(text);
 
@@ -146,7 +155,7 @@ public class GuiChatSuggestions extends Gui {
     public void updateScreen(int dWheel) {
         int cursorX = GuiHelper.getScaledMouseX(this.mc);
         int cursorY = GuiHelper.getScaledMouseY(this.mc);
-        if (isHoveringOverSuggestions(cursorX, cursorY) && dWheel != 0) {
+        if (this.isHoveringOverSuggestions(cursorX, cursorY) && dWheel != 0) {
             this.scroll(Math.round(Math.signum(dWheel)) * -1);
         }
     }

@@ -1,8 +1,14 @@
 package net.pedroricardo.commander.content;
 
 import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.net.command.CommandHandler;
+import net.minecraft.core.net.command.CommandSender;
+import net.minecraft.core.net.command.ServerCommandHandler;
+import net.minecraft.core.net.command.ServerPlayerCommandSender;
+import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.entity.player.EntityPlayerMP;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,5 +45,10 @@ public class CommanderServerCommandSource implements CommanderCommandSource {
     @Override
     public boolean hasAdmin() {
         return false;
+    }
+
+    @Override
+    public @Nullable Vec3d getCoordinates() {
+        return this.getSender().getPosition(1.0f);
     }
 }

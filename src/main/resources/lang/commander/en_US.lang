@@ -1,2 +1,14 @@
-commands.commander.achievement.invalid_achievement=Invalid achievement: %s
-commands.commander.achievement.invalid_entity=Invalid entity: %s
+argument_types.commander.achievement.invalid_achievement=Invalid achievement ID
+argument_types.commander.entity_summon.invalid_entity=Invalid entity ID
+argument_types.commander.block.invalid_block=Invalid block ID
+argument_types.commander.entity.invalid_selector.single_player_only=Selector includes more than one entity, but command only accepts a single player as an argument
+argument_types.commander.entity.invalid_selector.single_entity_only=Selector includes more than one entity, but command only accepts a single entity as an argument
+argument_types.commander.entity.invalid_selector.player_only=Selector includes non-player entities, but command only accepts players as an argument
+argument_types.commander.entity.invalid_selector.generic=Invalid selector
+argument_types.commander.entity.selector.nearest_player=Nearest player
+argument_types.commander.entity.selector.all_players=All players
+argument_types.commander.entity.selector.random_player=Random player
+argument_types.commander.entity.selector.self=Current entity
+argument_types.commander.entity.selector.all_entities=All entities
+argument_types.commander.incomplete=Incomplete argument
+argument_types.commander.not_in_world=Argument requires sender to be in world, but they are not present

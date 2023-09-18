@@ -3,17 +3,9 @@ package net.pedroricardo.commander.content.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import net.minecraft.core.achievement.Achievement;
-import net.minecraft.core.entity.Entity;
-import net.minecraft.core.entity.player.EntityPlayer;
 import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.AchievementArgumentType;
-import net.pedroricardo.commander.content.arguments.EntityArgumentType;
-import net.pedroricardo.commander.content.arguments.EntitySelector;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class TestCommand {

@@ -10,7 +10,7 @@ import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.AchievementArgumentType;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
-import net.pedroricardo.commander.content.arguments.EntitySelector;
+import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +19,7 @@ import java.util.List;
 public class AchievementCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("achievement"))
+                .requires(c -> ((CommanderCommandSource)c).hasAdmin())
                 .then(((LiteralArgumentBuilder)LiteralArgumentBuilder.<CommanderCommandSource>literal("grant")
                 ).then(RequiredArgumentBuilder.argument("achievement", AchievementArgumentType.achievement())
                         .executes(c -> {

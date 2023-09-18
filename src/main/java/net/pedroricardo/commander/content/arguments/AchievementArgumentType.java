@@ -24,17 +24,18 @@ public class AchievementArgumentType implements ArgumentType<Achievement> {
 
         for (Achievement achievement : AchievementList.achievementList) {
             if (((StatNameAccessor)achievement).statName().equals(string)) {
+                reader.skip();
                 return achievement;
             }
         }
-        throw new CommandSyntaxException(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument(), () -> I18n.getInstance().translateKeyAndFormat("commands.commander.achievement.invalid_achievement", string));
+        throw new CommandSyntaxException(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument(), () -> I18n.getInstance().translateKey("argument_types.commander.achievement.invalid_achievement"));
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
         for (Achievement achievement : AchievementList.achievementList) {
             if (((StatNameAccessor)achievement).statName().startsWith(builder.getRemaining())) {
-                builder.suggest(((StatNameAccessor)achievement).statName());
+                builder.suggest(((StatNameAccessor)achievement).statName(), achievement::getStatName);
             }
         }
         return builder.buildFuture();
