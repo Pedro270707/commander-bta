@@ -16,6 +16,7 @@ import net.pedroricardo.commander.content.CommanderClientCommandSource;
 import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 
 import java.awt.*;
 import java.util.List;
@@ -113,9 +114,15 @@ public class GuiChatSuggestions extends Gui {
 
     public void keyTyped(char c, int key) {
         if (key == 15) {
-            this.cycleThroughSuggestions();
+            if (Keyboard.isKeyDown(42)) {
+                this.cycleThroughSuggestions(-1);
+            } else {
+                this.cycleThroughSuggestions();
+            }
             return;
         }
+
+        if (key == 42) return;
 
         this.resetAllManagerVariables();
         String text = this.editor.getText();
@@ -211,11 +218,16 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public void cycleThroughSuggestions() {
-        this.cycleToSuggestion(this.commandIndex + 1);
+        this.cycleThroughSuggestions(1);
+    }
+
+    public void cycleThroughSuggestions(int amount) {
+        this.cycleToSuggestion(this.commandIndex + amount);
     }
 
     public void cycleToSuggestion(int index) {
         if (this.suggestions.size() == 0) return;
+        if (index < 0) index += this.suggestions.size();
         this.commandIndex = index % this.suggestions.size();
         Suggestion suggestion = this.suggestions.get(this.commandIndex);
         this.editor.setText(suggestion.apply(this.tablessMessage));

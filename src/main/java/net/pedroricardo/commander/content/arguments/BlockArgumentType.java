@@ -30,6 +30,7 @@ public class BlockArgumentType implements ArgumentType<Block> {
         for (Block block : Block.blocksList) {
             if (block == null) continue;
             if (block.getKey().equals(string) || (block.getKey().startsWith("tile.") && block.getKey().substring("tile.".length()).equals(string))) {
+                reader.skip();
                 return block;
             }
         }

@@ -5,6 +5,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.player.EntityPlayer;
+import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,12 +26,14 @@ public class EntitySelectorParser {
     private BiConsumer<Entity, List<? extends Entity>> order;
     private @Nullable Class<? extends Entity> limitToType;
     private boolean currentEntity;
+    private String playerName;
 
     public EntitySelectorParser(StringReader reader) {
         this.reader = reader;
     }
 
     private void parseSelector() throws CommandSyntaxException {
+        this.reader.skip();
         if (!this.reader.canRead()) throw CommanderExceptions.invalidSelector().createWithContext(this.reader);
 
         switch (this.reader.peek()) {
@@ -68,49 +71,27 @@ public class EntitySelectorParser {
                 this.order = ORDER_ARBITRARY;
                 this.currentEntity = false;
                 break;
+            default:
+                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(this.reader);
         }
         reader.skip();
-        // Temporary; replace later with selectors (e.g. @e[type=Sheep,name="the sheep"])
-        if (reader.canRead() && reader.peek() != ' ') {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(this.reader);
-        }
+        // TODO: add target selector extra arguments or whatever it's called
+    }
+
+    private void parseName() throws CommandSyntaxException {
+        this.maxResults = 1;
+        this.includesEntities = false;
+        this.playerName = this.reader.readString();
     }
 
     public EntitySelector parse() throws CommandSyntaxException {
-        if (this.reader.canRead() && this.reader.peek() == '@') {
-            this.reader.skip();
+        if (!this.reader.canRead()) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(this.reader);
+
+        if (this.reader.peek() == '@') {
             this.parseSelector();
         } else {
-            // Temporary; change to allow entity names/class instance IDs
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(this.reader);
+            this.parseName();
         }
-        return new EntitySelector(this.maxResults, this.includesEntities, this.order, this.limitToType, this.currentEntity);
-
-//        if (reader.canRead()) {
-//            switch (reader.peek()) {
-//                case 'a':
-//                    reader.skip();
-//                    if (singleEntity) {
-//                        throw new CommandSyntaxException(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException(), () -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.single_entity"));
-//                    }
-//                    return new EntitySelector(singleEntity, playerOnly, EntitySelector.EntitySelectors.ALL_PLAYERS);
-//                case 'e':
-//                    reader.skip();
-//                    if (playerOnly) {
-//                        throw new CommandSyntaxException(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException(), () -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.player_only"));
-//                    }
-//                    return new EntitySelector(singleEntity, playerOnly, EntitySelector.EntitySelectors.ALL_ENTITIES);
-//                case 'r':
-//                    reader.skip();
-//                    return new EntitySelector(singleEntity, playerOnly, EntitySelector.EntitySelectors.RANDOM_PLAYER);
-//                case 'p':
-//                    reader.skip();
-//                    return new EntitySelector(singleEntity, playerOnly, EntitySelector.EntitySelectors.CLOSEST_PLAYER);
-//                case 's':
-//                    reader.skip();
-//                    return new EntitySelector(singleEntity, playerOnly, EntitySelector.EntitySelectors.SELF);
-//            }
-//        }
-//        throw new CommandSyntaxException(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument(), () -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.generic"));
+        return new EntitySelector(this.maxResults, this.includesEntities, this.order, this.limitToType, this.currentEntity, this.playerName);
     }
 }

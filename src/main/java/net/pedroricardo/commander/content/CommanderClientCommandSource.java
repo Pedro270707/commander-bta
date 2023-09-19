@@ -30,6 +30,15 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     }
 
     @Override
+    public Collection<String> getEntitySuggestions() {
+        List<String> suggestions = new ArrayList<>(this.getPlayerNames());
+        if (this.mc.objectMouseOver != null && this.mc.objectMouseOver.entity != null) {
+            suggestions.add("entity#" + this.mc.objectMouseOver.entity.hashCode());
+        }
+        return suggestions;
+    }
+
+    @Override
     public String getType() {
         return "client";
     }

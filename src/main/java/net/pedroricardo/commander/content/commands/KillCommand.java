@@ -9,6 +9,7 @@ import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.util.phys.Vec3d;
+import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.BlockArgumentType;
@@ -31,13 +32,21 @@ public class KillCommand {
                     }
                     return CommanderCommandManager.SINGLE_SUCCESS;
                 })
-                .then((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("entities", EntityArgumentType.entities())
+                .then(RequiredArgumentBuilder.argument("entities", EntityArgumentType.entities())
                         .executes(c -> {
                             EntitySelector entitySelector = c.getArgument("entities", EntitySelector.class);
                             List<? extends Entity> entities = entitySelector.get((CommanderCommandSource)c.getSource());
-                            while (!entities.isEmpty()) {
-                                if (entities.get(0) instanceof EntityLiving) {
-                                    ((EntityLiving)entities.get(0)).hurt(null, 1000, null);
+                            int amountOfEntities = entities.size();
+                            for (int i = 0; i < (amountOfEntities * 2) && !entities.isEmpty(); i++) {
+                                Entity entity = entities.get(0);
+                                if (entity instanceof EntityLiving) {
+                                    if (entity instanceof EntityPlayer) {
+                                        ((EntityPlayer)entity).killPlayer();
+                                    } else {
+                                        ((EntityLiving) entity).hurt(null, 100, null);
+                                        if (entity.isAlive())
+                                            entity.remove();
+                                    }
                                 } else {
                                     entities.get(0).remove();
                                 }

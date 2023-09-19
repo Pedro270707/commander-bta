@@ -33,6 +33,11 @@ public class CommanderServerCommandSource implements CommanderCommandSource {
     }
 
     @Override
+    public Collection<String> getEntitySuggestions() {
+        return this.getPlayerNames();
+    }
+
+    @Override
     public String getType() {
         return "server";
     }
