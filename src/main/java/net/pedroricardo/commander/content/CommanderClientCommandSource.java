@@ -7,6 +7,7 @@ import net.minecraft.core.net.command.ClientPlayerCommandSender;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
 import net.minecraft.core.util.phys.Vec3d;
+import net.pedroricardo.commander.Commander;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     public Collection<String> getEntitySuggestions() {
         List<String> suggestions = new ArrayList<>(this.getPlayerNames());
         if (this.mc.objectMouseOver != null && this.mc.objectMouseOver.entity != null) {
-            suggestions.add("entity#" + this.mc.objectMouseOver.entity.hashCode());
+            suggestions.add(Commander.ENTITY_PREFIX + this.mc.objectMouseOver.entity.hashCode());
         }
         return suggestions;
     }
@@ -56,5 +57,10 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     @Override
     public @Nullable Vec3d getCoordinates() {
         return this.getSender().getPosition(1.0f);
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        this.mc.ingameGUI.addChatMessage(message);
     }
 }

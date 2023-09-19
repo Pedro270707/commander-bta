@@ -26,6 +26,7 @@ public class EntitySelectorParser {
     private BiConsumer<Entity, List<? extends Entity>> order;
     private @Nullable Class<? extends Entity> limitToType;
     private boolean currentEntity;
+    private String entityId;
     private String playerName;
 
     public EntitySelectorParser(StringReader reader) {
@@ -78,10 +79,16 @@ public class EntitySelectorParser {
         // TODO: add target selector extra arguments or whatever it's called
     }
 
-    private void parseName() throws CommandSyntaxException {
+    private void parseNameOrEntityId() throws CommandSyntaxException {
+        String string = this.reader.readString();
         this.maxResults = 1;
-        this.includesEntities = false;
-        this.playerName = this.reader.readString();
+        if (string.startsWith(Commander.ENTITY_PREFIX)) {
+            this.includesEntities = true;
+            this.entityId = string;
+        } else {
+            this.includesEntities = false;
+            this.playerName = string;
+        }
     }
 
     public EntitySelector parse() throws CommandSyntaxException {
@@ -90,8 +97,8 @@ public class EntitySelectorParser {
         if (this.reader.peek() == '@') {
             this.parseSelector();
         } else {
-            this.parseName();
+            this.parseNameOrEntityId();
         }
-        return new EntitySelector(this.maxResults, this.includesEntities, this.order, this.limitToType, this.currentEntity, this.playerName);
+        return new EntitySelector(this.maxResults, this.includesEntities, this.order, this.limitToType, this.currentEntity, this.entityId, this.playerName);
     }
 }

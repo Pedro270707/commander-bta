@@ -13,6 +13,8 @@ public class Commander implements ModInitializer {
     public static int maxSuggestions = 6;
     public static boolean suggestionsFollowParameters = true;
 
+    public static String ENTITY_PREFIX = "entity.";
+
     @Override
     public void onInitialize() {
         LOGGER.info("Commander initialized.");

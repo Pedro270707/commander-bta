@@ -74,7 +74,7 @@ public class ShowCommandSuggestionsMixin {
                     || this.suggestionsGui.getCursor() == this.suggestionsGui.getParseResults().getReader().getString().length())) {
             Suggestion suggestionToRender;
             if (this.suggestionsGui.isHoveringOverSuggestions(mouseX, mouseY)) {
-                suggestionToRender = this.suggestionsGui.getSuggestions().get(this.suggestionsGui.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY));
+                suggestionToRender = this.suggestionsGui.getSuggestions().get(this.suggestionsGui.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY).get());
             } else {
                 suggestionToRender = this.suggestionsGui.getSuggestions().get(0);
             }
@@ -123,7 +123,7 @@ public class ShowCommandSuggestionsMixin {
                 this.parseResults = dispatcher.parse(stringReader, this.suggestionsGui.getCommandSource());
             }
 
-            int distanceFromCursorToTextStart = 0;//text.length() - cursor;
+            int distanceFromCursorToTextStart = 0;
 
             StringBuilder stringToDrawBuilder = new StringBuilder();
             CommandContextBuilder<CommanderCommandSource> builder = this.parseResults.getContext().getLastChild();

@@ -26,7 +26,7 @@ public class SummonCommand {
                                 throw new RuntimeException(e);
                             }
                             entity.spawnInit();
-                            entity.moveTo(((CommanderCommandSource)c.getSource()).getSender().x, ((CommanderCommandSource)c.getSource()).getSender().y, ((CommanderCommandSource)c.getSource()).getSender().z, 0.0f, 0.0f);
+                            entity.moveTo(((CommanderCommandSource)c.getSource()).getSender().x, ((CommanderCommandSource)c.getSource()).getSender().y - 1.6, ((CommanderCommandSource)c.getSource()).getSender().z, 0.0f, 0.0f);
                             ((CommanderCommandSource)c.getSource()).getSender().world.entityJoinedWorld(entity);
                             return CommanderCommandManager.SINGLE_SUCCESS;
                         })
@@ -41,7 +41,7 @@ public class SummonCommand {
                                         throw new RuntimeException(e);
                                     }
                                     entity.spawnInit();
-                                    entity.moveTo(coordinates.getX(((CommanderCommandSource)c.getSource()).getSender().x), coordinates.getY(((CommanderCommandSource)c.getSource()).getSender().y), coordinates.getZ(((CommanderCommandSource)c.getSource()).getSender().z), 0.0f, 0.0f);
+                                    entity.moveTo(coordinates.getX(((CommanderCommandSource)c.getSource()).getSender().x), coordinates.getY(((CommanderCommandSource)c.getSource()).getSender().y - 1.6), coordinates.getZ(((CommanderCommandSource)c.getSource()).getSender().z), 0.0f, 0.0f);
                                     ((CommanderCommandSource)c.getSource()).getSender().world.entityJoinedWorld(entity);
                                     return CommanderCommandManager.SINGLE_SUCCESS;
                                 }))));

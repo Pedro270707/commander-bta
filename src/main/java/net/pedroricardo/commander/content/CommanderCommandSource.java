@@ -27,4 +27,6 @@ public interface CommanderCommandSource {
     boolean hasAdmin();
 
     @Nullable Vec3d getCoordinates();
+
+    void sendMessage(String message);
 }

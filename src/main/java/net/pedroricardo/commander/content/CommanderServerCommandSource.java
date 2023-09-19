@@ -5,6 +5,8 @@ import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
 import net.minecraft.core.net.command.ServerCommandHandler;
 import net.minecraft.core.net.command.ServerPlayerCommandSender;
+import net.minecraft.core.net.packet.Packet3Chat;
+import net.minecraft.core.util.helper.AES;
 import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.entity.player.EntityPlayerMP;
@@ -55,5 +57,10 @@ public class CommanderServerCommandSource implements CommanderCommandSource {
     @Override
     public @Nullable Vec3d getCoordinates() {
         return this.getSender().getPosition(1.0f);
+    }
+
+    @Override
+    public void sendMessage(String message) {
+        this.player.playerNetServerHandler.sendPacket(new Packet3Chat(message, AES.keyChain.get(this.player.username)));
     }
 }

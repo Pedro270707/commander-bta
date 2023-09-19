@@ -6,6 +6,7 @@ import net.minecraft.core.lang.I18n;
 public class CommanderExceptions {
     private static final SimpleCommandExceptionType INCOMPLETE_ARGUMENT = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.incomplete"));
     private static final SimpleCommandExceptionType NOT_IN_WORLD = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.not_in_world"));
+    private static final SimpleCommandExceptionType EMPTY_SELECTOR = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.empty"));
     private static final SimpleCommandExceptionType INVALID_SELECTOR = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.generic"));
     private static final SimpleCommandExceptionType SINGLE_ENTITY_ONLY = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.single_entity_only"));
     private static final SimpleCommandExceptionType SINGLE_PLAYER_ONLY = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.single_player_only"));
@@ -17,6 +18,10 @@ public class CommanderExceptions {
 
     public static SimpleCommandExceptionType notInWorld() {
         return NOT_IN_WORLD;
+    }
+
+    public static SimpleCommandExceptionType emptySelector() {
+        return EMPTY_SELECTOR;
     }
 
     public static SimpleCommandExceptionType invalidSelector() {

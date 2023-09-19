@@ -3,6 +3,7 @@ package net.pedroricardo.commander.gui;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import net.minecraft.client.Minecraft;
@@ -21,8 +22,10 @@ import org.lwjgl.input.Keyboard;
 import java.awt.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("OptionalGetWithoutIsPresent")
 public class GuiChatSuggestions extends Gui {
     private final TextFieldEditor editor;
     private final GuiChat chat;
@@ -52,6 +55,7 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public void drawScreen() {
+        CommandSyntaxException parseException;
         if (!this.suggestions.isEmpty()) {
             this.renderSuggestions(this.fontRenderer, this.tablessMessage, this.tablessCursor);
         } else if (this.parseResults != null) {
@@ -61,8 +65,8 @@ public class GuiChatSuggestions extends Gui {
                     this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + e.getMessage(), i);
                     i++;
                 }
-            } else if (CommanderCommandManager.getParseException(this.parseResults) != null) {
-                this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + CommanderCommandManager.getParseException(this.parseResults).getMessage(), 0);
+            } else if ((parseException = CommanderCommandManager.getParseException(this.parseResults)) != null) {
+                this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + parseException.getMessage(), 0);
             }
         }
     }
@@ -90,7 +94,7 @@ public class GuiChatSuggestions extends Gui {
             String suggestionText = this.suggestions.get(i + this.scroll).getText();
             int suggestionHeight = 12 * (-i + Math.min(this.suggestions.size(), Commander.maxSuggestions) - 1) + 25;
             String colorCode;
-            if (i + this.scroll == this.commandIndex || i + this.scroll == this.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY)) {
+            if (i + this.scroll == this.commandIndex || (this.isHoveringOverSuggestions(mouseX, mouseY) && i + this.scroll == this.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY).get())) {
                 colorCode = "§4";
             } else {
                 colorCode = "§8";
@@ -98,13 +102,13 @@ public class GuiChatSuggestions extends Gui {
             fontRenderer.drawStringWithShadow(colorCode + suggestionText, leftMargin + 1, height - suggestionHeight, 0xE0E0E0);
         }
 
-        if (this.isHoveringOverSuggestions(mouseX, mouseY) && this.suggestions.get(this.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY)).getTooltip() != null) {
-            this.tooltip.render(this.suggestions.get(this.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY)).getTooltip().getString(), mouseX, mouseY, 0, 0);
+        if (this.isHoveringOverSuggestions(mouseX, mouseY) && this.suggestions.get(this.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY).get()).getTooltip() != null) {
+            this.tooltip.render(this.suggestions.get(this.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY).get()).getTooltip().getString(), mouseX, mouseY, 0, 0);
         }
     }
 
-    private void renderSingleSuggestionLine(FontRenderer fontRenderer, String text, int index) {
-        int height = this.mc.resolution.scaledHeight - index * 12;
+    private void renderSingleSuggestionLine(FontRenderer fontRenderer, String text, int heightIndex) {
+        int height = this.mc.resolution.scaledHeight - heightIndex * 12;
         int leftMargin = 2;
         int stringWidth = fontRenderer.getStringWidth(text);
 
@@ -169,16 +173,16 @@ public class GuiChatSuggestions extends Gui {
 
     public void mouseClicked(int x, int y, int button) {
         if (isHoveringOverSuggestions(x, y) && button == 0) {
-            this.cycleToSuggestion(this.getIndexOfSuggestionBeingHoveredOver(x, y));
+            this.cycleToSuggestion(this.getIndexOfSuggestionBeingHoveredOver(x, y).get());
         }
     }
 
     public boolean isHoveringOverSuggestions(int cursorX, int cursorY) {
-        return this.getIndexOfSuggestionBeingHoveredOver(cursorX, cursorY) != -1;
+        return this.getIndexOfSuggestionBeingHoveredOver(cursorX, cursorY).isPresent();
     }
 
-    public int getIndexOfSuggestionBeingHoveredOver(int cursorX, int cursorY) {
-        if (this.suggestions.size() == 0) return -1;
+    public Optional<Integer> getIndexOfSuggestionBeingHoveredOver(int cursorX, int cursorY) {
+        if (this.suggestions.size() == 0) return Optional.empty();
         int height = this.mc.resolution.scaledHeight;
 
         int parameterStart = this.suggestions.get(0).getRange().getStart();
@@ -197,10 +201,10 @@ public class GuiChatSuggestions extends Gui {
             int maxY = height - 3 - ((Math.min(this.suggestions.size(), Commander.maxSuggestions) - i) * 12);
 
             if (cursorX >= minX && cursorX < maxX && cursorY >= minY && cursorY < maxY) {
-                return i + this.scroll;
+                return Optional.of(i + this.scroll);
             }
         }
-        return -1;
+        return Optional.empty();
     }
 
     private void resetAllManagerVariables() {

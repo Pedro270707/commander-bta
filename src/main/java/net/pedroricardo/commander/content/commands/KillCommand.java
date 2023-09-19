@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityLiving;
@@ -20,11 +21,13 @@ import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressWarnings("unchecked")
 public class KillCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("kill")
+                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .executes(c -> {
                     EntityPlayer sender = ((CommanderCommandSource)c.getSource()).getSender();
                     if (sender != null) {
@@ -35,20 +38,14 @@ public class KillCommand {
                 .then(RequiredArgumentBuilder.argument("entities", EntityArgumentType.entities())
                         .executes(c -> {
                             EntitySelector entitySelector = c.getArgument("entities", EntitySelector.class);
-                            List<? extends Entity> entities = entitySelector.get((CommanderCommandSource)c.getSource());
-                            int amountOfEntities = entities.size();
-                            for (int i = 0; i < (amountOfEntities * 2) && !entities.isEmpty(); i++) {
-                                Entity entity = entities.get(0);
-                                if (entity instanceof EntityLiving) {
-                                    if (entity instanceof EntityPlayer) {
-                                        ((EntityPlayer)entity).killPlayer();
-                                    } else {
-                                        ((EntityLiving) entity).hurt(null, 100, null);
-                                        if (entity.isAlive())
-                                            entity.remove();
-                                    }
+                            CopyOnWriteArrayList<? extends Entity> entities = new CopyOnWriteArrayList<>(entitySelector.get((CommanderCommandSource)c.getSource()));
+                            for (Entity entity : entities) {
+                                if (entity instanceof EntityPlayer) {
+                                    ((EntityPlayer) entity).killPlayer();
+                                } else if (entity instanceof EntityLiving) {
+                                    entity.hurt(null, 100, null);
                                 } else {
-                                    entities.get(0).remove();
+                                    entity.remove();
                                 }
                             }
                             return CommanderCommandManager.SINGLE_SUCCESS;

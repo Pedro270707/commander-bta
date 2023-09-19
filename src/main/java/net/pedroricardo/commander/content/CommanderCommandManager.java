@@ -2,19 +2,12 @@ package net.pedroricardo.commander.content;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.core.achievement.Achievement;
-import net.minecraft.core.net.command.*;
-import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.content.commands.*;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-
 public class CommanderCommandManager {
+    public static int FAILURE = 0;
     public static int SINGLE_SUCCESS = 1;
     private static final CommandDispatcher<CommanderCommandSource> DISPATCHER = new CommandDispatcher<>();
 
