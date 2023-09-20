@@ -34,4 +34,8 @@ public interface CommanderCommandSource {
     void sendMessage(String message);
 
     World getWorld();
+
+    @Deprecated CommandHandler getCommandHandler();
+
+    @Deprecated CommandSender getCommandSender();
 }

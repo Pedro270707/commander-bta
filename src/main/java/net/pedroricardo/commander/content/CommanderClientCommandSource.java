@@ -78,4 +78,14 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     public World getWorld() {
         return this.getSender().world;
     }
+
+    @Override
+    public @Deprecated CommandHandler getCommandHandler() {
+        return this.mc.commandHandler;
+    }
+
+    @Override
+    public @Deprecated CommandSender getCommandSender() {
+        return this.mc.thePlayer.sender;
+    }
 }

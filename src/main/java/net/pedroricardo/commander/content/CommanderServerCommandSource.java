@@ -72,6 +72,17 @@ public class CommanderServerCommandSource implements CommanderCommandSource {
 
     @Override
     public World getWorld() {
+        assert this.getSender() != null;
         return this.getSender().world;
+    }
+
+    @Override
+    public @Deprecated CommandHandler getCommandHandler() {
+        return this.server.serverCommandHandler;
+    }
+
+    @Override
+    public @Deprecated CommandSender getCommandSender() {
+        return new ServerPlayerCommandSender(this.server, this.player);
     }
 }
