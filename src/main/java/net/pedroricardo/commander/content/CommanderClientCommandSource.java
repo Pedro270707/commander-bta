@@ -7,6 +7,7 @@ import net.minecraft.core.net.command.ClientPlayerCommandSender;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
 import net.minecraft.core.util.phys.Vec3d;
+import net.minecraft.core.world.World;
 import net.pedroricardo.commander.Commander;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,7 +61,21 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     }
 
     @Override
+    public @Nullable Vec3d getBlockCoordinates() {
+        if (this.mc.objectMouseOver != null) {
+            return Vec3d.createVector(this.mc.objectMouseOver.x, this.mc.objectMouseOver.y, this.mc.objectMouseOver.z);
+        }
+        Vec3d playerCoordinates = this.getCoordinates();
+        return playerCoordinates == null ? null : Vec3d.createVector(playerCoordinates.xCoord, playerCoordinates.yCoord - 1.6, playerCoordinates.zCoord);
+    }
+
+    @Override
     public void sendMessage(String message) {
         this.mc.ingameGUI.addChatMessage(message);
+    }
+
+    @Override
+    public World getWorld() {
+        return this.getSender().world;
     }
 }

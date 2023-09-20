@@ -8,6 +8,7 @@ import net.minecraft.core.net.command.ServerPlayerCommandSender;
 import net.minecraft.core.net.packet.Packet3Chat;
 import net.minecraft.core.util.helper.AES;
 import net.minecraft.core.util.phys.Vec3d;
+import net.minecraft.core.world.World;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.entity.player.EntityPlayerMP;
 import org.jetbrains.annotations.Nullable;
@@ -60,7 +61,17 @@ public class CommanderServerCommandSource implements CommanderCommandSource {
     }
 
     @Override
+    public @Nullable Vec3d getBlockCoordinates() {
+        return this.getCoordinates();
+    }
+
+    @Override
     public void sendMessage(String message) {
         this.player.playerNetServerHandler.sendPacket(new Packet3Chat(message, AES.keyChain.get(this.player.username)));
+    }
+
+    @Override
+    public World getWorld() {
+        return this.getSender().world;
     }
 }

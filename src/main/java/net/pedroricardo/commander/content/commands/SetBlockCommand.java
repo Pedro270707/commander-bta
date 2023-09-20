@@ -21,9 +21,8 @@ public class SetBlockCommand {
                                 .executes(c -> {
                                     BlockCoordinates coordinates = c.getArgument("pos", BlockCoordinates.class);
                                     Block block = c.getArgument("block", Block.class);
-                                    Vec3d sourceCoordinates = ((CommanderCommandSource)c.getSource()).getCoordinates();
 
-                                    ((CommanderCommandSource)c.getSource()).getSender().world.setBlockWithNotify(coordinates.getX(sourceCoordinates == null ? null : sourceCoordinates.xCoord), coordinates.getY(sourceCoordinates == null ? null : sourceCoordinates.yCoord - 1.6), coordinates.getZ(sourceCoordinates == null ? null : sourceCoordinates.zCoord), block.id);
+                                    ((CommanderCommandSource)c.getSource()).getWorld().setBlockWithNotify(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource(), true), coordinates.getZ((CommanderCommandSource)c.getSource()), block.id);
 
                                     return CommanderCommandManager.SINGLE_SUCCESS;
                                 })
@@ -34,7 +33,7 @@ public class SetBlockCommand {
                                             Vec3d sourceCoordinates = ((CommanderCommandSource)c.getSource()).getCoordinates();
                                             int metadata = c.getArgument("metadata", Integer.class);
 
-                                            ((CommanderCommandSource)c.getSource()).getSender().world.setBlockAndMetadataWithNotify(coordinates.getX(sourceCoordinates == null ? null : sourceCoordinates.xCoord), coordinates.getY(sourceCoordinates == null ? null : sourceCoordinates.yCoord - 1.6), coordinates.getZ(sourceCoordinates == null ? null : sourceCoordinates.zCoord), block.id, metadata);
+                                            ((CommanderCommandSource)c.getSource()).getWorld().setBlockAndMetadataWithNotify(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource(), true), coordinates.getZ((CommanderCommandSource)c.getSource()), block.id, metadata);
 
                                             return CommanderCommandManager.SINGLE_SUCCESS;
                                         })))));

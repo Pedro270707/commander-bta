@@ -73,7 +73,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
         if ("@e".startsWith(builder.getRemainingLowerCase()))
             builder.suggest("@e", () -> I18n.getInstance().translateKey("argument_types.commander.entity.selector.all_entities"));
         for (String name : ((CommanderCommandSource)context.getSource()).getEntitySuggestions()) {
-            if (name.startsWith(builder.getRemaining())) {
+            if (name.toLowerCase().startsWith(builder.getRemainingLowerCase())) {
                 builder.suggest(name);
             }
         }

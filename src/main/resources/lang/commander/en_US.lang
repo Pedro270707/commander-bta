@@ -15,5 +15,6 @@ commands.commander.achievement.grant.exception_already_has_achievement=Player al
 commands.commander.achievement.grant.success_multiple_entities=Granted achievement §1[%s]§r to %s entities
 commands.commander.achievement.grant.success_single_entity=Granted achievement §1[%s]§r to %s
 commands.commander.achievement.grant.failure_empty_selector=No entity was found to grant achievement
+commands.commander.seed.success=Seed: §5[%s]§r
 argument_types.commander.incomplete=Incomplete argument
 argument_types.commander.not_in_world=Argument requires sender to be in world, but they are not present

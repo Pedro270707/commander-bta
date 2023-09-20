@@ -27,7 +27,7 @@ public class AchievementCommand {
 
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("achievement"))
-                .requires(c -> ((CommanderCommandSource)c).hasAdmin())
+                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .then(((LiteralArgumentBuilder)LiteralArgumentBuilder.<CommanderCommandSource>literal("grant")
                 ).then((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("entities", EntityArgumentType.players())
                         .then(RequiredArgumentBuilder.argument("achievement", AchievementArgumentType.achievement())

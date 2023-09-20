@@ -62,12 +62,12 @@ public class BlockCoordinatesArgumentType implements ArgumentType<BlockCoordinat
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         String string = builder.getRemaining();
-        Vec3d coordinates = ((CommanderCommandSource)context.getSource()).getCoordinates();
+        Vec3d coordinates = ((CommanderCommandSource)context.getSource()).getBlockCoordinates();
 
         if (coordinates == null) return builder.buildFuture();
 
         // Rounding the coordinates
-        int[] roundedCoordinates = new int[]{(int)Math.floor(coordinates.xCoord), (int)Math.floor(coordinates.yCoord - 1.6), (int)Math.floor(coordinates.zCoord)};
+        int[] roundedCoordinates = new int[]{(int)Math.floor(coordinates.xCoord), (int)Math.floor(coordinates.yCoord), (int)Math.floor(coordinates.zCoord)};
 
         if (string.isEmpty()) {
             String allCoordinates = roundedCoordinates[0] + " " + roundedCoordinates[1] + " " + roundedCoordinates[2];

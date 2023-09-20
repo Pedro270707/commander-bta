@@ -11,6 +11,8 @@ import net.pedroricardo.commander.content.arguments.EntitySummonArgumentType;
 import net.pedroricardo.commander.content.arguments.Vec3dArgumentType;
 import net.pedroricardo.commander.content.helpers.DoubleCoordinates;
 
+import java.util.Objects;
+
 @SuppressWarnings("unchecked")
 public class SummonCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
@@ -21,13 +23,13 @@ public class SummonCommand {
                             Class<? extends Entity> entityClass = c.getArgument("entity", Class.class);
                             Entity entity;
                             try {
-                                entity = entityClass.getConstructor(World.class).newInstance(((CommanderCommandSource)c.getSource()).getSender().world);
+                                entity = entityClass.getConstructor(World.class).newInstance(((CommanderCommandSource)c.getSource()).getWorld());
                             } catch (Exception e) {
                                 throw new RuntimeException(e);
                             }
                             entity.spawnInit();
-                            entity.moveTo(((CommanderCommandSource)c.getSource()).getSender().x, ((CommanderCommandSource)c.getSource()).getSender().y - 1.6, ((CommanderCommandSource)c.getSource()).getSender().z, 0.0f, 0.0f);
-                            ((CommanderCommandSource)c.getSource()).getSender().world.entityJoinedWorld(entity);
+                            entity.moveTo(Objects.requireNonNull(((CommanderCommandSource) c.getSource()).getSender()).x, ((CommanderCommandSource)c.getSource()).getSender().y - 1.6, ((CommanderCommandSource)c.getSource()).getSender().z, 0.0f, 0.0f);
+                            ((CommanderCommandSource)c.getSource()).getWorld().entityJoinedWorld(entity);
                             return CommanderCommandManager.SINGLE_SUCCESS;
                         })
                         .then(RequiredArgumentBuilder.argument("pos", Vec3dArgumentType.vec3d())
@@ -36,13 +38,13 @@ public class SummonCommand {
                                     DoubleCoordinates coordinates = c.getArgument("pos", DoubleCoordinates.class);
                                     Entity entity;
                                     try {
-                                        entity = entityClass.getConstructor(World.class).newInstance(((CommanderCommandSource)c.getSource()).getSender().world);
+                                        entity = entityClass.getConstructor(World.class).newInstance(((CommanderCommandSource)c.getSource()).getWorld());
                                     } catch (Exception e) {
                                         throw new RuntimeException(e);
                                     }
                                     entity.spawnInit();
-                                    entity.moveTo(coordinates.getX(((CommanderCommandSource)c.getSource()).getSender().x), coordinates.getY(((CommanderCommandSource)c.getSource()).getSender().y - 1.6), coordinates.getZ(((CommanderCommandSource)c.getSource()).getSender().z), 0.0f, 0.0f);
-                                    ((CommanderCommandSource)c.getSource()).getSender().world.entityJoinedWorld(entity);
+                                    entity.moveTo(coordinates.getX(((CommanderCommandSource)c.getSource())), coordinates.getY(((CommanderCommandSource)c.getSource()), true), coordinates.getZ(((CommanderCommandSource)c.getSource())), 0.0f, 0.0f);
+                                    ((CommanderCommandSource)c.getSource()).getWorld().entityJoinedWorld(entity);
                                     return CommanderCommandManager.SINGLE_SUCCESS;
                                 }))));
     }

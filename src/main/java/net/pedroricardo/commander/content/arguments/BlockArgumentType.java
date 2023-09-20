@@ -39,15 +39,15 @@ public class BlockArgumentType implements ArgumentType<Block> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        String remaining = builder.getRemaining();
+        String remaining = builder.getRemainingLowerCase();
         for (Block block : Block.blocksList) {
             if (block == null) continue;
             if ("tile.".startsWith(remaining) || remaining.startsWith("tile.")) {
-                if (block.getKey().startsWith(builder.getRemaining())) {
+                if (block.getKey().toLowerCase().startsWith(remaining)) {
                     builder.suggest(block.getKey(), () -> I18n.getInstance().translateKey(block.getLanguageKey(0) + ".name"));
                 }
             } else {
-                if (block.getKey().startsWith("tile.") && block.getKey().substring("tile.".length()).startsWith(builder.getRemaining())) {
+                if (block.getKey().startsWith("tile.") && block.getKey().substring("tile.".length()).toLowerCase().startsWith(remaining)) {
                     builder.suggest(block.getKey().substring("tile.".length()), () -> I18n.getInstance().translateKey(block.getLanguageKey(0) + ".name"));
                 }
             }

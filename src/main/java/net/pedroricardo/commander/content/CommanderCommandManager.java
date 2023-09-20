@@ -16,6 +16,7 @@ public class CommanderCommandManager {
         SummonCommand.register(DISPATCHER);
         SetBlockCommand.register(DISPATCHER);
         KillCommand.register(DISPATCHER);
+        SeedCommand.register(DISPATCHER);
 
         TestCommand.register(DISPATCHER);
     }

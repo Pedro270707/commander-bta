@@ -1,6 +1,8 @@
 package net.pedroricardo.commander.content.helpers;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.pedroricardo.commander.content.CommanderCommandSource;
+import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockCoordinates {
@@ -39,6 +41,39 @@ public class BlockCoordinates {
     public int getZ(@Nullable Double sourceZ) throws CommandSyntaxException {
         if (sourceZ == null) return this.z.get(null);
         return this.z.get((int) Math.floor(sourceZ));
+    }
+
+    public int getX(CommanderCommandSource source) throws CommandSyntaxException {
+        if (source.getCoordinates() == null) {
+            if (!this.x.isRelative()) {
+                return this.x.get(0);
+            } else {
+                throw CommanderExceptions.notInWorld().create();
+            }
+        }
+        return this.x.get((int) Math.floor(source.getCoordinates().xCoord));
+    }
+
+    public int getY(CommanderCommandSource source, boolean lowerToFeet) throws CommandSyntaxException {
+        if (source.getCoordinates() == null) {
+            if (!this.y.isRelative()) {
+                return this.y.get(0);
+            } else {
+                throw CommanderExceptions.notInWorld().create();
+            }
+        }
+        return this.y.get((int) (Math.floor(source.getCoordinates().yCoord - (lowerToFeet ? 1.6 : 0))));
+    }
+
+    public int getZ(CommanderCommandSource source) throws CommandSyntaxException {
+        if (source.getCoordinates() == null) {
+            if (!this.z.isRelative()) {
+                return this.z.get(0);
+            } else {
+                throw CommanderExceptions.notInWorld().create();
+            }
+        }
+        return this.z.get((int) Math.floor(source.getCoordinates().zCoord));
     }
 
     public boolean hasRelativeCoordinate() {

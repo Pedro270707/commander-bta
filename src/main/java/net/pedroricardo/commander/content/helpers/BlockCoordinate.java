@@ -17,7 +17,7 @@ public class BlockCoordinate {
     public int get(@Nullable Integer sourceCoordinate) throws CommandSyntaxException {
         if (this.isRelative) {
             if (sourceCoordinate != null) {
-                return Math.round(sourceCoordinate) + this.coordinate;
+                return sourceCoordinate + this.coordinate;
             } else {
                 throw CommanderExceptions.notInWorld().create();
             }

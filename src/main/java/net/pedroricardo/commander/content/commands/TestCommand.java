@@ -10,7 +10,7 @@ import net.pedroricardo.commander.content.arguments.AchievementArgumentType;
 @SuppressWarnings("unchecked")
 public class TestCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("give"))
+        dispatcher.register((LiteralArgumentBuilder)(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("test"))
                 .then(((LiteralArgumentBuilder)LiteralArgumentBuilder.<CommanderCommandSource>literal("grant")
                 ).then(RequiredArgumentBuilder.argument("achievement", AchievementArgumentType.achievement())
                         .then(RequiredArgumentBuilder.argument("achievement1", AchievementArgumentType.achievement())

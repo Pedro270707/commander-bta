@@ -4,6 +4,7 @@ import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
 import net.minecraft.core.util.phys.Vec3d;
+import net.minecraft.core.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -22,11 +23,15 @@ public interface CommanderCommandSource {
 
     String getType();
 
-    EntityPlayer getSender();
+    @Nullable EntityPlayer getSender();
 
     boolean hasAdmin();
 
     @Nullable Vec3d getCoordinates();
 
+    @Nullable Vec3d getBlockCoordinates();
+
     void sendMessage(String message);
+
+    World getWorld();
 }

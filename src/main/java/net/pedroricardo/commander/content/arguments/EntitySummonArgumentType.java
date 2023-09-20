@@ -37,7 +37,7 @@ public class EntitySummonArgumentType implements ArgumentType<Class<? extends En
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         for (String entityName : EntityDispatcher.stringToClassMapping.keySet()) {
-            if (entityName.startsWith(builder.getRemaining())) {
+            if (entityName.toLowerCase().startsWith(builder.getRemainingLowerCase())) {
                 builder.suggest(entityName);
             }
         }

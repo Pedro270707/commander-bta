@@ -35,7 +35,7 @@ public class EntitySelector {
         // Entity ID/player
         if (this.entityId != null) {
             List<Entity> entities = new ArrayList<>();
-            for (Entity entity : commandSource.getSender().world.loadedEntityList) {
+            for (Entity entity : commandSource.getWorld().loadedEntityList) {
                 if ((Commander.ENTITY_PREFIX + entity.hashCode()).equals(this.entityId)) {
                     entities.add(entity);
                 }
@@ -43,7 +43,7 @@ public class EntitySelector {
             return entities.subList(0, Math.min(entities.size(), this.maxResults));
         } else if (this.playerName != null) {
             List<EntityPlayer> players = new ArrayList<>();
-            for (EntityPlayer player : commandSource.getSender().world.players) {
+            for (EntityPlayer player : commandSource.getWorld().players) {
                 if (player.username.equals(this.playerName) || player.nickname.equals(this.playerName)) {
                     players.add(player);
                 }
@@ -54,9 +54,9 @@ public class EntitySelector {
         // Player only?
         List<? extends Entity> entities;
         if (this.includesEntities) {
-            entities = commandSource.getSender().world.loadedEntityList;
+            entities = commandSource.getWorld().loadedEntityList;
         } else {
-            entities = commandSource.getSender().world.players;
+            entities = commandSource.getWorld().players;
         }
 
         // Limit to entity type

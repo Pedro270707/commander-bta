@@ -8,6 +8,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.core.achievement.Achievement;
 import net.minecraft.core.achievement.AchievementList;
+import net.minecraft.core.block.Block;
 import net.minecraft.core.lang.I18n;
 import net.pedroricardo.commander.mixin.StatNameAccessor;
 
@@ -23,7 +24,7 @@ public class AchievementArgumentType implements ArgumentType<Achievement> {
         final String string = reader.readString();
 
         for (Achievement achievement : AchievementList.achievementList) {
-            if (((StatNameAccessor)achievement).statName().equals(string)) {
+            if (((StatNameAccessor)achievement).statName().equals(string) || (((StatNameAccessor)achievement).statName().startsWith("achievement.") && ((StatNameAccessor)achievement).statName().substring("achievement.".length()).equals(string))) {
                 reader.skip();
                 return achievement;
             }
@@ -33,15 +34,18 @@ public class AchievementArgumentType implements ArgumentType<Achievement> {
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
+        String remaining = builder.getRemainingLowerCase();
         for (Achievement achievement : AchievementList.achievementList) {
-            if (((StatNameAccessor)achievement).statName().startsWith(builder.getRemaining())) {
-                builder.suggest(((StatNameAccessor)achievement).statName(), achievement::getStatName);
+            if ("achievement.".startsWith(remaining) || remaining.startsWith("achievement.")) {
+                if (((StatNameAccessor)achievement).statName().toLowerCase().startsWith(remaining)) {
+                    builder.suggest(((StatNameAccessor)achievement).statName(), achievement::getStatName);
+                }
+            } else {
+                if (((StatNameAccessor)achievement).statName().startsWith("achievement.") && ((StatNameAccessor)achievement).statName().substring("achievement.".length()).toLowerCase().startsWith(remaining)) {
+                    builder.suggest(((StatNameAccessor)achievement).statName().substring("achievement.".length()), achievement::getStatName);
+                }
             }
         }
         return builder.buildFuture();
-    }
-
-    public static boolean isCharValid(char c) {
-        return c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c == '_' || c == ':' || c == '/' || c == '.' || c == '-' || c >= 'A' && c <= 'Z';
     }
 }
