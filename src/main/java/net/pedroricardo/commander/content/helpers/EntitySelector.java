@@ -8,9 +8,9 @@ import net.pedroricardo.commander.content.CommanderCommandSource;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 public class EntitySelector {
     private final int maxResults;
@@ -18,15 +18,17 @@ public class EntitySelector {
     private final BiConsumer<Entity, List<? extends Entity>> order;
     private final @Nullable Class<? extends Entity> limitToType;
     private final boolean currentEntity;
+    private final Predicate<Entity> predicate;
     private final @Nullable String entityId;
     private final @Nullable String playerName;
 
-    public EntitySelector(int maxResults, boolean includesEntities, BiConsumer<Entity, List<? extends Entity>> order, @Nullable Class<? extends Entity> limitToType, boolean currentEntity, @Nullable String entityId, @Nullable String playerName) {
+    public EntitySelector(int maxResults, boolean includesEntities, BiConsumer<Entity, List<? extends Entity>> order, @Nullable Class<? extends Entity> limitToType, boolean currentEntity, Predicate<Entity> predicate, @Nullable String entityId, @Nullable String playerName) {
         this.maxResults = maxResults;
         this.includesEntities = includesEntities;
         this.order = order;
         this.limitToType = limitToType;
         this.currentEntity = currentEntity;
+        this.predicate = predicate;
         this.entityId = entityId;
         this.playerName = playerName;
     }
@@ -73,10 +75,17 @@ public class EntitySelector {
         // Sorting order
         this.order.accept(commandSource.getSender(), entities);
 
-        // Maximum amount of results
-        entities = entities.subList(0, Math.min(entities.size(), this.maxResults));
+        List<Entity> listAfterPredicate = new ArrayList<>();
+        // Predicate
+        for (Entity entity : entities) {
+            if (!predicate.test(entity)) continue;
+            listAfterPredicate.add(entity);
+        }
 
-        return entities;
+        // Maximum amount of results
+        listAfterPredicate = listAfterPredicate.subList(0, Math.min(listAfterPredicate.size(), this.maxResults));
+
+        return listAfterPredicate;
     }
 
     public int getMaxResults() {

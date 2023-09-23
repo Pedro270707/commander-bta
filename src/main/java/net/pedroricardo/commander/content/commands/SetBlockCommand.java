@@ -30,7 +30,6 @@ public class SetBlockCommand {
                                         .executes(c -> {
                                             BlockCoordinates coordinates = c.getArgument("pos", BlockCoordinates.class);
                                             Block block = c.getArgument("block", Block.class);
-                                            Vec3d sourceCoordinates = ((CommanderCommandSource)c.getSource()).getCoordinates();
                                             int metadata = c.getArgument("metadata", Integer.class);
 
                                             ((CommanderCommandSource)c.getSource()).getWorld().setBlockAndMetadataWithNotify(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource(), true), coordinates.getZ((CommanderCommandSource)c.getSource()), block.id, metadata);

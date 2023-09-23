@@ -35,7 +35,7 @@ public class AchievementCommand {
                                     List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get((CommanderCommandSource) c.getSource());
                                     Achievement achievement = c.getArgument("achievement", Achievement.class);
 
-                                    if (entities.size() == 1 && ((EntityPlayer)entities.get(0)).getStat(achievement) == 1) {
+                                    if (entities.size() == 1 && ((EntityPlayer)entities.get(0)).getStat(achievement) != 0) {
                                         throw PLAYER_ALREADY_HAS_ACHIEVEMENT.create();
                                     }
                                     if (entities.size() == 0) {
@@ -58,7 +58,7 @@ public class AchievementCommand {
 
                                     return CommanderCommandManager.SINGLE_SUCCESS;
                                 }))
-                        .then((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("all")
+                        .then((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("*")
                                 .executes(c -> {
                                     List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get((CommanderCommandSource) c.getSource());
 
@@ -78,15 +78,28 @@ public class AchievementCommand {
                                             }
                                         }
                                     }
+
+                                    sendWildcardContextualMessage(((CommanderCommandSource)c.getSource()), entities);
+
                                     return CommanderCommandManager.SINGLE_SUCCESS;
                                 }))))));
     }
 
-    private static void sendContextualMessage(CommanderCommandSource source, List<? extends Entity> entities, Achievement achievement) {
+    private static void sendContextualMessage(CommanderCommandSource source, List<? extends Entity> entities, Achievement achievement) throws CommandSyntaxException {
         if (entities.size() > 1) {
             source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.achievement.grant.success_multiple_entities", achievement.getStatName(), entities.size()));
         } else if (entities.size() == 1) {
             source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.achievement.grant.success_single_entity", achievement.getStatName().trim(), ((EntityLiving)entities.get(0)).getDisplayName()));
+        } else {
+            throw CommanderExceptions.emptySelector().create();
+        }
+    }
+
+    private static void sendWildcardContextualMessage(CommanderCommandSource source, List<? extends Entity> entities) {
+        if (entities.size() > 1) {
+            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.achievement.grant.all.success_multiple_entities", entities.size()));
+        } else if (entities.size() == 1) {
+            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.achievement.grant.all.success_single_entity",  ((EntityLiving)entities.get(0)).getDisplayName()));
         } else {
             source.sendMessage(I18n.getInstance().translateKey("commands.commander.achievement.grant.failure_empty_selector"));
         }

@@ -1,16 +1,18 @@
 package net.pedroricardo.commander;
 
+import com.mojang.brigadier.Message;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.core.net.command.Command;
 import net.minecraft.core.net.command.Commands;
 import net.pedroricardo.commander.content.CommanderCommandManager;
 
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public class CommanderHelper {
     private static Collection<Integer> IGNORABLE_KEYS = Arrays.asList(
@@ -69,5 +71,41 @@ public class CommanderHelper {
 
     public static boolean isIgnorableKey(int key) {
         return IGNORABLE_KEYS.contains(key);
+    }
+
+    public static CompletableFuture<Suggestions> suggest(Iterable<String> iterable, SuggestionsBuilder suggestionsBuilder) {
+        String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
+        for (String string2 : iterable) {
+            if (!matchesSubStr(string, string2.toLowerCase(Locale.ROOT))) continue;
+            suggestionsBuilder.suggest(string2);
+        }
+        return suggestionsBuilder.buildFuture();
+    }
+
+    public static boolean matchesSubStr(String string, String string2) {
+        int i = 0;
+        while (!string2.startsWith(string, i)) {
+            if ((i = string2.indexOf(95, i)) < 0) {
+                return false;
+            }
+            ++i;
+        }
+        return true;
+    }
+
+    public static Optional<String> getStringToSuggest(String checkedString, String input) {
+        if (checkedString.startsWith(input)) {
+            return Optional.of(checkedString);
+        } else if (checkedString.substring(checkedString.indexOf('.') + 1).startsWith(input)) {
+            return Optional.of(checkedString.substring(checkedString.indexOf('.') + 1));
+        }
+        return Optional.empty();
+    }
+
+    public static boolean matchesKeyString(String checkedString, String input) {
+        if (checkedString.equals(input)) {
+            return true;
+        }
+        return checkedString.substring(checkedString.indexOf('.') + 1).equals(input);
     }
 }

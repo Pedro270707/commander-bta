@@ -16,6 +16,7 @@ import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.BlockArgumentType;
 import net.pedroricardo.commander.content.arguments.BlockCoordinatesArgumentType;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
+import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import net.pedroricardo.commander.content.helpers.BlockCoordinates;
 import net.pedroricardo.commander.content.helpers.EntitySelector;
 
@@ -30,9 +31,11 @@ public class KillCommand {
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .executes(c -> {
                     EntityPlayer sender = ((CommanderCommandSource)c.getSource()).getSender();
-                    if (sender != null) {
-                        sender.killPlayer();
-                    }
+
+                    if (sender == null) throw CommanderExceptions.notInWorld().create();
+
+                    sender.killPlayer();
+
                     return CommanderCommandManager.SINGLE_SUCCESS;
                 })
                 .then(RequiredArgumentBuilder.argument("entities", EntityArgumentType.entities())
