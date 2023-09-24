@@ -73,6 +73,12 @@ public class CommanderHelper {
         return IGNORABLE_KEYS.contains(key);
     }
 
+    public static CompletableFuture<Suggestions> suggest(String string, SuggestionsBuilder suggestionsBuilder) {
+        String stringRemaining = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
+        if (matchesSubStr(stringRemaining, string.toLowerCase(Locale.ROOT))) suggestionsBuilder.suggest(string);
+        return suggestionsBuilder.buildFuture();
+    }
+
     public static CompletableFuture<Suggestions> suggest(Iterable<String> iterable, SuggestionsBuilder suggestionsBuilder) {
         String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
         for (String string2 : iterable) {
@@ -96,7 +102,7 @@ public class CommanderHelper {
     public static Optional<String> getStringToSuggest(String checkedString, String input) {
         if (checkedString.startsWith(input)) {
             return Optional.of(checkedString);
-        } else if (checkedString.substring(checkedString.indexOf('.') + 1).startsWith(input)) {
+        } else if (checkedString.contains(".") && checkedString.substring(checkedString.indexOf('.') + 1).startsWith(input)) {
             return Optional.of(checkedString.substring(checkedString.indexOf('.') + 1));
         }
         return Optional.empty();

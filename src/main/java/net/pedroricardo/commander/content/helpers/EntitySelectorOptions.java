@@ -1,25 +1,32 @@
 package net.pedroricardo.commander.content.helpers;
 
-import com.mojang.brigadier.Message;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.core.entity.Entity;
+import net.minecraft.core.entity.EntityDispatcher;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.lang.text.Text;
 import net.minecraft.core.lang.text.TextTranslatable;
 import net.minecraft.core.player.gamemode.Gamemode;
+import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.CommanderHelper;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 public class EntitySelectorOptions {
     private static final DynamicCommandExceptionType INAPPLICABLE_OPTION = new DynamicCommandExceptionType(value -> (() -> I18n.getInstance().translateKeyAndFormat("argument_types.commander.entity.selector.options.inapplicable", value)));
     private static final DynamicCommandExceptionType UNKNOWN_OPTION = new DynamicCommandExceptionType(value -> (() -> I18n.getInstance().translateKeyAndFormat("argument_types.commander.entity.selector.options.unknown", value)));
     private static final DynamicCommandExceptionType UNKNOWN_GAME_MODE = new DynamicCommandExceptionType(value -> (() -> I18n.getInstance().translateKeyAndFormat("argument_types.commander.entity.selector.options.gamemode.invalid", value)));
+    private static final DynamicCommandExceptionType UNKNOWN_SORT = new DynamicCommandExceptionType(value -> (() -> I18n.getInstance().translateKeyAndFormat("argument_types.commander.entity.selector.options.sort.invalid", value)));
+    private static final DynamicCommandExceptionType UNKNOWN_ENTITY_TYPE = new DynamicCommandExceptionType(value -> (() -> I18n.getInstance().translateKeyAndFormat("argument_types.commander.entity.selector.options.type.invalid", value)));
+    private static final SimpleCommandExceptionType NEGATIVE_DISTANCE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.selector.options.distance.invalid"));
+    private static final SimpleCommandExceptionType LIMIT_TOO_SMALL = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.selector.options.limit.invalid"));
 
     private final StringReader reader;
     private final String key;
@@ -36,6 +43,87 @@ public class EntitySelectorOptions {
     }
 
     static {
+        register("distance", (parser) -> {
+            int cursor = parser.getReader().getCursor();
+            MinMaxBounds.Doubles bounds = MinMaxBounds.Doubles.fromReader(parser.getReader());
+            if ((bounds.getMin() != null && bounds.getMin() < 0) || (bounds.getMax() != null && bounds.getMax() < 0)) {
+                parser.getReader().setCursor(cursor);
+                throw NEGATIVE_DISTANCE.createWithContext(parser.getReader());
+            }
+            parser.setDistance(bounds);
+        }, parser -> parser.getDistance().isAny(), new TextTranslatable("argument_types.commander.entity.selector.options.distance.description"));
+        register("type", (parser) -> {
+            int cursor = parser.getReader().getCursor();
+            boolean invert = parser.shouldInvertValue();
+
+            parser.setSuggestions((builder, consumer) -> {
+                String string = builder.getRemaining().toLowerCase(Locale.ROOT);
+                if (!string.isEmpty()) {
+                    if (string.charAt(0) == '!') {
+                        string = string.substring(1);
+                    }
+                }
+                CommanderHelper.suggest("!Player", builder);
+                CommanderHelper.suggest("Player", builder);
+                for (String key : EntityDispatcher.stringToClassMapping.keySet()) {
+                    if (!key.toLowerCase(Locale.ROOT).startsWith(string)) continue;
+                    CommanderHelper.suggest("!" + key, builder);
+                    if (invert) continue;
+                    CommanderHelper.suggest(key, builder);
+                }
+                return builder.buildFuture();
+            });
+
+            if (invert) {
+                parser.setTypeInverse(true);
+            }
+            String type = parser.getReader().readUnquotedString();
+            if (type.equals("Player")) {
+                parser.setLimitToType(EntityPlayer.class);
+            } else {
+                if (EntityDispatcher.stringToClassMapping.containsKey(type)) {
+                    parser.setLimitToType(EntityDispatcher.stringToClassMapping.get(type));
+                } else {
+                    parser.getReader().setCursor(cursor);
+                    throw UNKNOWN_ENTITY_TYPE.createWithContext(parser.getReader(), type);
+                }
+            }
+        }, parser -> !parser.hasType(), new TextTranslatable("argument_types.commander.entity.selector.options.type.description"));
+        register("limit", (parser) -> {
+            int cursor = parser.getReader().getCursor();
+            int limit = parser.getReader().readInt();
+            if (limit < 1) {
+                parser.getReader().setCursor(cursor);
+                throw LIMIT_TOO_SMALL.createWithContext(parser.getReader());
+            }
+            parser.setMaxResults(limit);
+            parser.setHasLimit(true);
+        }, parser -> !parser.hasLimit(), new TextTranslatable("argument_types.commander.entity.selector.options.limit.description"));
+        register("sort", (parser) -> {
+            int i = parser.getReader().getCursor();
+            String string = parser.getReader().readUnquotedString();
+            parser.setSuggestions((suggestionsBuilder, consumer) -> CommanderHelper.suggest(Arrays.asList("nearest", "furthest", "random", "arbitrary"), suggestionsBuilder));
+            BiConsumer<Entity, List<? extends Entity>> sort;
+            switch (string) {
+                case "nearest":
+                    sort = EntitySelectorParser.ORDER_NEAREST;
+                    break;
+                case "furthest":
+                    sort = EntitySelectorParser.ORDER_FURTHEST;
+                    break;
+                case "random":
+                    sort = EntitySelectorParser.ORDER_RANDOM;
+                    break;
+                case "arbitrary":
+                    sort = EntitySelectorParser.ORDER_ARBITRARY;
+                    break;
+                default:
+                    parser.getReader().setCursor(i);
+                    throw UNKNOWN_SORT.createWithContext(parser.getReader(), string);
+            }
+            parser.setOrder(sort);
+            parser.setSorted(true);
+        }, parser -> !parser.isSorted(), new TextTranslatable("argument_types.commander.entity.selector.options.sort.description"));
         register("gamemode", (parser) -> {
             parser.setSuggestions((builder, consumer) -> {
                 String string = builder.getRemaining().toLowerCase(Locale.ROOT);
@@ -75,6 +163,7 @@ public class EntitySelectorOptions {
                 throw UNKNOWN_GAME_MODE.createWithContext(parser.getReader(), value);
             }
 
+            parser.setIncludesEntities(false);
             parser.addPredicate((entity) -> {
                 if (!(entity instanceof EntityPlayer)) return false;
                 return CommanderHelper.matchesKeyString(((EntityPlayer) entity).gamemode.languageKey, value) != invert;

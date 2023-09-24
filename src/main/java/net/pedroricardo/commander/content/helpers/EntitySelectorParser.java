@@ -3,6 +3,7 @@ package net.pedroricardo.commander.content.helpers;
 import com.google.common.primitives.Doubles;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -22,10 +23,13 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class EntitySelectorParser {
-    private final BiConsumer<Entity, List<? extends Entity>> ORDER_RANDOM = (sender, entities) -> Collections.shuffle(entities);
-    private final BiConsumer<Entity, List<? extends Entity>> ORDER_ARBITRARY = (sender, entities) -> {};
-    private final BiConsumer<Entity, List<? extends Entity>> ORDER_CLOSEST = (sender, entities) -> entities.sort((firstEntity, secondEntity) -> Doubles.compare(firstEntity.distanceTo(sender), secondEntity.distanceTo(sender)));
-    private final BiConsumer<Entity, List<? extends Entity>> ORDER_FARTHEST = (sender, entities) -> entities.sort((firstEntity, secondEntity) -> Doubles.compare(secondEntity.distanceTo(sender), firstEntity.distanceTo(sender)));
+    private static final SimpleCommandExceptionType EXPECTED_END_OF_OPTIONS = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.selector.options.unterminated"));
+    private static final DynamicCommandExceptionType EXPECTED_OPTION_VALUE = new DynamicCommandExceptionType((value) -> () -> I18n.getInstance().translateKeyAndFormat("argument_types.commander.entity.selector.options.valueless", value));
+
+    public static final BiConsumer<Entity, List<? extends Entity>> ORDER_RANDOM = (sender, entities) -> Collections.shuffle(entities);
+    public static final BiConsumer<Entity, List<? extends Entity>> ORDER_ARBITRARY = (sender, entities) -> {};
+    public static final BiConsumer<Entity, List<? extends Entity>> ORDER_NEAREST = (sender, entities) -> entities.sort((firstEntity, secondEntity) -> Doubles.compare(firstEntity.distanceTo(sender), secondEntity.distanceTo(sender)));
+    public static final BiConsumer<Entity, List<? extends Entity>> ORDER_FURTHEST = (sender, entities) -> entities.sort((firstEntity, secondEntity) -> Doubles.compare(secondEntity.distanceTo(sender), firstEntity.distanceTo(sender)));
 
     private final SimpleCommandExceptionType SELECTORS_NOT_ALLOWED = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.selectors_not_allowed"));
 
@@ -38,10 +42,12 @@ public class EntitySelectorParser {
     private boolean includesEntities;
     private BiConsumer<Entity, List<? extends Entity>> order;
     private @Nullable Class<? extends Entity> limitToType;
+    private boolean typeInverse = false;
     private boolean currentEntity;
     private String entityId;
     private String playerName;
-    private boolean allowSelectors;
+    private MinMaxBounds.Doubles distance = MinMaxBounds.Doubles.ANY;
+    private final boolean allowSelectors;
 
     private final BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> NO_SUGGESTIONS = (builder, consumer) -> builder.buildFuture();
 
@@ -65,29 +71,28 @@ public class EntitySelectorParser {
             case 'p':
                 this.maxResults = 1;
                 this.includesEntities = false;
-                this.order = ORDER_CLOSEST;
-                this.limitToType = EntityPlayer.class;
+                this.order = ORDER_NEAREST;
+                this.setLimitToType(EntityPlayer.class);
                 this.currentEntity = false;
                 break;
             case 'a':
                 this.maxResults = Integer.MAX_VALUE;
                 this.includesEntities = false;
                 this.order = ORDER_ARBITRARY;
-                this.limitToType = EntityPlayer.class;
+                this.setLimitToType(EntityPlayer.class);
                 this.currentEntity = false;
                 break;
             case 'r':
                 this.maxResults = 1;
                 this.includesEntities = false;
                 this.order = ORDER_RANDOM;
-                this.limitToType = EntityPlayer.class;
+                this.setLimitToType(EntityPlayer.class);
                 this.currentEntity = false;
                 break;
             case 's':
                 this.maxResults = 1;
                 this.includesEntities = true;
                 this.order = ORDER_ARBITRARY;
-                this.limitToType = EntityPlayer.class;
                 this.currentEntity = true;
                 break;
             case 'e':
@@ -133,7 +138,7 @@ public class EntitySelectorParser {
         } else {
             this.parseNameOrEntityId();
         }
-        return new EntitySelector(this.maxResults, this.includesEntities, this.order, this.limitToType, this.currentEntity, this.predicate, this.entityId, this.playerName);
+        return new EntitySelector(this.maxResults, this.includesEntities, this.order, this.limitToType, this.typeInverse, this.currentEntity, this.predicate, this.entityId, this.playerName, this.distance);
     }
 
     private void parseOptions() throws CommandSyntaxException {
@@ -147,8 +152,7 @@ public class EntitySelectorParser {
             this.reader.skipWhitespace();
             if (!this.reader.canRead() || this.reader.peek() != '=') {
                 this.reader.setCursor(i);
-                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherParseException().createWithContext(this.reader, key);
-//                throw ERROR_EXPECTED_OPTION_VALUE.createWithContext(this.reader, key);
+                throw EXPECTED_OPTION_VALUE.createWithContext(this.reader, key);
             }
             this.reader.skip();
             this.reader.skipWhitespace();
@@ -163,12 +167,10 @@ public class EntitySelectorParser {
                 continue;
             }
             if (this.reader.peek() == ']') break;
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(this.reader);
-            // throw ERROR_EXPECTED_END_OF_OPTIONS.createWithContext(this.reader);
+            throw EXPECTED_END_OF_OPTIONS.createWithContext(this.reader);
         }
         if (!this.reader.canRead()) {
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(this.reader);
-            // throw ERROR_EXPECTED_END_OF_OPTIONS.createWithContext(this.reader);
+            throw EXPECTED_END_OF_OPTIONS.createWithContext(this.reader);
         }
         this.reader.skip();
         this.suggestions = NO_SUGGESTIONS;
@@ -255,6 +257,9 @@ public class EntitySelectorParser {
 
     private boolean hasGamemodeEquals = false;
     private boolean hasGamemodeNotEquals = false;
+    private boolean isSorted = false;
+    private boolean hasLimit = false;
+    private boolean hasType = false;
 
     public boolean hasGamemodeEquals() {
         return this.hasGamemodeEquals;
@@ -270,5 +275,61 @@ public class EntitySelectorParser {
 
     public void setHasGamemodeNotEquals(boolean bl) {
         this.hasGamemodeNotEquals = bl;
+    }
+
+    public boolean isSorted() {
+        return this.isSorted;
+    }
+
+    public void setSorted(boolean bl) {
+        this.isSorted = bl;
+    }
+
+    public boolean hasLimit() {
+        return this.hasLimit;
+    }
+
+    public void setHasLimit(boolean bl) {
+        this.hasLimit = bl;
+    }
+
+    public boolean hasType() {
+        return this.limitToType != null;
+    }
+
+    public boolean isTypeInverse() {
+        return this.typeInverse;
+    }
+
+    public void setTypeInverse(boolean bl) {
+        this.typeInverse = bl;
+    }
+
+    public MinMaxBounds.Doubles getDistance() {
+        return this.distance;
+    }
+
+    public void setDistance(MinMaxBounds.Doubles distance) {
+        this.distance = distance;
+    }
+
+    public void setMaxResults(int maxResults) {
+        this.maxResults = maxResults;
+    }
+
+    public void setIncludesEntities(boolean includesEntities) {
+        this.includesEntities = includesEntities;
+    }
+
+    public void setOrder(BiConsumer<Entity, List<? extends Entity>> order) {
+        this.order = order;
+    }
+
+    public void setLimitToType(Class<? extends Entity> type) {
+        this.limitToType = type;
+    }
+
+    public void setCurrentEntity(boolean currentEntity) {
+        this.currentEntity = currentEntity;
     }
 }

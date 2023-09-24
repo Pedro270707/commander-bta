@@ -17,27 +17,31 @@ public class EntitySelector {
     private final boolean includesEntities;
     private final BiConsumer<Entity, List<? extends Entity>> order;
     private final @Nullable Class<? extends Entity> limitToType;
+    private final boolean typeInverse;
     private final boolean currentEntity;
     private final Predicate<Entity> predicate;
     private final @Nullable String entityId;
     private final @Nullable String playerName;
+    private final MinMaxBounds.Doubles distance;
 
-    public EntitySelector(int maxResults, boolean includesEntities, BiConsumer<Entity, List<? extends Entity>> order, @Nullable Class<? extends Entity> limitToType, boolean currentEntity, Predicate<Entity> predicate, @Nullable String entityId, @Nullable String playerName) {
+    public EntitySelector(int maxResults, boolean includesEntities, BiConsumer<Entity, List<? extends Entity>> order, @Nullable Class<? extends Entity> limitToType, boolean typeInverse, boolean currentEntity, Predicate<Entity> predicate, @Nullable String entityId, @Nullable String playerName, MinMaxBounds.Doubles distance) {
         this.maxResults = maxResults;
         this.includesEntities = includesEntities;
         this.order = order;
         this.limitToType = limitToType;
+        this.typeInverse = typeInverse;
         this.currentEntity = currentEntity;
         this.predicate = predicate;
         this.entityId = entityId;
         this.playerName = playerName;
+        this.distance = distance;
     }
 
-    public List<? extends Entity> get(CommanderCommandSource commandSource) throws CommandSyntaxException {
+    public List<? extends Entity> get(CommanderCommandSource source) throws CommandSyntaxException {
         // Entity ID/player
         if (this.entityId != null) {
             List<Entity> entities = new ArrayList<>();
-            for (Entity entity : commandSource.getWorld().loadedEntityList) {
+            for (Entity entity : source.getWorld().loadedEntityList) {
                 if ((Commander.ENTITY_PREFIX + entity.hashCode()).equals(this.entityId)) {
                     entities.add(entity);
                 }
@@ -45,7 +49,7 @@ public class EntitySelector {
             return entities.subList(0, Math.min(entities.size(), this.maxResults));
         } else if (this.playerName != null) {
             List<EntityPlayer> players = new ArrayList<>();
-            for (EntityPlayer player : commandSource.getWorld().players) {
+            for (EntityPlayer player : source.getWorld().players) {
                 if (player.username.equals(this.playerName) || player.nickname.equals(this.playerName)) {
                     players.add(player);
                 }
@@ -53,30 +57,29 @@ public class EntitySelector {
             return players.subList(0, Math.min(players.size(), this.maxResults));
         }
 
-        // Player only?
+        // Player only
         List<? extends Entity> entities;
         if (this.includesEntities) {
-            entities = commandSource.getWorld().loadedEntityList;
+            entities = source.getWorld().loadedEntityList;
         } else {
-            entities = commandSource.getWorld().players;
+            entities = source.getWorld().players;
         }
 
-        // Limit to entity type
-        if (limitToType != null) {
-            List<? extends Entity> temp = new ArrayList<>(entities);
-            for (Entity entity : entities) {
-                if (!limitToType.isInstance(entity)) {
-                    temp.remove(entity);
-                }
+        List<? extends Entity> temp = new ArrayList<>(entities);
+        for (Entity entity : entities) {
+            if ((limitToType != null && limitToType.isInstance(entity) == this.typeInverse)
+                    || !predicate.test(entity)
+                    || !this.distanceContains(source, entity)) {
+                temp.remove(entity);
             }
-            entities = temp;
         }
+        entities = temp;
 
         // Sorting order
-        this.order.accept(commandSource.getSender(), entities);
+        this.order.accept(source.getSender(), entities);
 
-        List<Entity> listAfterPredicate = new ArrayList<>();
         // Predicate
+        List<Entity> listAfterPredicate = new ArrayList<>();
         for (Entity entity : entities) {
             if (!predicate.test(entity)) continue;
             listAfterPredicate.add(entity);
@@ -86,6 +89,11 @@ public class EntitySelector {
         listAfterPredicate = listAfterPredicate.subList(0, Math.min(listAfterPredicate.size(), this.maxResults));
 
         return listAfterPredicate;
+    }
+
+    private boolean distanceContains(CommanderCommandSource source, Entity entity) {
+        if (this.distance.isAny()) return true;
+        return source.getSender() != null && this.distance.contains(source.getSender().distanceTo(entity));
     }
 
     public int getMaxResults() {
