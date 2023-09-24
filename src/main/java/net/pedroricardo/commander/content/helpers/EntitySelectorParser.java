@@ -260,6 +260,8 @@ public class EntitySelectorParser {
     private boolean isSorted = false;
     private boolean hasLimit = false;
     private boolean hasType = false;
+    private boolean hasNameEquals = false;
+    private boolean hasNameNotEquals = false;
 
     public boolean hasGamemodeEquals() {
         return this.hasGamemodeEquals;
@@ -311,6 +313,22 @@ public class EntitySelectorParser {
 
     public void setDistance(MinMaxBounds.Doubles distance) {
         this.distance = distance;
+    }
+
+    public boolean hasNameEquals() {
+        return this.hasNameEquals;
+    }
+
+    public void setHasNameEquals(boolean bl) {
+        this.hasNameEquals = bl;
+    }
+
+    public boolean hasNameNotEquals() {
+        return this.hasNameNotEquals;
+    }
+
+    public void setHasNameNotEquals(boolean bl) {
+        this.hasNameNotEquals = bl;
     }
 
     public void setMaxResults(int maxResults) {

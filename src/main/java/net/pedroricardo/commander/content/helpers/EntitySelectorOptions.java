@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityDispatcher;
+import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.lang.text.Text;
@@ -43,6 +44,26 @@ public class EntitySelectorOptions {
     }
 
     static {
+        EntitySelectorOptions.register("name", entitySelectorParser -> {
+                    int i = entitySelectorParser.getReader().getCursor();
+                    boolean bl = entitySelectorParser.shouldInvertValue();
+                    String string = entitySelectorParser.getReader().readString();
+                    if (entitySelectorParser.hasNameNotEquals() && !bl) {
+                        entitySelectorParser.getReader().setCursor(i);
+                        throw INAPPLICABLE_OPTION.createWithContext(entitySelectorParser.getReader(), "name");
+                    }
+                    if (bl) {
+                        entitySelectorParser.setHasNameNotEquals(true);
+                    } else {
+                        entitySelectorParser.setHasNameEquals(true);
+                    }
+                    entitySelectorParser.addPredicate(entity -> {
+                        if (!(entity instanceof EntityLiving)) return bl;
+                        else if (entity instanceof EntityPlayer) return ((EntityPlayer)entity).username.equals(string) != bl;
+                        else if (!((EntityLiving)entity).getDisplayName().startsWith("§") || ((EntityLiving)entity).getDisplayName().length() < 2) return ((EntityLiving)entity).getDisplayName().equals(string) != bl;
+                        return ((EntityLiving)entity).getDisplayName().substring(2).equals(string) != bl;
+                    });
+                }, entitySelectorParser -> !entitySelectorParser.hasNameEquals(), new TextTranslatable("argument_types.commander.entity.selector.options.name.description"));
         register("distance", (parser) -> {
             int cursor = parser.getReader().getCursor();
             MinMaxBounds.Doubles bounds = MinMaxBounds.Doubles.fromReader(parser.getReader());
@@ -74,6 +95,10 @@ public class EntitySelectorOptions {
                 return builder.buildFuture();
             });
 
+            if (parser.isTypeInverse() && !invert) {
+                parser.getReader().setCursor(cursor);
+                throw INAPPLICABLE_OPTION.createWithContext(parser.getReader(), "type");
+            }
             if (invert) {
                 parser.setTypeInverse(true);
             }

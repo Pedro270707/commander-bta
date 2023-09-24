@@ -26,6 +26,7 @@ argument_types.commander.entity.selector.options.type.description=Entities of ty
 argument_types.commander.entity.selector.options.type.invalid=Invalid or unknown entity type '%s'
 argument_types.commander.entity.selector.options.distance.description=Distance to entity
 argument_types.commander.entity.selector.options.distance.invalid=Distance cannot be negative
+argument_types.commander.entity.selector.options.name.description=Entity name
 argument_types.commander.range.empty=Expected value or range of values
 argument_types.commander.range.swapped=Min cannot be bigger than max
 commands.commander.achievement.grant.exception_already_has_achievement=Player already has achievement
