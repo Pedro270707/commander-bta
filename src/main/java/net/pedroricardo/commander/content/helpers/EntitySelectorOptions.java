@@ -44,20 +44,44 @@ public class EntitySelectorOptions {
     }
 
     static {
-        EntitySelectorOptions.register("name", entitySelectorParser -> {
-                    int i = entitySelectorParser.getReader().getCursor();
-                    boolean bl = entitySelectorParser.shouldInvertValue();
-                    String string = entitySelectorParser.getReader().readString();
-                    if (entitySelectorParser.hasNameNotEquals() && !bl) {
-                        entitySelectorParser.getReader().setCursor(i);
-                        throw INAPPLICABLE_OPTION.createWithContext(entitySelectorParser.getReader(), "name");
+        EntitySelectorOptions.register("x", (parser) -> {
+            double x = parser.getReader().readDouble();
+            parser.setX(x);
+        }, entitySelectorParser -> entitySelectorParser.getX() == null, new TextTranslatable("argument_types.commander.entity.selector.options.x.description"));
+        EntitySelectorOptions.register("y", (parser) -> {
+            double y = parser.getReader().readDouble();
+            parser.setY(y);
+        }, entitySelectorParser -> entitySelectorParser.getY() == null, new TextTranslatable("argument_types.commander.entity.selector.options.y.description"));
+        EntitySelectorOptions.register("z", (parser) -> {
+            double z = parser.getReader().readDouble();
+            parser.setZ(z);
+        }, entitySelectorParser -> entitySelectorParser.getZ() == null, new TextTranslatable("argument_types.commander.entity.selector.options.z.description"));
+        EntitySelectorOptions.register("dx", (parser) -> {
+            double dx = parser.getReader().readDouble();
+            parser.setDeltaX(dx);
+        }, entitySelectorParser -> entitySelectorParser.getDeltaX() == null, new TextTranslatable("argument_types.commander.entity.selector.options.dx.description"));
+        EntitySelectorOptions.register("dy", (parser) -> {
+            double dy = parser.getReader().readDouble();
+            parser.setDeltaY(dy);
+        }, entitySelectorParser -> entitySelectorParser.getDeltaY() == null, new TextTranslatable("argument_types.commander.entity.selector.options.dy.description"));
+        EntitySelectorOptions.register("dz", (parser) -> {
+            double dz = parser.getReader().readDouble();
+            parser.setDeltaZ(dz);
+        }, entitySelectorParser -> entitySelectorParser.getDeltaZ() == null, new TextTranslatable("argument_types.commander.entity.selector.options.dz.description"));
+        EntitySelectorOptions.register("name", (parser) -> {
+                    int i = parser.getReader().getCursor();
+                    boolean bl = parser.shouldInvertValue();
+                    String string = parser.getReader().readString();
+                    if (parser.hasNameNotEquals() && !bl) {
+                        parser.getReader().setCursor(i);
+                        throw INAPPLICABLE_OPTION.createWithContext(parser.getReader(), "name");
                     }
                     if (bl) {
-                        entitySelectorParser.setHasNameNotEquals(true);
+                        parser.setHasNameNotEquals(true);
                     } else {
-                        entitySelectorParser.setHasNameEquals(true);
+                        parser.setHasNameEquals(true);
                     }
-                    entitySelectorParser.addPredicate(entity -> {
+                    parser.addPredicate(entity -> {
                         if (!(entity instanceof EntityLiving)) return bl;
                         else if (entity instanceof EntityPlayer) return ((EntityPlayer)entity).username.equals(string) != bl;
                         else if (!((EntityLiving)entity).getDisplayName().startsWith("§") || ((EntityLiving)entity).getDisplayName().length() < 2) return ((EntityLiving)entity).getDisplayName().equals(string) != bl;

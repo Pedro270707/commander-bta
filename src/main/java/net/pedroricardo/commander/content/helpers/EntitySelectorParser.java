@@ -10,6 +10,8 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.lang.I18n;
+import net.minecraft.core.util.phys.AABB;
+import net.minecraft.core.util.phys.Vec3d;
 import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import org.jetbrains.annotations.Nullable;
@@ -17,10 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public class EntitySelectorParser {
     private static final SimpleCommandExceptionType EXPECTED_END_OF_OPTIONS = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.selector.options.unterminated"));
@@ -47,6 +46,12 @@ public class EntitySelectorParser {
     private String entityId;
     private String playerName;
     private MinMaxBounds.Doubles distance = MinMaxBounds.Doubles.ANY;
+    private Double x;
+    private Double y;
+    private Double z;
+    private Double deltaX;
+    private Double deltaY;
+    private Double deltaZ;
     private final boolean allowSelectors;
 
     private final BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> NO_SUGGESTIONS = (builder, consumer) -> builder.buildFuture();
@@ -138,7 +143,7 @@ public class EntitySelectorParser {
         } else {
             this.parseNameOrEntityId();
         }
-        return new EntitySelector(this.maxResults, this.includesEntities, this.order, this.limitToType, this.typeInverse, this.currentEntity, this.predicate, this.entityId, this.playerName, this.distance);
+        return this.getSelector();
     }
 
     private void parseOptions() throws CommandSyntaxException {
@@ -174,6 +179,33 @@ public class EntitySelectorParser {
         }
         this.reader.skip();
         this.suggestions = NO_SUGGESTIONS;
+    }
+
+    public EntitySelector getSelector() {
+        AABB aABB;
+        if (this.deltaX != null || this.deltaY != null || this.deltaZ != null) {
+            aABB = this.createAabb(this.deltaX == null ? 0.0 : this.deltaX, this.deltaY == null ? 0.0 : this.deltaY, this.deltaZ == null ? 0.0 : this.deltaZ);
+        } else if (this.distance.getMax() != null) {
+            double d = (Double)this.distance.getMax();
+            aABB = new AABB(-d, -d, -d, d + 1.0, d + 1.0, d + 1.0);
+        } else {
+            aABB = null;
+        }
+        Function<Vec3d, Vec3d> position = this.x == null && this.y == null && this.z == null ? vec3 -> vec3 : vec3 -> Vec3d.createVector(this.x == null ? vec3.xCoord : this.x, this.y == null ? vec3.yCoord : this.y, this.z == null ? vec3.zCoord : this.z);
+        return new EntitySelector(this.maxResults, this.includesEntities, this.order, this.limitToType, this.typeInverse, this.currentEntity, this.predicate, this.entityId, this.playerName, this.distance, position, aABB);
+    }
+
+    private AABB createAabb(double d, double e, double f) {
+        boolean bl = d < 0.0;
+        boolean bl2 = e < 0.0;
+        boolean bl3 = f < 0.0;
+        double g = bl ? d : 0.0;
+        double h = bl2 ? e : 0.0;
+        double i = bl3 ? f : 0.0;
+        double j = (bl ? 0.0 : d) + 1.0;
+        double k = (bl2 ? 0.0 : e) + 1.0;
+        double l = (bl3 ? 0.0 : f) + 1.0;
+        return new AABB(g, h, i, j, k, l);
     }
 
     public void addPredicate(Predicate<Entity> predicate) {
@@ -349,5 +381,53 @@ public class EntitySelectorParser {
 
     public void setCurrentEntity(boolean currentEntity) {
         this.currentEntity = currentEntity;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public void setZ(double z) {
+        this.z = z;
+    }
+
+    public void setDeltaX(double deltaX) {
+        this.deltaX = deltaX;
+    }
+
+    public void setDeltaY(double deltaY) {
+        this.deltaY = deltaY;
+    }
+
+    public void setDeltaZ(double deltaZ) {
+        this.deltaZ = deltaZ;
+    }
+
+    public Double getX() {
+        return this.x;
+    }
+
+    public Double getY() {
+        return this.y;
+    }
+
+    public Double getZ() {
+        return this.z;
+    }
+
+    public Double getDeltaX() {
+        return this.deltaX;
+    }
+
+    public Double getDeltaY() {
+        return this.deltaY;
+    }
+
+    public Double getDeltaZ() {
+        return this.deltaZ;
     }
 }

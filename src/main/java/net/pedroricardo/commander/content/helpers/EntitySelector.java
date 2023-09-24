@@ -3,6 +3,8 @@ package net.pedroricardo.commander.content.helpers;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.util.phys.AABB;
+import net.minecraft.core.util.phys.Vec3d;
 import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class EntitySelector {
@@ -23,8 +26,10 @@ public class EntitySelector {
     private final @Nullable String entityId;
     private final @Nullable String playerName;
     private final MinMaxBounds.Doubles distance;
+    private final Function<Vec3d, Vec3d> position;
+    private final AABB aABB;
 
-    public EntitySelector(int maxResults, boolean includesEntities, BiConsumer<Entity, List<? extends Entity>> order, @Nullable Class<? extends Entity> limitToType, boolean typeInverse, boolean currentEntity, Predicate<Entity> predicate, @Nullable String entityId, @Nullable String playerName, MinMaxBounds.Doubles distance) {
+    public EntitySelector(int maxResults, boolean includesEntities, BiConsumer<Entity, List<? extends Entity>> order, @Nullable Class<? extends Entity> limitToType, boolean typeInverse, boolean currentEntity, Predicate<Entity> predicate, @Nullable String entityId, @Nullable String playerName, MinMaxBounds.Doubles distance, Function<Vec3d, Vec3d> position, AABB aABB) {
         this.maxResults = maxResults;
         this.includesEntities = includesEntities;
         this.order = order;
@@ -35,6 +40,8 @@ public class EntitySelector {
         this.entityId = entityId;
         this.playerName = playerName;
         this.distance = distance;
+        this.position = position;
+        this.aABB = aABB;
     }
 
     public List<? extends Entity> get(CommanderCommandSource source) throws CommandSyntaxException {
@@ -65,11 +72,29 @@ public class EntitySelector {
             entities = source.getWorld().players;
         }
 
+        Vec3d sourceCoordinates = source.getCoordinates();
+        Vec3d position;
+        if (sourceCoordinates != null) {
+            position = this.position.apply(sourceCoordinates);
+            this.aABB.minX = this.aABB.minX + position.xCoord;
+            this.aABB.maxX = this.aABB.maxX + position.xCoord;
+            this.aABB.minY = this.aABB.minY + position.yCoord;
+            this.aABB.maxY = this.aABB.maxY + position.yCoord;
+            this.aABB.minZ = this.aABB.minZ + position.zCoord;
+            this.aABB.maxZ = this.aABB.maxZ + position.zCoord;
+        } else {
+            position = this.position.apply(Vec3d.createVector(0, 0, 0));
+        }
+
+        Commander.LOGGER.info(position.toString());
+        Commander.LOGGER.info(this.aABB.toString());
+
         List<? extends Entity> temp = new ArrayList<>(entities);
         for (Entity entity : entities) {
             if ((limitToType != null && limitToType.isInstance(entity) == this.typeInverse)
                     || !predicate.test(entity)
-                    || !this.distanceContains(source, entity)) {
+                    || !this.distanceContains(entity, position.xCoord, position.yCoord, position.zCoord)
+                    || !this.aABB.intersectsWith(entity.bb)) {
                 temp.remove(entity);
             }
         }
@@ -91,9 +116,9 @@ public class EntitySelector {
         return listAfterPredicate;
     }
 
-    private boolean distanceContains(CommanderCommandSource source, Entity entity) {
+    private boolean distanceContains(Entity entity, double x, double y, double z) {
         if (this.distance.isAny()) return true;
-        return source.getSender() != null && this.distance.contains(source.getSender().distanceTo(entity));
+        return this.distance.contains(entity.distanceTo(x, y, z));
     }
 
     public int getMaxResults() {
