@@ -16,10 +16,10 @@ public class SetBlockCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("setblock")
                 .requires(sourceStack -> ((CommanderCommandSource)sourceStack).hasAdmin())
-                .then(RequiredArgumentBuilder.argument("pos", BlockCoordinatesArgumentType.blockCoordinates())
+                .then(RequiredArgumentBuilder.argument("position", BlockCoordinatesArgumentType.blockCoordinates())
                         .then(RequiredArgumentBuilder.argument("block", BlockArgumentType.block())
                                 .executes(c -> {
-                                    BlockCoordinates coordinates = c.getArgument("pos", BlockCoordinates.class);
+                                    BlockCoordinates coordinates = c.getArgument("position", BlockCoordinates.class);
                                     Block block = c.getArgument("block", Block.class);
 
                                     ((CommanderCommandSource)c.getSource()).getWorld().setBlockWithNotify(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource(), true), coordinates.getZ((CommanderCommandSource)c.getSource()), block.id);
@@ -28,7 +28,7 @@ public class SetBlockCommand {
                                 })
                                 .then(RequiredArgumentBuilder.argument("metadata", IntegerArgumentType.integer(0, 255))
                                         .executes(c -> {
-                                            BlockCoordinates coordinates = c.getArgument("pos", BlockCoordinates.class);
+                                            BlockCoordinates coordinates = c.getArgument("position", BlockCoordinates.class);
                                             Block block = c.getArgument("block", Block.class);
                                             int metadata = c.getArgument("metadata", Integer.class);
 

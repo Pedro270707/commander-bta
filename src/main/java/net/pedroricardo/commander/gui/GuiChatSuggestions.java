@@ -6,6 +6,8 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
@@ -22,6 +24,7 @@ import org.lwjgl.input.Keyboard;
 import java.awt.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -62,11 +65,16 @@ public class GuiChatSuggestions extends Gui {
             if (!this.parseResults.getExceptions().isEmpty()) {
                 int i = 0;
                 for (Exception e : this.parseResults.getExceptions().values()) {
-                    this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + e.getMessage(), i);
+                    this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + e.getMessage(), i, false);
                     i++;
                 }
             } else if ((parseException = CommanderCommandManager.getParseException(this.parseResults)) != null) {
-                this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + parseException.getMessage(), 0);
+                this.renderSingleSuggestionLine(this.mc.fontRenderer, "§e" + parseException.getMessage(), 0, false);
+            } else {
+                List<String> commandUsage = getCommandUsage(this.tablessCursor);
+                for (int i = 0; i < commandUsage.size(); i++) {
+                    this.renderSingleSuggestionLine(this.mc.fontRenderer, "§8" + commandUsage.get(i), i, true);
+                }
             }
         }
     }
@@ -107,13 +115,26 @@ public class GuiChatSuggestions extends Gui {
         }
     }
 
-    private void renderSingleSuggestionLine(FontRenderer fontRenderer, String text, int heightIndex) {
+    private void renderSingleSuggestionLine(FontRenderer fontRenderer, String text, int heightIndex, boolean followParameters) {
         int height = this.mc.resolution.scaledHeight - heightIndex * 12;
         int leftMargin = 2;
         int stringWidth = fontRenderer.getStringWidth(text);
 
+        if (Commander.suggestionsFollowParameters && this.parseResults != null && followParameters)
+            leftMargin += fontRenderer.getStringWidth(this.tablessMessage.substring(0, this.parseResults.getContext().findSuggestionContext(this.tablessCursor).startPos)) + 1;
+
         this.drawRect(leftMargin, height - 27, stringWidth + leftMargin + 1, height - 15, Integer.MIN_VALUE);
         fontRenderer.drawStringWithShadow(text, leftMargin + 1, height - 25, 0xE0E0E0);
+    }
+
+    private List<String> getCommandUsage(int cursor) {
+        List<String> commandUsage = new ArrayList<>();
+        if (this.parseResults == null) return commandUsage;
+        for (Map.Entry<CommandNode<CommanderCommandSource>, String> entry : CommanderCommandManager.getDispatcher().getSmartUsage(this.parseResults.getContext().findSuggestionContext(cursor).parent, this.commandSource).entrySet()) {
+            if (entry.getKey() instanceof LiteralCommandNode) continue;
+            commandUsage.add(entry.getValue());
+        }
+        return commandUsage;
     }
 
     public void keyTyped(char c, int key) {

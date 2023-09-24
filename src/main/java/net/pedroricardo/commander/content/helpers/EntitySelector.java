@@ -27,9 +27,9 @@ public class EntitySelector {
     private final @Nullable String playerName;
     private final MinMaxBounds.Doubles distance;
     private final Function<Vec3d, Vec3d> position;
-    private final AABB aABB;
+    private final @Nullable AABB aABB;
 
-    public EntitySelector(int maxResults, boolean includesEntities, BiConsumer<Entity, List<? extends Entity>> order, @Nullable Class<? extends Entity> limitToType, boolean typeInverse, boolean currentEntity, Predicate<Entity> predicate, @Nullable String entityId, @Nullable String playerName, MinMaxBounds.Doubles distance, Function<Vec3d, Vec3d> position, AABB aABB) {
+    public EntitySelector(int maxResults, boolean includesEntities, BiConsumer<Entity, List<? extends Entity>> order, @Nullable Class<? extends Entity> limitToType, boolean typeInverse, boolean currentEntity, Predicate<Entity> predicate, @Nullable String entityId, @Nullable String playerName, MinMaxBounds.Doubles distance, Function<Vec3d, Vec3d> position, @Nullable AABB aABB) {
         this.maxResults = maxResults;
         this.includesEntities = includesEntities;
         this.order = order;
@@ -76,25 +76,24 @@ public class EntitySelector {
         Vec3d position;
         if (sourceCoordinates != null) {
             position = this.position.apply(sourceCoordinates);
-            this.aABB.minX = this.aABB.minX + position.xCoord;
-            this.aABB.maxX = this.aABB.maxX + position.xCoord;
-            this.aABB.minY = this.aABB.minY + position.yCoord;
-            this.aABB.maxY = this.aABB.maxY + position.yCoord;
-            this.aABB.minZ = this.aABB.minZ + position.zCoord;
-            this.aABB.maxZ = this.aABB.maxZ + position.zCoord;
+            if (this.aABB != null) {
+                this.aABB.minX = this.aABB.minX + position.xCoord;
+                this.aABB.maxX = this.aABB.maxX + position.xCoord;
+                this.aABB.minY = this.aABB.minY + position.yCoord;
+                this.aABB.maxY = this.aABB.maxY + position.yCoord;
+                this.aABB.minZ = this.aABB.minZ + position.zCoord;
+                this.aABB.maxZ = this.aABB.maxZ + position.zCoord;
+            }
         } else {
             position = this.position.apply(Vec3d.createVector(0, 0, 0));
         }
-
-        Commander.LOGGER.info(position.toString());
-        Commander.LOGGER.info(this.aABB.toString());
 
         List<? extends Entity> temp = new ArrayList<>(entities);
         for (Entity entity : entities) {
             if ((limitToType != null && limitToType.isInstance(entity) == this.typeInverse)
                     || !predicate.test(entity)
                     || !this.distanceContains(entity, position.xCoord, position.yCoord, position.zCoord)
-                    || !this.aABB.intersectsWith(entity.bb)) {
+                    || !aABBIntersectsWithAABB(this.aABB, entity.bb)) {
                 temp.remove(entity);
             }
         }
@@ -119,6 +118,11 @@ public class EntitySelector {
     private boolean distanceContains(Entity entity, double x, double y, double z) {
         if (this.distance.isAny()) return true;
         return this.distance.contains(entity.distanceTo(x, y, z));
+    }
+
+    private static boolean aABBIntersectsWithAABB(AABB aABB1, AABB aABB2) {
+        if (aABB1 == null) return true;
+        return aABB2 != null && aABB1.intersectsWith(aABB2);
     }
 
     public int getMaxResults() {

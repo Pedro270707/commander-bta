@@ -28,9 +28,9 @@ public class SummonCommand {
 
                             return CommanderCommandManager.SINGLE_SUCCESS;
                         })
-                        .then(RequiredArgumentBuilder.argument("pos", Vec3dArgumentType.vec3d())
+                        .then(RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
                                 .executes(c -> {
-                                    DoubleCoordinates coordinates = c.getArgument("pos", DoubleCoordinates.class);
+                                    DoubleCoordinates coordinates = c.getArgument("position", DoubleCoordinates.class);
 
                                     summonEntityAt(c, coordinates.getX(((CommanderCommandSource)c.getSource())), coordinates.getY(((CommanderCommandSource)c.getSource()), true), coordinates.getZ(((CommanderCommandSource)c.getSource())), 0.0f, 0.0f);
 
