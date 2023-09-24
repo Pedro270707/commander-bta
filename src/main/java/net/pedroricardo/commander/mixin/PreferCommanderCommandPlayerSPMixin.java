@@ -27,10 +27,10 @@ public class PreferCommanderCommandPlayerSPMixin {
         CommanderClientCommandSource clientCommandSource = new CommanderClientCommandSource(((EntityPlayerSPAccessor)((EntityPlayerSP)(Object)this)).mc());
         try {
             CommanderCommandManager.execute(command, clientCommandSource);
-            ci.cancel();
         } catch (CommandSyntaxException e) {
             if (e.getType() != CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand())
                 ((EntityPlayerSPAccessor)((EntityPlayerSP)(Object)this)).mc().thePlayer.sender.sendMessage(TextFormatting.RED + e.getMessage());
         }
+        ci.cancel();
     }
 }

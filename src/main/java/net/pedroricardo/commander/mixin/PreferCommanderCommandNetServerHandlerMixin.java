@@ -30,10 +30,10 @@ public class PreferCommanderCommandNetServerHandlerMixin {
         CommanderServerCommandSource serverCommandSource = new CommanderServerCommandSource(((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).mcServer(), ((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity());
         try {
             CommanderCommandManager.execute(s, serverCommandSource);
-            ci.cancel();
         } catch (CommandSyntaxException e) {
             if (e.getType() != CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand())
                 ((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity().playerNetServerHandler.sendPacket(new Packet3Chat(e.getMessage(), AES.keyChain.get(((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity().username)));
         }
+        ci.cancel();
     }
 }

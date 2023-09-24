@@ -115,6 +115,9 @@ public class EntitySelectorParser {
             this.suggestions = this::suggestOptionsKeyOrClose;
             this.parseOptions();
         }
+        if (this.reader.canRead() && this.reader.peek() != ' ') {
+            this.suggestions = NO_SUGGESTIONS;
+        }
     }
 
     private void parseNameOrEntityId() throws CommandSyntaxException {
