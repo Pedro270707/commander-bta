@@ -21,6 +21,7 @@ import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.gui.GuiChatSuggestions;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -50,9 +51,11 @@ public class ShowCommandSuggestionsMixin {
         TextFieldEditor editor();
     }
 
+    @Unique
     private GuiChatSuggestions suggestionsGui;
-    @Nullable
-    private ParseResults<CommanderCommandSource> parseResults;
+    @Unique
+    private @Nullable ParseResults<CommanderCommandSource> parseResults;
+    @Unique
     private final List<String> ARGUMENT_STYLES = new ArrayList<>();
 
     @Inject(method = "initGui", at = @At("TAIL"))
