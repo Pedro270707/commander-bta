@@ -9,6 +9,7 @@ import net.minecraft.core.net.command.CommandSender;
 import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.core.world.World;
 import net.pedroricardo.commander.Commander;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -41,12 +42,12 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     }
 
     @Override
-    public String getType() {
-        return "client";
+    public String toString() {
+        return "CommanderClientCommandSource{" + this.mc + "}";
     }
 
     @Override
-    public EntityPlayer getSender() {
+    public @NotNull EntityPlayer getSender() {
         return this.mc.thePlayer;
     }
 
@@ -56,17 +57,19 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     }
 
     @Override
-    public @Nullable Vec3d getCoordinates() {
-        return this.getSender().getPosition(1.0f);
+    public @NotNull Vec3d getCoordinates(boolean offsetHeight) {
+        Vec3d position = this.getSender().getPosition(1.0f);
+        if (offsetHeight) return position.addVector(0.0f, -this.getSender().heightOffset, 0.0f);
+        return position;
     }
 
     @Override
-    public @Nullable Vec3d getBlockCoordinates() {
+    public @NotNull Vec3d getBlockCoordinates() {
         if (this.mc.objectMouseOver != null) {
             return Vec3d.createVector(this.mc.objectMouseOver.x, this.mc.objectMouseOver.y, this.mc.objectMouseOver.z);
         }
-        Vec3d playerCoordinates = this.getCoordinates();
-        return playerCoordinates == null ? null : Vec3d.createVector(playerCoordinates.xCoord, playerCoordinates.yCoord - 1.6, playerCoordinates.zCoord);
+        Vec3d playerCoordinates = this.getCoordinates(true);
+        return Vec3d.createVector(playerCoordinates.xCoord, playerCoordinates.yCoord, playerCoordinates.zCoord);
     }
 
     @Override
@@ -76,7 +79,12 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
 
     @Override
     public World getWorld() {
-        return this.getSender().world;
+        return this.mc.theWorld;
+    }
+
+    @Override
+    public World getWorld(int dimension) {
+        return this.mc.theWorld;
     }
 
     @Override

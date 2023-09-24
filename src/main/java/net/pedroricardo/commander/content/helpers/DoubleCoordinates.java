@@ -28,36 +28,36 @@ public class DoubleCoordinates {
     }
 
     public double getX(CommanderCommandSource source) throws CommandSyntaxException {
-        if (source.getCoordinates() == null) {
+        if (source.getCoordinates(false) == null) {
             if (!this.x.isRelative()) {
                 return this.x.get(0.0);
             } else {
                 throw CommanderExceptions.notInWorld().create();
             }
         }
-        return this.x.get(source.getCoordinates().xCoord);
+        return this.x.get(source.getCoordinates(false).xCoord);
     }
 
-    public double getY(CommanderCommandSource source, boolean lowerToFeet) throws CommandSyntaxException {
-        if (source.getCoordinates() == null) {
+    public double getY(CommanderCommandSource source) throws CommandSyntaxException {
+        if (source.getCoordinates(false) == null) {
             if (!this.y.isRelative()) {
                 return this.y.get(0.0);
             } else {
                 throw CommanderExceptions.notInWorld().create();
             }
         }
-        return this.y.get(source.getCoordinates().yCoord - (lowerToFeet ? 1.6 : 0));
+        return this.y.get(source.getCoordinates(false).yCoord);
     }
 
     public double getZ(CommanderCommandSource source) throws CommandSyntaxException {
-        if (source.getCoordinates() == null) {
+        if (source.getCoordinates(false) == null) {
             if (!this.z.isRelative()) {
                 return this.z.get(0.0);
             } else {
                 throw CommanderExceptions.notInWorld().create();
             }
         }
-        return this.z.get(source.getCoordinates().zCoord);
+        return this.z.get(source.getCoordinates(false).zCoord);
     }
 
     public boolean hasRelativeCoordinates() {

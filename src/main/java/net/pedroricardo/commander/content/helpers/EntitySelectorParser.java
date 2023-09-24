@@ -433,4 +433,8 @@ public class EntitySelectorParser {
     public Double getDeltaZ() {
         return this.deltaZ;
     }
+
+    public boolean isCurrentEntity() {
+        return this.currentEntity;
+    }
 }

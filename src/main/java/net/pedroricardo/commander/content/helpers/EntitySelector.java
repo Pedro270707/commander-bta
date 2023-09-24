@@ -7,9 +7,11 @@ import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.util.phys.Vec3d;
 import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.content.CommanderCommandSource;
+import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -64,15 +66,20 @@ public class EntitySelector {
             return players.subList(0, Math.min(players.size(), this.maxResults));
         }
 
-        // Player only
         List<? extends Entity> entities;
-        if (this.includesEntities) {
+        if (this.currentEntity) {
+            if (source.getSender() == null) {
+                throw CommanderExceptions.notInWorld().create();
+            } else {
+                entities = Collections.singletonList(source.getSender());
+            }
+        } else if (this.includesEntities) {
             entities = source.getWorld().loadedEntityList;
         } else {
             entities = source.getWorld().players;
         }
 
-        Vec3d sourceCoordinates = source.getCoordinates();
+        Vec3d sourceCoordinates = source.getCoordinates(true); // Should I leave it as true or should I make it false? I don't know
         Vec3d position;
         if (sourceCoordinates != null) {
             position = this.position.apply(sourceCoordinates);

@@ -1,16 +1,20 @@
 package net.pedroricardo.commander.content;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
-import net.minecraft.core.net.command.ServerCommandHandler;
+import net.minecraft.core.net.command.ConsoleCommandSender;
 import net.minecraft.core.net.command.ServerPlayerCommandSender;
 import net.minecraft.core.net.packet.Packet3Chat;
 import net.minecraft.core.util.helper.AES;
+import net.minecraft.core.util.helper.LogPrintStream;
 import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.core.world.World;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.entity.player.EntityPlayerMP;
+import net.pedroricardo.commander.Commander;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,13 +22,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CommanderServerCommandSource implements CommanderCommandSource {
-    public final MinecraftServer server;
-    public final EntityPlayerMP player;
+public class CommanderConsoleCommandSource implements CommanderCommandSource {
+    private static final Logger LOGGER = Logger.getLogger("Minecraft");
 
-    public CommanderServerCommandSource(MinecraftServer server, EntityPlayerMP player) {
+    public final MinecraftServer server;
+
+    public CommanderConsoleCommandSource(MinecraftServer server) {
         this.server = server;
-        this.player = player;
     }
 
     @Override
@@ -43,39 +47,37 @@ public class CommanderServerCommandSource implements CommanderCommandSource {
 
     @Override
     public String toString() {
-        return "CommanderServerCommandSource{" + this.server + ", " + this.player + "}";
+        return "CommanderConsoleCommandSource{" + this.server + "}";
     }
 
     @Override
-    public @NotNull EntityPlayer getSender() {
-        return this.player;
+    public EntityPlayer getSender() {
+        return null;
     }
 
     @Override
     public boolean hasAdmin() {
-        return false;
+        return true;
     }
 
     @Override
-    public @NotNull Vec3d getCoordinates(boolean offsetHeight) {
-        Vec3d position = this.getSender().getPosition(1.0f);
-        if (offsetHeight) return position.addVector(0.0f, -this.getSender().heightOffset, 0.0f);
-        return position;
+    public @Nullable Vec3d getCoordinates(boolean offsetHeight) {
+        return null;
     }
 
     @Override
-    public @NotNull Vec3d getBlockCoordinates() {
-        return this.getCoordinates(true);
+    public @Nullable Vec3d getBlockCoordinates() {
+        return null;
     }
 
     @Override
     public void sendMessage(String message) {
-        this.player.playerNetServerHandler.sendPacket(new Packet3Chat(message, AES.keyChain.get(this.player.username)));
+        LOGGER.info(LogPrintStream.removeColorCodes(message));
     }
 
     @Override
     public World getWorld() {
-        return this.getSender().world;
+        return this.server.getWorldManager(0);
     }
 
     @Override
@@ -90,6 +92,6 @@ public class CommanderServerCommandSource implements CommanderCommandSource {
 
     @Override
     public @Deprecated CommandSender getCommandSender() {
-        return new ServerPlayerCommandSender(this.server, this.player);
+        return new ConsoleCommandSender(this.server);
     }
 }

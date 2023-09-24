@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import net.minecraft.core.block.Block;
+import net.minecraft.core.util.collection.Pair;
 import net.minecraft.core.util.phys.Vec3d;
 import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
@@ -20,21 +21,11 @@ public class SetBlockCommand {
                         .then(RequiredArgumentBuilder.argument("block", BlockArgumentType.block())
                                 .executes(c -> {
                                     BlockCoordinates coordinates = c.getArgument("position", BlockCoordinates.class);
-                                    Block block = c.getArgument("block", Block.class);
+                                    Pair<Block, Integer> pair = c.getArgument("block", Pair.class);
 
-                                    ((CommanderCommandSource)c.getSource()).getWorld().setBlockWithNotify(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource(), true), coordinates.getZ((CommanderCommandSource)c.getSource()), block.id);
+                                    ((CommanderCommandSource)c.getSource()).getWorld().setBlockAndMetadataWithNotify(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource()), coordinates.getZ((CommanderCommandSource)c.getSource()), pair.getLeft().id, pair.getRight());
 
                                     return CommanderCommandManager.SINGLE_SUCCESS;
-                                })
-                                .then(RequiredArgumentBuilder.argument("metadata", IntegerArgumentType.integer(0, 255))
-                                        .executes(c -> {
-                                            BlockCoordinates coordinates = c.getArgument("position", BlockCoordinates.class);
-                                            Block block = c.getArgument("block", Block.class);
-                                            int metadata = c.getArgument("metadata", Integer.class);
-
-                                            ((CommanderCommandSource)c.getSource()).getWorld().setBlockAndMetadataWithNotify(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource(), true), coordinates.getZ((CommanderCommandSource)c.getSource()), block.id, metadata);
-
-                                            return CommanderCommandManager.SINGLE_SUCCESS;
-                                        })))));
+                                }))));
     }
 }

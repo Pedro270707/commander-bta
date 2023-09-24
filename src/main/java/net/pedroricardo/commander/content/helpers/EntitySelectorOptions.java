@@ -147,7 +147,7 @@ public class EntitySelectorOptions {
             }
             parser.setMaxResults(limit);
             parser.setHasLimit(true);
-        }, parser -> !parser.hasLimit(), new TextTranslatable("argument_types.commander.entity.selector.options.limit.description"));
+        }, parser -> !parser.isCurrentEntity() && !parser.hasLimit(), new TextTranslatable("argument_types.commander.entity.selector.options.limit.description"));
         register("sort", (parser) -> {
             int i = parser.getReader().getCursor();
             String string = parser.getReader().readUnquotedString();

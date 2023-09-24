@@ -21,19 +21,21 @@ public interface CommanderCommandSource {
         return Collections.emptyList();
     }
 
-    String getType();
+    String toString();
 
     @Nullable EntityPlayer getSender();
 
     boolean hasAdmin();
 
-    @Nullable Vec3d getCoordinates();
+    @Nullable Vec3d getCoordinates(boolean offsetHeight);
 
     @Nullable Vec3d getBlockCoordinates();
 
     void sendMessage(String message);
 
     World getWorld();
+
+    World getWorld(int dimension);
 
     @Deprecated CommandHandler getCommandHandler();
 

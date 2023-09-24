@@ -26,6 +26,7 @@ public class CommanderCommandManager {
         SeedCommand.register(DISPATCHER);
         SetBlockCommand.register(DISPATCHER);
         SummonCommand.register(DISPATCHER);
+        TeleportCommand.register(DISPATCHER);
 
         registerLegacyCommands();
 

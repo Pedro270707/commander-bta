@@ -44,36 +44,36 @@ public class BlockCoordinates {
     }
 
     public int getX(CommanderCommandSource source) throws CommandSyntaxException {
-        if (source.getCoordinates() == null) {
+        if (source.getCoordinates(true) == null) {
             if (!this.x.isRelative()) {
                 return this.x.get(0);
             } else {
                 throw CommanderExceptions.notInWorld().create();
             }
         }
-        return this.x.get((int) Math.floor(source.getCoordinates().xCoord));
+        return this.x.get((int) Math.floor(source.getCoordinates(true).xCoord));
     }
 
-    public int getY(CommanderCommandSource source, boolean lowerToFeet) throws CommandSyntaxException {
-        if (source.getCoordinates() == null) {
+    public int getY(CommanderCommandSource source) throws CommandSyntaxException {
+        if (source.getCoordinates(true) == null) {
             if (!this.y.isRelative()) {
                 return this.y.get(0);
             } else {
                 throw CommanderExceptions.notInWorld().create();
             }
         }
-        return this.y.get((int) (Math.floor(source.getCoordinates().yCoord - (lowerToFeet ? 1.6 : 0))));
+        return this.y.get((int) Math.floor(source.getCoordinates(true).yCoord));
     }
 
     public int getZ(CommanderCommandSource source) throws CommandSyntaxException {
-        if (source.getCoordinates() == null) {
+        if (source.getCoordinates(true) == null) {
             if (!this.z.isRelative()) {
                 return this.z.get(0);
             } else {
                 throw CommanderExceptions.notInWorld().create();
             }
         }
-        return this.z.get((int) Math.floor(source.getCoordinates().zCoord));
+        return this.z.get((int) Math.floor(source.getCoordinates(true).zCoord));
     }
 
     public boolean hasRelativeCoordinate() {

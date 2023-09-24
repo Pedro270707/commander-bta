@@ -62,7 +62,7 @@ public class Vec3dArgumentType implements ArgumentType<DoubleCoordinates> {
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         String string = builder.getRemaining();
-        Vec3d coordinates = ((CommanderCommandSource)context.getSource()).getCoordinates();
+        Vec3d coordinates = ((CommanderCommandSource)context.getSource()).getCoordinates(true);
 
         if (coordinates == null) return builder.buildFuture();
 

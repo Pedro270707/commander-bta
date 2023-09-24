@@ -21,7 +21,7 @@ public class SummonCommand {
                 .requires(c -> ((CommanderCommandSource)c).hasAdmin())
                 .then(RequiredArgumentBuilder.argument("entity", EntitySummonArgumentType.entity())
                         .executes(c -> {
-                            Vec3d coordinates = ((CommanderCommandSource)c.getSource()).getCoordinates();
+                            Vec3d coordinates = ((CommanderCommandSource)c.getSource()).getCoordinates(false);
                             if (coordinates == null) throw CommanderExceptions.notInWorld().create();
 
                             summonEntityAt(c, coordinates.xCoord, coordinates.yCoord - 1.6, coordinates.zCoord, 0.0f, 0.0f);
@@ -32,7 +32,7 @@ public class SummonCommand {
                                 .executes(c -> {
                                     DoubleCoordinates coordinates = c.getArgument("position", DoubleCoordinates.class);
 
-                                    summonEntityAt(c, coordinates.getX(((CommanderCommandSource)c.getSource())), coordinates.getY(((CommanderCommandSource)c.getSource()), true), coordinates.getZ(((CommanderCommandSource)c.getSource())), 0.0f, 0.0f);
+                                    summonEntityAt(c, coordinates.getX(((CommanderCommandSource)c.getSource())), coordinates.getY(((CommanderCommandSource)c.getSource())), coordinates.getZ(((CommanderCommandSource)c.getSource())), 0.0f, 0.0f);
 
                                     return CommanderCommandManager.SINGLE_SUCCESS;
                                 }))));
