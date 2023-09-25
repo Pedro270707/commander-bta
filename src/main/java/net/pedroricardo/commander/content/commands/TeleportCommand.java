@@ -1,5 +1,6 @@
 package net.pedroricardo.commander.content.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -7,7 +8,6 @@ import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.lang.I18n;
 import net.pedroricardo.commander.CommanderHelper;
-import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
 import net.pedroricardo.commander.content.arguments.Vec3dArgumentType;
@@ -33,7 +33,7 @@ public class TeleportCommand {
                                 throw CommanderExceptions.notInWorld().create();
                             }
 
-                            return CommanderCommandManager.SINGLE_SUCCESS;
+                            return Command.SINGLE_SUCCESS;
                         }))
                 .then((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("entity", EntityArgumentType.entities())
                         .then((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
@@ -49,7 +49,7 @@ public class TeleportCommand {
                                     if (entities.size() == 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), targetCoordinates.getX((CommanderCommandSource)c.getSource()), targetCoordinates.getY(((CommanderCommandSource) c.getSource()), true), targetCoordinates.getZ((CommanderCommandSource)c.getSource())));
                                     else if (entities.size() > 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_multiple_entities", entities.size(), targetCoordinates.getX((CommanderCommandSource)c.getSource()), targetCoordinates.getY(((CommanderCommandSource) c.getSource()), true), targetCoordinates.getZ((CommanderCommandSource)c.getSource())));
 
-                                    return CommanderCommandManager.SINGLE_SUCCESS;
+                                    return Command.SINGLE_SUCCESS;
                                 }))
                 .then((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("target", EntityArgumentType.entity())
                         .executes(c -> {
@@ -65,7 +65,7 @@ public class TeleportCommand {
                             if (entities.size() == 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.entity.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), CommanderHelper.getEntityName(targetEntity)));
                             else if (entities.size() > 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.entity.success_multiple_entities", entities.size(), CommanderHelper.getEntityName(targetEntity)));
 
-                            return CommanderCommandManager.SINGLE_SUCCESS;
+                            return Command.SINGLE_SUCCESS;
                         }))));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("tp")
                 .redirect(command));

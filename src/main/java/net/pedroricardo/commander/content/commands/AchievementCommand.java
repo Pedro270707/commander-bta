@@ -1,5 +1,6 @@
 package net.pedroricardo.commander.content.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -11,7 +12,6 @@ import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.lang.I18n;
-import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.AchievementArgumentType;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
@@ -56,7 +56,7 @@ public class AchievementCommand {
 
                                             sendContextualMessage((CommanderCommandSource) c.getSource(), entities, achievement);
 
-                                            return CommanderCommandManager.SINGLE_SUCCESS;
+                                            return Command.SINGLE_SUCCESS;
                                         }))
                                 .then((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("*")
                                         .executes(c -> {
@@ -81,7 +81,7 @@ public class AchievementCommand {
 
                                             sendWildcardContextualMessage(((CommanderCommandSource)c.getSource()), entities);
 
-                                            return CommanderCommandManager.SINGLE_SUCCESS;
+                                            return Command.SINGLE_SUCCESS;
                                 }))))));
     }
 

@@ -15,8 +15,6 @@ import java.util.Collections;
 
 @SuppressWarnings("unchecked")
 public class CommanderCommandManager {
-    public static int FAILURE = 0;
-    public static int SINGLE_SUCCESS = 1;
     private static final CommandDispatcher<CommanderCommandSource> DISPATCHER = new CommandDispatcher<>();
 
     static {
@@ -29,6 +27,13 @@ public class CommanderCommandManager {
         TeleportCommand.register(DISPATCHER);
         MessageCommand.register(DISPATCHER);
         SetSpawnCommand.register(DISPATCHER);
+        TimeCommand.register(DISPATCHER);
+        // GiveCommand.register(DISPATCHER);
+        // HelpCommand.register(DISPATCHER);
+        // WeatherCommand.register(DISPATCHER);
+        // GamemodeCommand.register(DISPATCHER);
+        // GenerateCommand.register(DISPATCHER);
+        // ChunkCommand.register(DISPATCHER);
 
         registerLegacyCommands();
 
@@ -64,7 +69,7 @@ public class CommanderCommandManager {
                         .then(RequiredArgumentBuilder.argument("command", StringArgumentType.greedyString())
                                 .executes(c -> {
                                     Commands.getCommand(command.getName()).execute(((CommanderCommandSource) c.getSource()).getCommandHandler(), ((CommanderCommandSource) c.getSource()).getCommandSender(), c.getArgument("command", String.class).split(" "));
-                                    return SINGLE_SUCCESS;
+                                    return com.mojang.brigadier.Command.SINGLE_SUCCESS;
                                 })));
             }
         }

@@ -80,7 +80,7 @@ public class CommanderServerCommandSource implements CommanderCommandSource {
 
     @Override
     public World getWorld() {
-        return this.getSender().world;
+        return this.player == null ? this.server.getWorldManager(0) : this.player.world;
     }
 
     @Override

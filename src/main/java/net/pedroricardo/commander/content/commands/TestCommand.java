@@ -1,5 +1,6 @@
 package net.pedroricardo.commander.content.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -20,7 +21,7 @@ public class TestCommand {
                                                         .then(RequiredArgumentBuilder.argument("achievement5", AchievementArgumentType.achievement())
                                                                 .executes(c -> {
                                                                     ((CommanderCommandSource)c.getSource()).getSender().addChatMessage("Command run!");
-                                                                    return CommanderCommandManager.SINGLE_SUCCESS;
+                                                                    return Command.SINGLE_SUCCESS;
                                                                 }))))))))));
     }
 }

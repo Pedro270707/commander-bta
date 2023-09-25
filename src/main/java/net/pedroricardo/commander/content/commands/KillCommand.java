@@ -1,5 +1,6 @@
 package net.pedroricardo.commander.content.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -8,7 +9,6 @@ import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.lang.I18n;
 import net.pedroricardo.commander.CommanderHelper;
-import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
@@ -30,7 +30,7 @@ public class KillCommand {
 
                     ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.kill.single_entity", sender.getDisplayName()));
 
-                    return CommanderCommandManager.SINGLE_SUCCESS;
+                    return Command.SINGLE_SUCCESS;
                 })
                 .then(RequiredArgumentBuilder.argument("entities", EntityArgumentType.entities())
                         .executes(c -> {
@@ -53,7 +53,7 @@ public class KillCommand {
                                 }
                             }
 
-                            return CommanderCommandManager.SINGLE_SUCCESS;
+                            return Command.SINGLE_SUCCESS;
                         })));
     }
 }

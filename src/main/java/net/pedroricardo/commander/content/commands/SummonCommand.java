@@ -1,5 +1,6 @@
 package net.pedroricardo.commander.content.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -10,7 +11,6 @@ import net.minecraft.core.lang.I18n;
 import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.core.world.World;
 import net.pedroricardo.commander.CommanderHelper;
-import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.EntitySummonArgumentType;
 import net.pedroricardo.commander.content.arguments.Vec3dArgumentType;
@@ -31,7 +31,7 @@ public class SummonCommand {
 
                             ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.summon.success_single_entity", CommanderHelper.getEntityName(entity)));
 
-                            return CommanderCommandManager.SINGLE_SUCCESS;
+                            return Command.SINGLE_SUCCESS;
                         })
                         .then(RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
                                 .executes(c -> {
@@ -41,7 +41,7 @@ public class SummonCommand {
 
                                     ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.summon.success_single_entity", CommanderHelper.getEntityName(entity)));
 
-                                    return CommanderCommandManager.SINGLE_SUCCESS;
+                                    return Command.SINGLE_SUCCESS;
                                 })
                                 .then(RequiredArgumentBuilder.argument("amount", IntegerArgumentType.integer(1, 255))
                                         .executes(c -> {
@@ -54,7 +54,7 @@ public class SummonCommand {
 
                                             ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.summon.success_multiple_entities", amount));
 
-                                            return CommanderCommandManager.SINGLE_SUCCESS;
+                                            return Command.SINGLE_SUCCESS;
                                         })))));
     }
 

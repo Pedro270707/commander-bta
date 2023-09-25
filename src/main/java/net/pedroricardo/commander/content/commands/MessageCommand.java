@@ -1,5 +1,6 @@
 package net.pedroricardo.commander.content.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -9,7 +10,6 @@ import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.util.helper.LogPrintStream;
-import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
 import net.pedroricardo.commander.content.helpers.EntitySelector;
@@ -35,7 +35,7 @@ public class MessageCommand {
                                         ((CommanderCommandSource)c.getSource()).sendMessageToPlayer((EntityPlayer)player, "§8§o" + I18n.getInstance().translateKeyAndFormat("commands.commander.message.incoming", senderName, message));
                                     }
 
-                                    return CommanderCommandManager.SINGLE_SUCCESS;
+                                    return Command.SINGLE_SUCCESS;
                                 }))));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("msg")
                 .redirect(command));

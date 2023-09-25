@@ -1,14 +1,13 @@
 package net.pedroricardo.commander.content.commands;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.core.world.chunk.ChunkCoordinates;
-import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.IntegerCoordinatesArgumentType;
-import net.pedroricardo.commander.content.helpers.DoubleCoordinates;
 import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 
 @SuppressWarnings("unchecked")
@@ -26,7 +25,7 @@ public class SetSpawnCommand {
 
                             ((CommanderCommandSource)c.getSource()).getWorld().setSpawnPoint(new ChunkCoordinates(x, y, z));
 
-                            return CommanderCommandManager.SINGLE_SUCCESS;
+                            return Command.SINGLE_SUCCESS;
                         })));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("setspawn")
                 .redirect(command));
