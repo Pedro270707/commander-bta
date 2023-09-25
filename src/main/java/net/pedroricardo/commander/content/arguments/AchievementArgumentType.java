@@ -12,9 +12,13 @@ import net.minecraft.core.block.Block;
 import net.minecraft.core.lang.I18n;
 import net.pedroricardo.commander.mixin.StatNameAccessor;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 public class AchievementArgumentType implements ArgumentType<Achievement> {
+    private static final Collection<String> EXAMPLES = Arrays.asList("achievement.acquireIron", "acquireIron");
+
     public static ArgumentType<Achievement> achievement() {
         return new AchievementArgumentType();
     }
@@ -47,5 +51,10 @@ public class AchievementArgumentType implements ArgumentType<Achievement> {
             }
         }
         return builder.buildFuture();
+    }
+
+    @Override
+    public Collection<String> getExamples() {
+        return EXAMPLES;
     }
 }

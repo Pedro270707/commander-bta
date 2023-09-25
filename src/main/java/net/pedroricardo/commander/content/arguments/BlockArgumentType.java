@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class BlockArgumentType implements ArgumentType<Pair<Block, Integer>> {
-    private static final List<String> EXAMPLES = Arrays.asList("tile.stone", "stone", "dirt");
+    private static final List<String> EXAMPLES = Arrays.asList("tile.stone", "stone", "tile.log[1]");
 
     public static ArgumentType<Pair<Block, Integer>> block() {
         return new BlockArgumentType();

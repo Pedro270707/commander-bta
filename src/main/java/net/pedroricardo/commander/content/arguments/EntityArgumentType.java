@@ -13,10 +13,13 @@ import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import net.pedroricardo.commander.content.helpers.EntitySelector;
 import net.pedroricardo.commander.content.helpers.EntitySelectorParser;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 public class EntityArgumentType implements ArgumentType<EntitySelector> {
+    private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "@e", "@e[type=foo]", "entity.11203");
+
     private final boolean singleEntity, playerOnly;
 
     private EntityArgumentType(boolean singleEntity, boolean playerOnly) {
@@ -77,5 +80,10 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
             });
         }
         return Suggestions.empty();
+    }
+
+    @Override
+    public Collection<String> getExamples() {
+        return EXAMPLES;
     }
 }

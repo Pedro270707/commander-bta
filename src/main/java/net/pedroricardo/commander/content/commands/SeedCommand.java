@@ -22,8 +22,6 @@ import java.util.List;
 
 @SuppressWarnings("unchecked")
 public class SeedCommand {
-    private static final SimpleCommandExceptionType PLAYER_ALREADY_HAS_ACHIEVEMENT = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.achievement.grant.exception_already_has_achievement"));
-
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("seed")
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
