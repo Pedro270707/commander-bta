@@ -38,15 +38,15 @@ public class DoubleCoordinates {
         return this.x.get(source.getCoordinates(false).xCoord);
     }
 
-    public double getY(CommanderCommandSource source) throws CommandSyntaxException {
-        if (source.getCoordinates(false) == null) {
+    public double getY(CommanderCommandSource source, boolean offsetHeight) throws CommandSyntaxException {
+        if (source.getCoordinates(offsetHeight) == null) {
             if (!this.y.isRelative()) {
                 return this.y.get(0.0);
             } else {
                 throw CommanderExceptions.notInWorld().create();
             }
         }
-        return this.y.get(source.getCoordinates(false).yCoord);
+        return this.y.get(source.getCoordinates(offsetHeight).yCoord);
     }
 
     public double getZ(CommanderCommandSource source) throws CommandSyntaxException {

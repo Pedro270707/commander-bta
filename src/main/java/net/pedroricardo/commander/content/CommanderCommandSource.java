@@ -33,6 +33,8 @@ public interface CommanderCommandSource {
 
     void sendMessage(String message);
 
+    void sendMessageToPlayer(EntityPlayer player, String message);
+
     World getWorld();
 
     World getWorld(int dimension);

@@ -5,8 +5,12 @@ import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.core.entity.Entity;
+import net.minecraft.core.entity.EntityDispatcher;
+import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.net.command.Command;
 import net.minecraft.core.net.command.Commands;
+import net.minecraft.core.util.helper.LogPrintStream;
 import net.pedroricardo.commander.content.CommanderCommandManager;
 
 import java.awt.event.KeyEvent;
@@ -113,5 +117,14 @@ public class CommanderHelper {
             return true;
         }
         return checkedString.substring(checkedString.indexOf('.') + 1).equals(input);
+    }
+
+    public static String getEntityName(Entity entity) {
+        if (entity instanceof EntityLiving) {
+            if (!LogPrintStream.removeColorCodes(((EntityLiving) entity).getDisplayName()).isEmpty()) {
+                return ((EntityLiving) entity).getDisplayName();
+            }
+        }
+        return EntityDispatcher.getEntityString(entity);
     }
 }

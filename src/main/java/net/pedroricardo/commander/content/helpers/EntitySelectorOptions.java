@@ -13,6 +13,7 @@ import net.minecraft.core.lang.I18n;
 import net.minecraft.core.lang.text.Text;
 import net.minecraft.core.lang.text.TextTranslatable;
 import net.minecraft.core.player.gamemode.Gamemode;
+import net.minecraft.core.util.helper.LogPrintStream;
 import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.CommanderHelper;
 
@@ -84,8 +85,7 @@ public class EntitySelectorOptions {
                     parser.addPredicate(entity -> {
                         if (!(entity instanceof EntityLiving)) return bl;
                         else if (entity instanceof EntityPlayer) return ((EntityPlayer)entity).username.equals(string) != bl;
-                        else if (!((EntityLiving)entity).getDisplayName().startsWith("§") || ((EntityLiving)entity).getDisplayName().length() < 2) return ((EntityLiving)entity).getDisplayName().equals(string) != bl;
-                        return ((EntityLiving)entity).getDisplayName().substring(2).equals(string) != bl;
+                        else return LogPrintStream.removeColorCodes(((EntityLiving)entity).getDisplayName()).equals(string) != bl;
                     });
                 }, entitySelectorParser -> !entitySelectorParser.hasNameEquals(), new TextTranslatable("argument_types.commander.entity.selector.options.name.description"));
         register("distance", (parser) -> {

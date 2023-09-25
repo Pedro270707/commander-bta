@@ -9,15 +9,15 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.core.util.phys.Vec3d;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
-import net.pedroricardo.commander.content.helpers.BlockCoordinate;
-import net.pedroricardo.commander.content.helpers.BlockCoordinates;
+import net.pedroricardo.commander.content.helpers.IntegerCoordinate;
+import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class BlockCoordinatesArgumentType implements ArgumentType<BlockCoordinates> {
+public class BlockCoordinatesArgumentType implements ArgumentType<IntegerCoordinates> {
     private static final List<String> EXAMPLES = Arrays.asList("~ ~ ~", "0 0 0", "~ ~60 ~", "~-20 ~10 -25");
 
     public static BlockCoordinatesArgumentType blockCoordinates() {
@@ -25,9 +25,9 @@ public class BlockCoordinatesArgumentType implements ArgumentType<BlockCoordinat
     }
 
     @Override
-    public BlockCoordinates parse(StringReader reader) throws CommandSyntaxException {
+    public IntegerCoordinates parse(StringReader reader) throws CommandSyntaxException {
         int i = reader.getCursor();
-        BlockCoordinate x = BlockCoordinate.parse(reader);
+        IntegerCoordinate x = IntegerCoordinate.parse(reader);
         if (!reader.canRead() || reader.peek() != ' ') {
             if (reader.peek() == 'f' || reader.peek() == 'd') {
                 reader.skip();
@@ -41,7 +41,7 @@ public class BlockCoordinatesArgumentType implements ArgumentType<BlockCoordinat
             }
         }
         reader.skip();
-        BlockCoordinate y = BlockCoordinate.parse(reader);
+        IntegerCoordinate y = IntegerCoordinate.parse(reader);
         if (!reader.canRead() || reader.peek() != ' ') {
             if (reader.peek() == 'f' || reader.peek() == 'd') {
                 reader.skip();
@@ -55,8 +55,8 @@ public class BlockCoordinatesArgumentType implements ArgumentType<BlockCoordinat
             }
         }
         reader.skip();
-        BlockCoordinate z = BlockCoordinate.parse(reader);
-        return new BlockCoordinates(x, y, z);
+        IntegerCoordinate z = IntegerCoordinate.parse(reader);
+        return new IntegerCoordinates(x, y, z);
     }
 
     @Override

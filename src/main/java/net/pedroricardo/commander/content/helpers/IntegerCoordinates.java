@@ -5,12 +5,12 @@ import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import org.jetbrains.annotations.Nullable;
 
-public class BlockCoordinates {
-    private final BlockCoordinate x;
-    private final BlockCoordinate y;
-    private final BlockCoordinate z;
+public class IntegerCoordinates {
+    private final IntegerCoordinate x;
+    private final IntegerCoordinate y;
+    private final IntegerCoordinate z;
 
-    public BlockCoordinates(BlockCoordinate x, BlockCoordinate y, BlockCoordinate z) {
+    public IntegerCoordinates(IntegerCoordinate x, IntegerCoordinate y, IntegerCoordinate z) {
         this.x = x;
         this.y = y;
         this.z = z;

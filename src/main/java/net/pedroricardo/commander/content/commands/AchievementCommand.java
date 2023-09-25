@@ -28,60 +28,60 @@ public class AchievementCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("achievement"))
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then(((LiteralArgumentBuilder)LiteralArgumentBuilder.<CommanderCommandSource>literal("grant")
-                ).then((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("entities", EntityArgumentType.players())
-                        .then(RequiredArgumentBuilder.argument("achievement", AchievementArgumentType.achievement())
-                                .executes(c -> {
-                                    List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get((CommanderCommandSource) c.getSource());
-                                    Achievement achievement = c.getArgument("achievement", Achievement.class);
+                .then(((LiteralArgumentBuilder)LiteralArgumentBuilder.<CommanderCommandSource>literal("grant"))
+                        .then((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("entities", EntityArgumentType.players())
+                                .then(RequiredArgumentBuilder.argument("achievement", AchievementArgumentType.achievement())
+                                        .executes(c -> {
+                                            List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get((CommanderCommandSource) c.getSource());
+                                            Achievement achievement = c.getArgument("achievement", Achievement.class);
 
-                                    if (entities.size() == 1 && ((EntityPlayer)entities.get(0)).getStat(achievement) != 0) {
-                                        throw PLAYER_ALREADY_HAS_ACHIEVEMENT.create();
-                                    }
-                                    if (entities.size() == 0) {
-                                        throw CommanderExceptions.emptySelector().create();
-                                    }
-
-                                    List<Achievement> achievements = new ArrayList<>();
-                                    achievements.add(achievement);
-
-                                    while (achievements.get(achievements.size() - 1).parent != null) {
-                                        achievements.add(achievements.get(achievements.size() - 1).parent);
-                                    }
-                                    for (int i = 0; i < achievements.size(); i++) {
-                                        for (Entity entity : entities) {
-                                            ((EntityPlayer)entity).triggerAchievement(achievements.get(achievements.size() - 1 - i));
-                                        }
-                                    }
-
-                                    sendContextualMessage((CommanderCommandSource) c.getSource(), entities, achievement);
-
-                                    return CommanderCommandManager.SINGLE_SUCCESS;
-                                }))
-                        .then((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("*")
-                                .executes(c -> {
-                                    List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get((CommanderCommandSource) c.getSource());
-
-                                    if (entities.size() == 0) {
-                                        throw CommanderExceptions.emptySelector().create();
-                                    }
-
-                                    for (Achievement achievement : AchievementList.achievementList) {
-                                        List<Achievement> achievements = new ArrayList<>();
-                                        achievements.add(achievement);
-                                        while (achievements.get(achievements.size() - 1).parent != null) {
-                                            achievements.add(achievements.get(achievements.size() - 1).parent);
-                                        }
-                                        for (int i = 0; i < achievements.size(); i++) {
-                                            for (Entity entity : entities) {
-                                                ((EntityPlayer)entity).triggerAchievement(achievements.get(achievements.size() - 1 - i));
+                                            if (entities.size() == 1 && ((EntityPlayer)entities.get(0)).getStat(achievement) != 0) {
+                                                throw PLAYER_ALREADY_HAS_ACHIEVEMENT.create();
                                             }
-                                        }
-                                    }
+                                            if (entities.size() == 0) {
+                                                throw CommanderExceptions.emptySelector().create();
+                                            }
 
-                                    sendWildcardContextualMessage(((CommanderCommandSource)c.getSource()), entities);
+                                            List<Achievement> achievements = new ArrayList<>();
+                                            achievements.add(achievement);
 
-                                    return CommanderCommandManager.SINGLE_SUCCESS;
+                                            while (achievements.get(achievements.size() - 1).parent != null) {
+                                                achievements.add(achievements.get(achievements.size() - 1).parent);
+                                            }
+                                            for (int i = 0; i < achievements.size(); i++) {
+                                                for (Entity entity : entities) {
+                                                    ((EntityPlayer)entity).triggerAchievement(achievements.get(achievements.size() - 1 - i));
+                                                }
+                                            }
+
+                                            sendContextualMessage((CommanderCommandSource) c.getSource(), entities, achievement);
+
+                                            return CommanderCommandManager.SINGLE_SUCCESS;
+                                        }))
+                                .then((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("*")
+                                        .executes(c -> {
+                                            List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get((CommanderCommandSource) c.getSource());
+
+                                            if (entities.size() == 0) {
+                                                throw CommanderExceptions.emptySelector().create();
+                                            }
+
+                                            for (Achievement achievement : AchievementList.achievementList) {
+                                                List<Achievement> achievements = new ArrayList<>();
+                                                achievements.add(achievement);
+                                                while (achievements.get(achievements.size() - 1).parent != null) {
+                                                    achievements.add(achievements.get(achievements.size() - 1).parent);
+                                                }
+                                                for (int i = 0; i < achievements.size(); i++) {
+                                                    for (Entity entity : entities) {
+                                                        ((EntityPlayer)entity).triggerAchievement(achievements.get(achievements.size() - 1 - i));
+                                                    }
+                                                }
+                                            }
+
+                                            sendWildcardContextualMessage(((CommanderCommandSource)c.getSource()), entities);
+
+                                            return CommanderCommandManager.SINGLE_SUCCESS;
                                 }))))));
     }
 

@@ -78,6 +78,13 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     }
 
     @Override
+    public void sendMessageToPlayer(EntityPlayer player, String message) {
+        if (player == this.mc.thePlayer) {
+            this.sendMessage(message);
+        }
+    }
+
+    @Override
     public World getWorld() {
         return this.mc.theWorld;
     }

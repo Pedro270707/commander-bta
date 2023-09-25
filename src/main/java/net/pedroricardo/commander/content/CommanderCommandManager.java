@@ -27,6 +27,7 @@ public class CommanderCommandManager {
         SetBlockCommand.register(DISPATCHER);
         SummonCommand.register(DISPATCHER);
         TeleportCommand.register(DISPATCHER);
+        MessageCommand.register(DISPATCHER);
 
         registerLegacyCommands();
 
