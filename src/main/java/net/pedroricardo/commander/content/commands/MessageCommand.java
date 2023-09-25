@@ -20,8 +20,8 @@ import java.util.List;
 public class MessageCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         CommandNode<Object> command = dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("message")
-                .then((RequiredArgumentBuilder) RequiredArgumentBuilder.argument("targets", EntityArgumentType.players())
-                        .then((RequiredArgumentBuilder) RequiredArgumentBuilder.argument("message", StringArgumentType.greedyString())
+                .then(RequiredArgumentBuilder.argument("targets", EntityArgumentType.players())
+                        .then(RequiredArgumentBuilder.argument("message", StringArgumentType.greedyString())
                                 .executes(c -> {
                                     EntitySelector entitySelector = c.getArgument("targets", EntitySelector.class);
                                     String message = c.getArgument("message", String.class);

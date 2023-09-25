@@ -1,6 +1,7 @@
 package net.pedroricardo.commander.mixin;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.net.packet.Packet3Chat;
 import net.minecraft.core.util.helper.AES;
 import net.minecraft.server.MinecraftServer;
@@ -31,8 +32,7 @@ public class PreferCommanderCommandNetServerHandlerMixin {
         try {
             CommanderCommandManager.execute(s, serverCommandSource);
         } catch (CommandSyntaxException e) {
-            if (e.getType() != CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand())
-                ((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity().playerNetServerHandler.sendPacket(new Packet3Chat(e.getMessage(), AES.keyChain.get(((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity().username)));
+            ((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity().playerNetServerHandler.sendPacket(new Packet3Chat(TextFormatting.RED + e.getMessage(), AES.keyChain.get(((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity().username)));
         }
         ci.cancel();
     }

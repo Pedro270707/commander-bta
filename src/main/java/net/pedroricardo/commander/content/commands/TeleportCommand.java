@@ -22,7 +22,7 @@ public class TeleportCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         CommandNode<Object> command = dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("teleport")
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
+                .then(RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
                         .executes(c -> {
                             DoubleCoordinates targetCoordinates = c.getArgument("position", DoubleCoordinates.class);
 
@@ -35,8 +35,8 @@ public class TeleportCommand {
 
                             return Command.SINGLE_SUCCESS;
                         }))
-                .then((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("entity", EntityArgumentType.entities())
-                        .then((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
+                .then(RequiredArgumentBuilder.argument("entity", EntityArgumentType.entities())
+                        .then(RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
                                 .executes(c -> {
                                     EntitySelector entitySelector = c.getArgument("entity", EntitySelector.class);
                                     DoubleCoordinates targetCoordinates = c.getArgument("position", DoubleCoordinates.class);
@@ -51,7 +51,7 @@ public class TeleportCommand {
 
                                     return Command.SINGLE_SUCCESS;
                                 }))
-                .then((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("target", EntityArgumentType.entity())
+                .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.entity())
                         .executes(c -> {
                             EntitySelector entitySelector = c.getArgument("entity", EntitySelector.class);
                             EntitySelector targetEntitySelector = c.getArgument("target", EntitySelector.class);

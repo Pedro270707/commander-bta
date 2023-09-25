@@ -29,7 +29,7 @@ public class AchievementCommand {
         dispatcher.register((LiteralArgumentBuilder)(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("achievement"))
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .then(((LiteralArgumentBuilder)LiteralArgumentBuilder.<CommanderCommandSource>literal("grant"))
-                        .then((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("entities", EntityArgumentType.players())
+                        .then(RequiredArgumentBuilder.argument("entities", EntityArgumentType.players())
                                 .then(RequiredArgumentBuilder.argument("achievement", AchievementArgumentType.achievement())
                                         .executes(c -> {
                                             List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get((CommanderCommandSource) c.getSource());
@@ -58,7 +58,7 @@ public class AchievementCommand {
 
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("*")
+                                .then(LiteralArgumentBuilder.literal("*")
                                         .executes(c -> {
                                             List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get((CommanderCommandSource) c.getSource());
 
