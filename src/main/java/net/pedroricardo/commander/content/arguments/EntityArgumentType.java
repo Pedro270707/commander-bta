@@ -7,6 +7,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
@@ -18,7 +19,7 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 public class EntityArgumentType implements ArgumentType<EntitySelector> {
-    private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "@e", "@e[type=foo]", "entity.11203");
+    private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "@e", "@e[type=foo]", Commander.ENTITY_PREFIX + "11203");
 
     private final boolean singleEntity, playerOnly;
 
