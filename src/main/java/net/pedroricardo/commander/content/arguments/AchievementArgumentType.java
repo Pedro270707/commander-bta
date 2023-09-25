@@ -10,10 +10,12 @@ import net.minecraft.core.achievement.Achievement;
 import net.minecraft.core.achievement.AchievementList;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.lang.I18n;
+import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.mixin.StatNameAccessor;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class AchievementArgumentType implements ArgumentType<Achievement> {
@@ -39,15 +41,8 @@ public class AchievementArgumentType implements ArgumentType<Achievement> {
     public <S> CompletableFuture<Suggestions> listSuggestions(final CommandContext<S> context, final SuggestionsBuilder builder) {
         String remaining = builder.getRemainingLowerCase();
         for (Achievement achievement : AchievementList.achievementList) {
-            if ("achievement.".startsWith(remaining) || remaining.startsWith("achievement.")) {
-                if (((StatNameAccessor)achievement).statName().toLowerCase().startsWith(remaining)) {
-                    builder.suggest(((StatNameAccessor)achievement).statName(), achievement::getStatName);
-                }
-            } else {
-                if (((StatNameAccessor)achievement).statName().startsWith("achievement.") && ((StatNameAccessor)achievement).statName().substring("achievement.".length()).toLowerCase().startsWith(remaining)) {
-                    builder.suggest(((StatNameAccessor)achievement).statName().substring("achievement.".length()), achievement::getStatName);
-                }
-            }
+            Optional<String> optional = CommanderHelper.getStringToSuggest(((StatNameAccessor)achievement).statName(), remaining);
+            optional.ifPresent(builder::suggest);
         }
         return builder.buildFuture();
     }

@@ -28,6 +28,7 @@ public class CommanderCommandManager {
         MessageCommand.register(DISPATCHER);
         SetSpawnCommand.register(DISPATCHER);
         TimeCommand.register(DISPATCHER);
+        GameModeCommand.register(DISPATCHER);
         // GiveCommand.register(DISPATCHER);
         // HelpCommand.register(DISPATCHER);
         // WeatherCommand.register(DISPATCHER);

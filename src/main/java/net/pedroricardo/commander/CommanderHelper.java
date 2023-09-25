@@ -104,10 +104,12 @@ public class CommanderHelper {
     }
 
     public static Optional<String> getStringToSuggest(String checkedString, String input) {
-        if (checkedString.startsWith(input)) {
+        if (checkedString.toLowerCase(Locale.ROOT).startsWith(input.toLowerCase(Locale.ROOT))) {
             return Optional.of(checkedString);
-        } else if (checkedString.contains(".") && checkedString.substring(checkedString.indexOf('.') + 1).startsWith(input)) {
-            return Optional.of(checkedString.substring(checkedString.indexOf('.') + 1));
+        } else {
+            if (checkedString.contains(".") && checkedString.toLowerCase(Locale.ROOT).substring(checkedString.indexOf('.') + 1).startsWith(input.toLowerCase(Locale.ROOT))) {
+                return Optional.of(checkedString.substring(checkedString.indexOf('.') + 1));
+            }
         }
         return Optional.empty();
     }

@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 // TODO: ChunkCoordinateArgumentType
 // TODO: ItemStackArgumentType
 // TODO: WorldFeatureArgumentType
-// TODO: GameModeArgumentType
-// TODO: TimeArgumentType
 // TODO: WeatherArgumentType
 
 public class Commander implements ModInitializer {
