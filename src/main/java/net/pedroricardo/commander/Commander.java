@@ -5,6 +5,12 @@ import net.pedroricardo.commander.content.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+// TODO: ChunkCoordinateArgumentType
+// TODO: ItemStackArgumentType
+// TODO: WorldFeatureArgumentType
+// TODO: GameModeArgumentType
+// TODO: TimeArgumentType
+// TODO: WeatherArgumentType
 
 public class Commander implements ModInitializer {
     public static final String MOD_ID = "commander";

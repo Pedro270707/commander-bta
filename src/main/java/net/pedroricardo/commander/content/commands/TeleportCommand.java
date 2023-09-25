@@ -46,7 +46,7 @@ public class TeleportCommand {
                                         entity.moveTo(targetCoordinates.getX((CommanderCommandSource)c.getSource()), targetCoordinates.getY(((CommanderCommandSource) c.getSource()), true), targetCoordinates.getZ((CommanderCommandSource)c.getSource()), entity.yRot, entity.xRot);
                                     }
 
-                                    if (entities.size() == 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_single_entity", entities.get(0), targetCoordinates.getX((CommanderCommandSource)c.getSource()), targetCoordinates.getY(((CommanderCommandSource) c.getSource()), true), targetCoordinates.getZ((CommanderCommandSource)c.getSource())));
+                                    if (entities.size() == 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), targetCoordinates.getX((CommanderCommandSource)c.getSource()), targetCoordinates.getY(((CommanderCommandSource) c.getSource()), true), targetCoordinates.getZ((CommanderCommandSource)c.getSource())));
                                     else if (entities.size() > 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_multiple_entities", entities.size(), targetCoordinates.getX((CommanderCommandSource)c.getSource()), targetCoordinates.getY(((CommanderCommandSource) c.getSource()), true), targetCoordinates.getZ((CommanderCommandSource)c.getSource())));
 
                                     return CommanderCommandManager.SINGLE_SUCCESS;
@@ -62,7 +62,7 @@ public class TeleportCommand {
                                 entity.moveTo(targetEntity.x, targetEntity.y - targetEntity.heightOffset, targetEntity.z, entity.yRot, entity.xRot);
                             }
 
-                            if (entities.size() == 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.entity.success_single_entity", entities.get(0), CommanderHelper.getEntityName(targetEntity)));
+                            if (entities.size() == 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.entity.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), CommanderHelper.getEntityName(targetEntity)));
                             else if (entities.size() > 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.entity.success_multiple_entities", entities.size(), CommanderHelper.getEntityName(targetEntity)));
 
                             return CommanderCommandManager.SINGLE_SUCCESS;

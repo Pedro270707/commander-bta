@@ -17,11 +17,11 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class BlockCoordinatesArgumentType implements ArgumentType<IntegerCoordinates> {
+public class IntegerCoordinatesArgumentType implements ArgumentType<IntegerCoordinates> {
     private static final List<String> EXAMPLES = Arrays.asList("~ ~ ~", "0 0 0", "~ ~60 ~", "~-20 ~10 -25");
 
-    public static BlockCoordinatesArgumentType blockCoordinates() {
-        return new BlockCoordinatesArgumentType();
+    public static IntegerCoordinatesArgumentType intCoordinates() {
+        return new IntegerCoordinatesArgumentType();
     }
 
     @Override

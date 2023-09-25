@@ -16,17 +16,17 @@ public class SetBlockCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("setblock")
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then(RequiredArgumentBuilder.argument("position", BlockCoordinatesArgumentType.blockCoordinates())
+                .then(RequiredArgumentBuilder.argument("position", IntegerCoordinatesArgumentType.intCoordinates())
                         .then(RequiredArgumentBuilder.argument("block", BlockArgumentType.block())
                                 .executes(c -> {
                                     IntegerCoordinates coordinates = c.getArgument("position", IntegerCoordinates.class);
                                     Pair<Block, Integer> pair = c.getArgument("block", Pair.class);
 
-                                    if (!((CommanderCommandSource)c.getSource()).getWorld().isBlockLoaded(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource()), coordinates.getZ((CommanderCommandSource)c.getSource()))) {
+                                    if (!((CommanderCommandSource)c.getSource()).getWorld().isBlockLoaded(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource(), true), coordinates.getZ((CommanderCommandSource)c.getSource()))) {
                                         ((CommanderCommandSource)c.getSource()).sendMessage("§e" + I18n.getInstance().translateKey("commands.commander.setblock.failure"));
                                     } else {
-                                        ((CommanderCommandSource)c.getSource()).getWorld().setBlockAndMetadataWithNotify(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource()), coordinates.getZ((CommanderCommandSource)c.getSource()), pair.getLeft().id, pair.getRight());
-                                        ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.setblock.success", coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource()), coordinates.getZ((CommanderCommandSource)c.getSource())));
+                                        ((CommanderCommandSource)c.getSource()).getWorld().setBlockAndMetadataWithNotify(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource(), true), coordinates.getZ((CommanderCommandSource)c.getSource()), pair.getLeft().id, pair.getRight());
+                                        ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.setblock.success", coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource(), true), coordinates.getZ((CommanderCommandSource)c.getSource())));
                                     }
 
                                     return CommanderCommandManager.SINGLE_SUCCESS;

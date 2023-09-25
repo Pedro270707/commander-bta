@@ -29,7 +29,6 @@ public class AchievementArgumentType implements ArgumentType<Achievement> {
 
         for (Achievement achievement : AchievementList.achievementList) {
             if (((StatNameAccessor)achievement).statName().equals(string) || (((StatNameAccessor)achievement).statName().startsWith("achievement.") && ((StatNameAccessor)achievement).statName().substring("achievement.".length()).equals(string))) {
-                reader.skip();
                 return achievement;
             }
         }

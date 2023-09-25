@@ -54,15 +54,15 @@ public class IntegerCoordinates {
         return this.x.get((int) Math.floor(source.getCoordinates(true).xCoord));
     }
 
-    public int getY(CommanderCommandSource source) throws CommandSyntaxException {
-        if (source.getCoordinates(true) == null) {
+    public int getY(CommanderCommandSource source, boolean offsetHeight) throws CommandSyntaxException {
+        if (source.getCoordinates(offsetHeight) == null) {
             if (!this.y.isRelative()) {
                 return this.y.get(0);
             } else {
                 throw CommanderExceptions.notInWorld().create();
             }
         }
-        return this.y.get((int) Math.floor(source.getCoordinates(true).yCoord));
+        return this.y.get((int) Math.floor(source.getCoordinates(offsetHeight).yCoord));
     }
 
     public int getZ(CommanderCommandSource source) throws CommandSyntaxException {

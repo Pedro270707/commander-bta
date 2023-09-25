@@ -28,6 +28,7 @@ public class CommanderCommandManager {
         SummonCommand.register(DISPATCHER);
         TeleportCommand.register(DISPATCHER);
         MessageCommand.register(DISPATCHER);
+        SetSpawnCommand.register(DISPATCHER);
 
         registerLegacyCommands();
 
