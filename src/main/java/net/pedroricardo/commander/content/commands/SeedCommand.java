@@ -12,7 +12,8 @@ public class SeedCommand {
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("seed")
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .executes(c -> {
-                    ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.seed.success", ((CommanderCommandSource)c.getSource()).getWorld().getRandomSeed()));
+                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.seed.success", source.getWorld().getRandomSeed()));
                     return Command.SINGLE_SUCCESS;
                 })
         );

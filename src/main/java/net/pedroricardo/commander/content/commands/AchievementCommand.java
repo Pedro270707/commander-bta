@@ -32,6 +32,7 @@ public class AchievementCommand {
                         .then(RequiredArgumentBuilder.argument("entities", EntityArgumentType.players())
                                 .then(RequiredArgumentBuilder.argument("achievement", AchievementArgumentType.achievement())
                                         .executes(c -> {
+                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                                             List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get((CommanderCommandSource) c.getSource());
                                             Achievement achievement = c.getArgument("achievement", Achievement.class);
 
@@ -54,12 +55,13 @@ public class AchievementCommand {
                                                 }
                                             }
 
-                                            sendContextualMessage((CommanderCommandSource) c.getSource(), entities, achievement);
+                                            sendContextualMessage(source, entities, achievement);
 
                                             return Command.SINGLE_SUCCESS;
                                         }))
                                 .then(LiteralArgumentBuilder.literal("*")
                                         .executes(c -> {
+                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                                             List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get((CommanderCommandSource) c.getSource());
 
                                             if (entities.size() == 0) {
@@ -79,7 +81,7 @@ public class AchievementCommand {
                                                 }
                                             }
 
-                                            sendWildcardContextualMessage(((CommanderCommandSource)c.getSource()), entities);
+                                            sendWildcardContextualMessage(source, entities);
 
                                             return Command.SINGLE_SUCCESS;
                                 }))))));

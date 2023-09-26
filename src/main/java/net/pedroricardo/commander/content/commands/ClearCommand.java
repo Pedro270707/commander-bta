@@ -25,19 +25,21 @@ public class ClearCommand {
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("clear")
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .executes(c -> {
-                    if (((CommanderCommandSource)c.getSource()).getSender() == null) throw CommanderExceptions.notInWorld().create();
-
+                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                     EntityPlayer sender = ((CommanderCommandSource)c.getSource()).getSender();
+
+                    if (sender == null) throw CommanderExceptions.notInWorld().create();
 
                     int itemsCleared = clearItemsFromEntity(sender);
 
-                    ((CommanderCommandSource) c.getSource()).sendMessage(getMessage(itemsCleared, Collections.singletonList(sender)));
+                    source.sendMessage(getMessage(itemsCleared, Collections.singletonList(sender)));
 
                     return Command.SINGLE_SUCCESS;
                 })
                 .then(RequiredArgumentBuilder.argument("players", EntityArgumentType.players())
                         .executes(c -> {
-                            List<? extends Entity> players = c.getArgument("players", EntitySelector.class).get(((CommanderCommandSource)c.getSource()));
+                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            List<? extends Entity> players = c.getArgument("players", EntitySelector.class).get(source);
 
                             int itemsCleared = 0;
 
@@ -45,7 +47,7 @@ public class ClearCommand {
                                 itemsCleared += clearItemsFromEntity((EntityPlayer)player);
                             }
 
-                            ((CommanderCommandSource) c.getSource()).sendMessage(getMessage(itemsCleared, players));
+                            source.sendMessage(getMessage(itemsCleared, players));
 
                             return Command.SINGLE_SUCCESS;
                         })));

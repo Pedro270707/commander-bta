@@ -24,11 +24,12 @@ public class TeleportCommand {
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .then(RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
                         .executes(c -> {
+                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                             DoubleCoordinates targetCoordinates = c.getArgument("position", DoubleCoordinates.class);
 
-                            if (((CommanderCommandSource)c.getSource()).getSender() != null) {
-                                ((CommanderCommandSource)c.getSource()).getSender().moveTo(targetCoordinates.getX((CommanderCommandSource)c.getSource()), targetCoordinates.getY(((CommanderCommandSource) c.getSource()), true), targetCoordinates.getZ((CommanderCommandSource)c.getSource()), ((CommanderCommandSource) c.getSource()).getSender().yRot, ((CommanderCommandSource) c.getSource()).getSender().xRot);
-                                ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_single_entity", ((CommanderCommandSource)c.getSource()).getSender().getDisplayName(), targetCoordinates.getX((CommanderCommandSource)c.getSource()), targetCoordinates.getY(((CommanderCommandSource) c.getSource()), true), targetCoordinates.getZ((CommanderCommandSource)c.getSource())));
+                            if (source.getSender() != null) {
+                                source.getSender().moveTo(targetCoordinates.getX(source), targetCoordinates.getY(source, true), targetCoordinates.getZ(source), source.getSender().yRot, source.getSender().xRot);
+                                source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_single_entity", source.getSender().getDisplayName(), targetCoordinates.getX(source), targetCoordinates.getY(source, true), targetCoordinates.getZ(source)));
                             } else {
                                 throw CommanderExceptions.notInWorld().create();
                             }
@@ -38,21 +39,23 @@ public class TeleportCommand {
                 .then(RequiredArgumentBuilder.argument("entity", EntityArgumentType.entities())
                         .then(RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
                                 .executes(c -> {
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                                     EntitySelector entitySelector = c.getArgument("entity", EntitySelector.class);
                                     DoubleCoordinates targetCoordinates = c.getArgument("position", DoubleCoordinates.class);
 
-                                    List<? extends Entity> entities = entitySelector.get((CommanderCommandSource) c.getSource());
+                                    List<? extends Entity> entities = entitySelector.get(source);
                                     for (Entity entity : entities) {
-                                        entity.moveTo(targetCoordinates.getX((CommanderCommandSource)c.getSource()), targetCoordinates.getY(((CommanderCommandSource) c.getSource()), true), targetCoordinates.getZ((CommanderCommandSource)c.getSource()), entity.yRot, entity.xRot);
+                                        entity.moveTo(targetCoordinates.getX(source), targetCoordinates.getY(source, true), targetCoordinates.getZ(source), entity.yRot, entity.xRot);
                                     }
 
-                                    if (entities.size() == 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), targetCoordinates.getX((CommanderCommandSource)c.getSource()), targetCoordinates.getY(((CommanderCommandSource) c.getSource()), true), targetCoordinates.getZ((CommanderCommandSource)c.getSource())));
-                                    else if (entities.size() > 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_multiple_entities", entities.size(), targetCoordinates.getX((CommanderCommandSource)c.getSource()), targetCoordinates.getY(((CommanderCommandSource) c.getSource()), true), targetCoordinates.getZ((CommanderCommandSource)c.getSource())));
+                                    if (entities.size() == 1) source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), targetCoordinates.getX(source), targetCoordinates.getY(source, true), targetCoordinates.getZ(source)));
+                                    else if (entities.size() > 1) source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_multiple_entities", entities.size(), targetCoordinates.getX(source), targetCoordinates.getY(source, true), targetCoordinates.getZ(source)));
 
                                     return Command.SINGLE_SUCCESS;
                                 }))
                 .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.entity())
                         .executes(c -> {
+                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                             EntitySelector entitySelector = c.getArgument("entity", EntitySelector.class);
                             EntitySelector targetEntitySelector = c.getArgument("target", EntitySelector.class);
                             Entity targetEntity = targetEntitySelector.get((CommanderCommandSource) c.getSource()).get(0);
@@ -62,8 +65,8 @@ public class TeleportCommand {
                                 entity.moveTo(targetEntity.x, targetEntity.y - targetEntity.heightOffset, targetEntity.z, entity.yRot, entity.xRot);
                             }
 
-                            if (entities.size() == 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.entity.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), CommanderHelper.getEntityName(targetEntity)));
-                            else if (entities.size() > 1) ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.entity.success_multiple_entities", entities.size(), CommanderHelper.getEntityName(targetEntity)));
+                            if (entities.size() == 1) source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.entity.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), CommanderHelper.getEntityName(targetEntity)));
+                            else if (entities.size() > 1) source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.entity.success_multiple_entities", entities.size(), CommanderHelper.getEntityName(targetEntity)));
 
                             return Command.SINGLE_SUCCESS;
                         }))));

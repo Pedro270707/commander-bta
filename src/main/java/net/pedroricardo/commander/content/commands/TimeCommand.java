@@ -18,54 +18,63 @@ public class TimeCommand {
                 .then(LiteralArgumentBuilder.literal("query")
                         .then(LiteralArgumentBuilder.literal("daytime")
                                 .executes(c -> {
-                                    ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.time.query", ((CommanderCommandSource)c.getSource()).getWorld().getWorldTime() % 24000L));
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.time.query", ((CommanderCommandSource)c.getSource()).getWorld().getWorldTime() % 24000L));
 
                                     return Command.SINGLE_SUCCESS;
                                 }))
                         .then(LiteralArgumentBuilder.literal("gametime")
                                 .executes(c -> {
-                                    ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.time.query", ((CommanderCommandSource)c.getSource()).getWorld().getWorldTime() % Integer.MAX_VALUE));
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.time.query", source.getWorld().getWorldTime() % Integer.MAX_VALUE));
 
                                     return Command.SINGLE_SUCCESS;
                                 }))
                         .then(LiteralArgumentBuilder.literal("day")
                                 .executes(c -> {
-                                    ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.time.query", (int) Math.floor(((CommanderCommandSource)c.getSource()).getWorld().getWorldTime() / 24000L % Integer.MAX_VALUE)));
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.time.query", (int) Math.floor(source.getWorld().getWorldTime() / 24000L % Integer.MAX_VALUE)));
 
                                     return Command.SINGLE_SUCCESS;
                                 })))
                 .then(LiteralArgumentBuilder.literal("set")
                         .then(RequiredArgumentBuilder.argument("time", TimeArgumentType.time())
                                 .executes(c -> {
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                                     int time = c.getArgument("time", Integer.class);
-                                    setWorldTime((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), time);
+                                    setWorldTime(source, source.getWorld(), time);
                                     return Command.SINGLE_SUCCESS;
                                 }))
                         .then(LiteralArgumentBuilder.literal("day")
                                 .executes(c -> {
-                                    setDayTime((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), 1000);
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    setDayTime(source, source.getWorld(), 1000);
                                     return Command.SINGLE_SUCCESS;
                                 }))
                         .then(LiteralArgumentBuilder.literal("noon")
                                 .executes(c -> {
-                                    setDayTime((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), 6000);
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    setDayTime(source, source.getWorld(), 6000);
                                     return Command.SINGLE_SUCCESS;
                                 }))
                         .then(LiteralArgumentBuilder.literal("night")
                                 .executes(c -> {
-                                    setDayTime((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), 13000);
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    setDayTime(source, source.getWorld(), 13000);
                                     return Command.SINGLE_SUCCESS;
                                 }))
                         .then(LiteralArgumentBuilder.literal("midnight")
                                 .executes(c -> {
-                                    setDayTime((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), 18000);
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    setDayTime(source, source.getWorld(), 18000);
                                     return Command.SINGLE_SUCCESS;
                                 })))
                 .then(LiteralArgumentBuilder.literal("add")
                         .then(RequiredArgumentBuilder.argument("time", TimeArgumentType.time())
                                 .executes(c -> {
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                                     int time = c.getArgument("time", Integer.class);
-                                    addWorldTime((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), time);
+                                    addWorldTime(source, source.getWorld(), time);
                                     return Command.SINGLE_SUCCESS;
                                 }))));
     }

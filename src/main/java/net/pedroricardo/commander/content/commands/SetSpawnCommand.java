@@ -17,13 +17,14 @@ public class SetSpawnCommand {
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .then(RequiredArgumentBuilder.argument("position", IntegerCoordinatesArgumentType.intCoordinates())
                         .executes(c -> {
+                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                             IntegerCoordinates coordinates = c.getArgument("position", IntegerCoordinates.class);
 
-                            int x = coordinates.getX((CommanderCommandSource) c.getSource());
-                            int y = coordinates.getY((CommanderCommandSource) c.getSource(), true);
-                            int z = coordinates.getZ((CommanderCommandSource) c.getSource());
+                            int x = coordinates.getX(source);
+                            int y = coordinates.getY(source, true);
+                            int z = coordinates.getZ(source);
 
-                            ((CommanderCommandSource)c.getSource()).getWorld().setSpawnPoint(new ChunkCoordinates(x, y, z));
+                            source.getWorld().setSpawnPoint(new ChunkCoordinates(x, y, z));
 
                             return Command.SINGLE_SUCCESS;
                         })));

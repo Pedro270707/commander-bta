@@ -91,6 +91,12 @@ public class CommanderConsoleCommandSource implements CommanderCommandSource {
     }
 
     @Override
+    public void movePlayerToDimension(EntityPlayer player, int dimension) {
+        if (player instanceof EntityPlayerMP) this.server.configManager.sendPlayerToOtherDimension((EntityPlayerMP) player, dimension);
+        throw new IllegalStateException("Player is not an instance of EntityPlayerMP");
+    }
+
+    @Override
     public @Deprecated CommandHandler getCommandHandler() {
         return this.server.serverCommandHandler;
     }

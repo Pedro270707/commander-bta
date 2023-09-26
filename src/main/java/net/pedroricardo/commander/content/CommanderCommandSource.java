@@ -39,6 +39,8 @@ public interface CommanderCommandSource {
 
     World getWorld(int dimension);
 
+    void movePlayerToDimension(EntityPlayer player, int dimension);
+
     @Deprecated CommandHandler getCommandHandler();
 
     @Deprecated CommandSender getCommandSender();

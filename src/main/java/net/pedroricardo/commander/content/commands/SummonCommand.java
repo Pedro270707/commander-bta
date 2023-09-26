@@ -24,35 +24,38 @@ public class SummonCommand {
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .then(RequiredArgumentBuilder.argument("entity", EntitySummonArgumentType.entity())
                         .executes(c -> {
-                            Vec3d coordinates = ((CommanderCommandSource)c.getSource()).getCoordinates(false);
+                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            Vec3d coordinates = source.getCoordinates(false);
                             if (coordinates == null) throw CommanderExceptions.notInWorld().create();
 
-                            Entity entity = summonEntityAt(c, coordinates.xCoord, coordinates.yCoord - ((CommanderCommandSource)c.getSource()).getSender().heightOffset, coordinates.zCoord, 0.0f, 0.0f);
+                            Entity entity = summonEntityAt(c, coordinates.xCoord, coordinates.yCoord - source.getSender().heightOffset, coordinates.zCoord, 0.0f, 0.0f);
 
-                            ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.summon.success_single_entity", CommanderHelper.getEntityName(entity)));
+                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.summon.success_single_entity", CommanderHelper.getEntityName(entity)));
 
                             return Command.SINGLE_SUCCESS;
                         })
                         .then(RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
                                 .executes(c -> {
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                                     DoubleCoordinates coordinates = c.getArgument("position", DoubleCoordinates.class);
 
-                                    Entity entity = summonEntityAt(c, coordinates.getX(((CommanderCommandSource)c.getSource())), coordinates.getY(((CommanderCommandSource)c.getSource()), true), coordinates.getZ(((CommanderCommandSource)c.getSource())), 0.0f, 0.0f);
+                                    Entity entity = summonEntityAt(c, coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source), 0.0f, 0.0f);
 
-                                    ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.summon.success_single_entity", CommanderHelper.getEntityName(entity)));
+                                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.summon.success_single_entity", CommanderHelper.getEntityName(entity)));
 
                                     return Command.SINGLE_SUCCESS;
                                 })
                                 .then(RequiredArgumentBuilder.argument("amount", IntegerArgumentType.integer(1, 255))
                                         .executes(c -> {
+                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                                             DoubleCoordinates coordinates = c.getArgument("position", DoubleCoordinates.class);
                                             int amount = c.getArgument("amount", Integer.class);
 
                                             for (int i = 0; i < amount; i++) {
-                                                summonEntityAt(c, coordinates.getX(((CommanderCommandSource) c.getSource())), coordinates.getY(((CommanderCommandSource) c.getSource()), true), coordinates.getZ(((CommanderCommandSource) c.getSource())), 0.0f, 0.0f);
+                                                summonEntityAt(c, coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source), 0.0f, 0.0f);
                                             }
 
-                                            ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.summon.success_multiple_entities", amount));
+                                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.summon.success_multiple_entities", amount));
 
                                             return Command.SINGLE_SUCCESS;
                                         })))));

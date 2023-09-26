@@ -7,6 +7,7 @@ import net.minecraft.core.net.command.ClientPlayerCommandSender;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
 import net.minecraft.core.util.phys.Vec3d;
+import net.minecraft.core.world.Dimension;
 import net.minecraft.core.world.World;
 import net.pedroricardo.commander.Commander;
 import org.jetbrains.annotations.NotNull;
@@ -92,6 +93,33 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     @Override
     public World getWorld(int dimension) {
         return this.mc.theWorld;
+    }
+
+    public void movePlayerToDimension(EntityPlayer player, int dimension) {
+        Dimension lastDim = Dimension.getDimensionList().get(player.dimension);
+        Dimension newDim = Dimension.getDimensionList().get(dimension);
+        System.out.println("Switching to dimension \"" + newDim.getTranslatedName() + "\"!!");
+        player.dimension = dimension;
+        this.mc.theWorld.setEntityDead(player);
+        this.mc.thePlayer.removed = false;
+        double x = player.x;
+        double y = player.y + 64;
+        double z = player.z;
+        player.moveTo(x *= Dimension.getCoordScale(lastDim, newDim), y, z *= Dimension.getCoordScale(lastDim, newDim), player.yRot, player.xRot);
+        if (player.isAlive()) {
+            this.mc.theWorld.updateEntityWithOptionalForce(player, false);
+        }
+        World world = new World(this.mc.theWorld, newDim);
+        if (newDim == lastDim.homeDim) {
+            this.mc.changeWorld(world, "Leaving " + lastDim.getTranslatedName(), player);
+        } else {
+            this.mc.changeWorld(world, "Entering " + newDim.getTranslatedName(), player);
+        }
+        player.world = this.mc.theWorld;
+        if (player.isAlive()) {
+            player.moveTo(x, y, z, player.yRot, player.xRot);
+            this.mc.theWorld.updateEntityWithOptionalForce(player, false);
+        }
     }
 
     @Override

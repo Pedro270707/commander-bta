@@ -24,17 +24,20 @@ public class GameModeCommand {
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .then(RequiredArgumentBuilder.argument("gamemode", GameModeArgumentType.gameMode())
                         .executes(c -> {
+                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                             Gamemode gameMode = c.getArgument("gamemode", Gamemode.class);
 
-                            if (((CommanderCommandSource)c.getSource()).getSender() == null) {
+                            if (source.getSender() == null) {
                                 throw CommanderExceptions.notInWorld().create();
                             }
-                            ((CommanderCommandSource)c.getSource()).getSender().setGamemode(gameMode);
-                            ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.gamemode.success_self", I18n.getInstance().translateKey(gameMode.languageKey + ".name")));
+
+                            source.getSender().setGamemode(gameMode);
+                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.gamemode.success_self", I18n.getInstance().translateKey(gameMode.languageKey + ".name")));
                             return Command.SINGLE_SUCCESS;
                         })
                         .then(RequiredArgumentBuilder.argument("targets", EntityArgumentType.players())
                                 .executes(c -> {
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                                     Gamemode gameMode = c.getArgument("gamemode", Gamemode.class);
                                     EntitySelector entitySelector = c.getArgument("targets", EntitySelector.class);
 
@@ -42,16 +45,16 @@ public class GameModeCommand {
 
                                     for (Entity entity : entities) {
                                         ((EntityPlayer)entity).setGamemode(gameMode);
-                                        if (entity != ((CommanderCommandSource)c.getSource()).getSender()) {
-                                            ((CommanderCommandSource) c.getSource()).sendMessageToPlayer((EntityPlayer) entity, I18n.getInstance().translateKey("commands.commander.gamemode.success_receiver"));
+                                        if (entity != source.getSender()) {
+                                            source.sendMessageToPlayer((EntityPlayer) entity, I18n.getInstance().translateKey("commands.commander.gamemode.success_receiver"));
                                         }
                                     }
 
                                     if (entities.size() == 1) {
-                                        if (entities.get(0) == ((CommanderCommandSource)c.getSource()).getSender()) {
-                                            ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.gamemode.success_self", I18n.getInstance().translateKey(gameMode.languageKey + ".name")));
+                                        if (entities.get(0) == source.getSender()) {
+                                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.gamemode.success_self", I18n.getInstance().translateKey(gameMode.languageKey + ".name")));
                                         } else {
-                                            ((CommanderCommandSource) c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.gamemode.success_other", CommanderHelper.getEntityName(entities.get(0)), I18n.getInstance().translateKey(gameMode.languageKey + ".name")));
+                                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.gamemode.success_other", CommanderHelper.getEntityName(entities.get(0)), I18n.getInstance().translateKey(gameMode.languageKey + ".name")));
                                         }
                                     }
                                     return Command.SINGLE_SUCCESS;

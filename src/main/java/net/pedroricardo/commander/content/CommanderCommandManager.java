@@ -29,10 +29,10 @@ public class CommanderCommandManager {
         SetSpawnCommand.register(DISPATCHER);
         TimeCommand.register(DISPATCHER);
         GameModeCommand.register(DISPATCHER);
+        WeatherCommand.register(DISPATCHER);
+        SpawnCommand.register(DISPATCHER);
         // GiveCommand.register(DISPATCHER);
         // HelpCommand.register(DISPATCHER);
-        // WeatherCommand.register(DISPATCHER);
-        // GamemodeCommand.register(DISPATCHER);
         // GenerateCommand.register(DISPATCHER);
         // ChunkCommand.register(DISPATCHER);
 

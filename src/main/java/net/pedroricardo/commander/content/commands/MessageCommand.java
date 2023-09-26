@@ -23,16 +23,17 @@ public class MessageCommand {
                 .then(RequiredArgumentBuilder.argument("targets", EntityArgumentType.players())
                         .then(RequiredArgumentBuilder.argument("message", StringArgumentType.greedyString())
                                 .executes(c -> {
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                                     EntitySelector entitySelector = c.getArgument("targets", EntitySelector.class);
                                     String message = c.getArgument("message", String.class);
 
-                                    String senderName = ((CommanderCommandSource)c.getSource()).getSender() == null ? "Server" : LogPrintStream.removeColorCodes(((CommanderCommandSource)c.getSource()).getSender().getDisplayName());
+                                    String senderName = source.getSender() == null ? "Server" : LogPrintStream.removeColorCodes(source.getSender().getDisplayName());
 
-                                    List<? extends Entity> players = entitySelector.get((CommanderCommandSource) c.getSource());
+                                    List<? extends Entity> players = entitySelector.get(source);
 
                                     for (Entity player : players) {
-                                        ((CommanderCommandSource)c.getSource()).sendMessage("§8§o" + I18n.getInstance().translateKeyAndFormat("commands.commander.message.outgoing", LogPrintStream.removeColorCodes(((EntityPlayer)player).getDisplayName()), message));
-                                        ((CommanderCommandSource)c.getSource()).sendMessageToPlayer((EntityPlayer)player, "§8§o" + I18n.getInstance().translateKeyAndFormat("commands.commander.message.incoming", senderName, message));
+                                        source.sendMessage("§8§o" + I18n.getInstance().translateKeyAndFormat("commands.commander.message.outgoing", LogPrintStream.removeColorCodes(((EntityPlayer)player).getDisplayName()), message));
+                                        source.sendMessageToPlayer((EntityPlayer)player, "§8§o" + I18n.getInstance().translateKeyAndFormat("commands.commander.message.incoming", senderName, message));
                                     }
 
                                     return Command.SINGLE_SUCCESS;
@@ -40,8 +41,6 @@ public class MessageCommand {
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("msg")
                 .redirect(command));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("whisper")
-                .redirect(command));
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("w")
                 .redirect(command));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("tell")
                 .redirect(command));

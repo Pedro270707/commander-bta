@@ -19,14 +19,15 @@ public class SetBlockCommand {
                 .then(RequiredArgumentBuilder.argument("position", IntegerCoordinatesArgumentType.intCoordinates())
                         .then(RequiredArgumentBuilder.argument("block", BlockArgumentType.block())
                                 .executes(c -> {
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                                     IntegerCoordinates coordinates = c.getArgument("position", IntegerCoordinates.class);
                                     Pair<Block, Integer> pair = c.getArgument("block", Pair.class);
 
-                                    if (!((CommanderCommandSource)c.getSource()).getWorld().isBlockLoaded(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource(), true), coordinates.getZ((CommanderCommandSource)c.getSource()))) {
-                                        ((CommanderCommandSource)c.getSource()).sendMessage("§e" + I18n.getInstance().translateKey("commands.commander.setblock.failure"));
+                                    if (!source.getWorld().isBlockLoaded(coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source))) {
+                                        source.sendMessage("§e" + I18n.getInstance().translateKey("commands.commander.setblock.failure"));
                                     } else {
-                                        ((CommanderCommandSource)c.getSource()).getWorld().setBlockAndMetadataWithNotify(coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource(), true), coordinates.getZ((CommanderCommandSource)c.getSource()), pair.getLeft().id, pair.getRight());
-                                        ((CommanderCommandSource)c.getSource()).sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.setblock.success", coordinates.getX((CommanderCommandSource)c.getSource()), coordinates.getY((CommanderCommandSource)c.getSource(), true), coordinates.getZ((CommanderCommandSource)c.getSource())));
+                                        source.getWorld().setBlockAndMetadataWithNotify(coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source), pair.getLeft().id, pair.getRight());
+                                        source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.setblock.success", coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source)));
                                     }
 
                                     return Command.SINGLE_SUCCESS;
