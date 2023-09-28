@@ -31,6 +31,7 @@ public class CommanderCommandManager {
         GameModeCommand.register(DISPATCHER);
         WeatherCommand.register(DISPATCHER);
         SpawnCommand.register(DISPATCHER);
+        PlaceCommand.register(DISPATCHER);
         // GiveCommand.register(DISPATCHER);
         // HelpCommand.register(DISPATCHER);
         // GenerateCommand.register(DISPATCHER);

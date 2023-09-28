@@ -6,6 +6,7 @@ import net.minecraft.core.net.command.ClientCommandHandler;
 import net.minecraft.core.net.command.ClientPlayerCommandSender;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
+import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.core.world.Dimension;
 import net.minecraft.core.world.World;
@@ -70,7 +71,7 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
             return Vec3d.createVector(this.mc.objectMouseOver.x, this.mc.objectMouseOver.y, this.mc.objectMouseOver.z);
         }
         Vec3d playerCoordinates = this.getCoordinates(true);
-        return Vec3d.createVector(playerCoordinates.xCoord, playerCoordinates.yCoord, playerCoordinates.zCoord);
+        return Vec3d.createVector(MathHelper.floor_double(playerCoordinates.xCoord), MathHelper.floor_double(playerCoordinates.yCoord), MathHelper.floor_double(playerCoordinates.zCoord));
     }
 
     @Override

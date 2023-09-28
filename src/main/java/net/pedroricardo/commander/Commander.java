@@ -22,5 +22,6 @@ public class Commander implements ModInitializer {
     public void onInitialize() {
         LOGGER.info("Commander initialized.");
         CommanderCommandManager.init();
+        CommanderHelper.init();
     }
 }

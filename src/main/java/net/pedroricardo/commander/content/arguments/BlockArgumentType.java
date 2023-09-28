@@ -11,6 +11,7 @@ import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityDispatcher;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.util.collection.Pair;
+import net.pedroricardo.commander.CommanderHelper;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,7 +32,7 @@ public class BlockArgumentType implements ArgumentType<Pair<Block, Integer>> {
         Block block = null;
         for (Block blockInList : Block.blocksList) {
             if (blockInList == null) continue;
-            if (blockInList.getKey().equals(string) || (blockInList.getKey().startsWith("tile.") && blockInList.getKey().substring("tile.".length()).equals(string))) {
+            if (CommanderHelper.matchesKeyString(blockInList.getKey(), string)) {
                 block = blockInList;
             }
         }

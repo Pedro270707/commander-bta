@@ -30,7 +30,7 @@ public class AchievementArgumentType implements ArgumentType<Achievement> {
         final String string = reader.readString();
 
         for (Achievement achievement : AchievementList.achievementList) {
-            if (((StatNameAccessor)achievement).statName().equals(string) || (((StatNameAccessor)achievement).statName().startsWith("achievement.") && ((StatNameAccessor)achievement).statName().substring("achievement.".length()).equals(string))) {
+            if (CommanderHelper.matchesKeyString(((StatNameAccessor)achievement).statName(), string)) {
                 return achievement;
             }
         }

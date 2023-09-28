@@ -5,12 +5,15 @@ import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.fabricmc.loader.impl.launch.knot.Knot;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityDispatcher;
 import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.net.command.Command;
 import net.minecraft.core.net.command.Commands;
 import net.minecraft.core.util.helper.LogPrintStream;
+import net.minecraft.core.util.helper.ReflectionHelper;
+import net.minecraft.core.world.generate.feature.WorldFeature;
 import net.pedroricardo.commander.content.CommanderCommandManager;
 
 import java.awt.event.KeyEvent;
@@ -19,6 +22,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 public class CommanderHelper {
+    public static final Map<String, Class<? extends WorldFeature>> WORLD_FEATURES = new HashMap<>();
+
     private static Collection<Integer> IGNORABLE_KEYS = Arrays.asList(
             KeyEvent.VK_SHIFT,
             KeyEvent.VK_CONTROL,
@@ -128,5 +133,16 @@ public class CommanderHelper {
             }
         }
         return EntityDispatcher.getEntityString(entity);
+    }
+
+    public static void init() {
+        try {
+            for (Class<?> clazz : CommanderReflectionHelper.getAllClasses(className -> className.startsWith("net.minecraft.core.world.generate.feature"))) {
+                if (!WorldFeature.class.isAssignableFrom(clazz)) continue;
+                WORLD_FEATURES.put(clazz.getSimpleName().substring(12), (Class<? extends WorldFeature>) clazz);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

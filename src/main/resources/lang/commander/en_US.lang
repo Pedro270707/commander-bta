@@ -39,6 +39,7 @@ argument_types.commander.time.invalid_unit=Invalid unit
 argument_types.commander.time.tick_count_too_low=Tick count must not be less than %s, found %s
 argument_types.commander.game_mode.invalid_game_mode=Invalid game mode
 argument_types.commander.weather.invalid_weather=Invalid weather
+argument_types.commander.world_feature.invalid_world_feature=Invalid world feature
 commands.commander.time.query=The time is %s
 commands.commander.time.set=Set the time to %s
 commands.commander.achievement.grant.exception_already_has_achievement=Player already has achievement

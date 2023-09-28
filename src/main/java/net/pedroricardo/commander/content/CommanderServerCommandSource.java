@@ -7,6 +7,7 @@ import net.minecraft.core.net.command.ServerCommandHandler;
 import net.minecraft.core.net.command.ServerPlayerCommandSender;
 import net.minecraft.core.net.packet.Packet3Chat;
 import net.minecraft.core.util.helper.AES;
+import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.core.world.World;
 import net.minecraft.server.MinecraftServer;
@@ -65,7 +66,8 @@ public class CommanderServerCommandSource implements CommanderCommandSource {
 
     @Override
     public @NotNull Vec3d getBlockCoordinates() {
-        return this.getCoordinates(true);
+        Vec3d coordinates = this.getCoordinates(true);
+        return Vec3d.createVector(MathHelper.floor_double(coordinates.xCoord), MathHelper.floor_double(coordinates.yCoord), MathHelper.floor_double(coordinates.zCoord));
     }
 
     @Override
