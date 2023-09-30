@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.entity.player.EntityPlayer;
@@ -18,6 +19,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @SuppressWarnings("unchecked")
 public class KillCommand {
+    private static final SimpleCommandExceptionType FAILURE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.kill.exception_failure"));
+
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("kill")
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
@@ -41,7 +44,7 @@ public class KillCommand {
 
                             int entityCount = entities.size();
 
-                            if (entityCount == 0) source.sendMessage("§e" + I18n.getInstance().translateKey("commands.commander.kill.failure"));
+                            if (entityCount == 0) throw FAILURE.create();
                             else if (entityCount == 1) source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.kill.single_entity", CommanderHelper.getEntityName(entities.get(0))));
                             else source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.kill.multiple_entities", entityCount));
 

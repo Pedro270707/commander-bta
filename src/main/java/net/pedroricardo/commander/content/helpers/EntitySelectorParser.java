@@ -13,6 +13,7 @@ import net.minecraft.core.lang.I18n;
 import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.util.phys.Vec3d;
 import net.pedroricardo.commander.Commander;
+import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,9 +55,7 @@ public class EntitySelectorParser {
     private Double deltaZ;
     private final boolean allowSelectors;
 
-    private final BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> NO_SUGGESTIONS = (builder, consumer) -> builder.buildFuture();
-
-    private BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> suggestions = NO_SUGGESTIONS;
+    private BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> suggestions = CommanderHelper.NO_SUGGESTIONS;
 
     public EntitySelectorParser(StringReader reader) {
         this(reader, true);
@@ -116,7 +115,7 @@ public class EntitySelectorParser {
             this.parseOptions();
         }
         if (this.reader.canRead() && this.reader.peek() != ' ') {
-            this.suggestions = NO_SUGGESTIONS;
+            this.suggestions = CommanderHelper.NO_SUGGESTIONS;
         }
     }
 
@@ -164,7 +163,7 @@ public class EntitySelectorParser {
             }
             this.reader.skip();
             this.reader.skipWhitespace();
-            this.suggestions = NO_SUGGESTIONS;
+            this.suggestions = CommanderHelper.NO_SUGGESTIONS;
             modifier.handle(this);
             this.reader.skipWhitespace();
             this.suggestions = this::suggestOptionsNextOrClose;
@@ -181,7 +180,7 @@ public class EntitySelectorParser {
             throw EXPECTED_END_OF_OPTIONS.createWithContext(this.reader);
         }
         this.reader.skip();
-        this.suggestions = NO_SUGGESTIONS;
+        this.suggestions = CommanderHelper.NO_SUGGESTIONS;
     }
 
     public EntitySelector getSelector() {

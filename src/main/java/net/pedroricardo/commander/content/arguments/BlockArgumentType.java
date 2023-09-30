@@ -57,20 +57,13 @@ public class BlockArgumentType implements ArgumentType<Pair<Block, Integer>> {
         throw new CommandSyntaxException(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument(), () -> I18n.getInstance().translateKey("argument_types.commander.block.invalid_block"));
     }
 
+    // Suggest [ and ] later
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         String remaining = builder.getRemainingLowerCase();
         for (Block block : Block.blocksList) {
             if (block == null) continue;
-            if ("tile.".startsWith(remaining) || remaining.startsWith("tile.")) {
-                if (block.getKey().toLowerCase().startsWith(remaining)) {
-                    builder.suggest(block.getKey(), () -> I18n.getInstance().translateKey(block.getLanguageKey(0) + ".name"));
-                }
-            } else {
-                if (block.getKey().startsWith("tile.") && block.getKey().substring("tile.".length()).toLowerCase().startsWith(remaining)) {
-                    builder.suggest(block.getKey().substring("tile.".length()), () -> I18n.getInstance().translateKey(block.getLanguageKey(0) + ".name"));
-                }
-            }
+            CommanderHelper.getStringToSuggest(block.getKey(), remaining).ifPresent(builder::suggest);
         }
         return builder.buildFuture();
     }

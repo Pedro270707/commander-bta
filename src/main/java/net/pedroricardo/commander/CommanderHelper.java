@@ -19,10 +19,14 @@ import net.pedroricardo.commander.content.CommanderCommandManager;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class CommanderHelper {
     public static final Map<String, Class<? extends WorldFeature>> WORLD_FEATURES = new HashMap<>();
+
+    public static final BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> NO_SUGGESTIONS = (builder, consumer) -> builder.buildFuture();
 
     private static Collection<Integer> IGNORABLE_KEYS = Arrays.asList(
             KeyEvent.VK_SHIFT,

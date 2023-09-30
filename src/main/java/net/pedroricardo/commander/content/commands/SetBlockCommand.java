@@ -4,6 +4,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.util.collection.Pair;
@@ -13,6 +14,8 @@ import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 
 @SuppressWarnings("unchecked")
 public class SetBlockCommand {
+    private static final SimpleCommandExceptionType FAILURE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.setblock.exception_failure"));
+
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("setblock")
                 .requires(source -> ((CommanderCommandSource)source).hasAdmin())
@@ -24,7 +27,7 @@ public class SetBlockCommand {
                                     Pair<Block, Integer> pair = c.getArgument("block", Pair.class);
 
                                     if (!source.getWorld().isBlockLoaded(coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source))) {
-                                        source.sendMessage("§e" + I18n.getInstance().translateKey("commands.commander.setblock.failure"));
+                                        throw FAILURE.create();
                                     } else {
                                         source.getWorld().setBlockAndMetadataWithNotify(coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source), pair.getLeft().id, pair.getRight());
                                         source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.setblock.success", coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source)));
