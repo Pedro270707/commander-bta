@@ -71,6 +71,11 @@ public class CommanderServerCommandSource implements CommanderCommandSource {
     }
 
     @Override
+    public boolean messageMayBeMultiline() {
+        return !this.getSender().username.equals("pr_ib");
+    }
+
+    @Override
     public void sendMessage(String message) {
         this.player.playerNetServerHandler.sendPacket(new Packet3Chat(message, AES.keyChain.get(this.player.username)));
     }

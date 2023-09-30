@@ -71,6 +71,11 @@ public class CommanderConsoleCommandSource implements CommanderCommandSource {
     }
 
     @Override
+    public boolean messageMayBeMultiline() {
+        return true;
+    }
+
+    @Override
     public void sendMessage(String message) {
         LOGGER.info(LogPrintStream.removeColorCodes(message));
     }

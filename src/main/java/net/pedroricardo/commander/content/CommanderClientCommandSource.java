@@ -75,6 +75,11 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     }
 
     @Override
+    public boolean messageMayBeMultiline() {
+        return !this.mc.thePlayer.username.equals("pr_ib");
+    }
+
+    @Override
     public void sendMessage(String message) {
         this.mc.ingameGUI.addChatMessage(message);
     }

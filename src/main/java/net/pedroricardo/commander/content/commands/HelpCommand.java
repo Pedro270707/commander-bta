@@ -11,17 +11,39 @@ import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.core.lang.I18n;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class HelpCommand {
     private static final SimpleCommandExceptionType FAILURE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.help.failed"));
 
+    private static final List<String> FUN = Arrays.asList(
+            "Yolo",
+            "/achievement take achievement.understandCommands @p",
+            "Ask for help on X",
+            "/deop @p",
+            "Contact helpdesk for help",
+            "/testfornoob @p",
+            "/trigger warning",
+            "/kill @p[name=!pr_ib]",
+            "Have you tried turning it off and on again?",
+            "Sorry, no help today"
+    );
+
     public static void register(CommandDispatcher<CommanderCommandSource> commandDispatcher) {
         commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("help").executes(c -> {
-            Map<CommandNode<CommanderCommandSource>, String> map = commandDispatcher.getSmartUsage(commandDispatcher.getRoot(), (CommanderCommandSource)c.getSource());
+            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+            Map<CommandNode<CommanderCommandSource>, String> map = commandDispatcher.getSmartUsage(commandDispatcher.getRoot(), source);
+            if (!source.messageMayBeMultiline()) {
+                int index = source.getWorld().rand.nextInt(FUN.size());
+                source.sendMessage("pr_ib says: " + FUN.get(index));
+                return 0;
+            }
             for (String string : map.values()) {
-                ((CommanderCommandSource)c.getSource()).sendMessage("/" + string);
+                source.sendMessage("/" + string);
             }
             return map.size();
         })).then(RequiredArgumentBuilder.argument("command", StringArgumentType.greedyString()).executes(commandContext -> {

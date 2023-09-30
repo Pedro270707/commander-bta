@@ -31,6 +31,8 @@ public interface CommanderCommandSource {
 
     @Nullable Vec3d getBlockCoordinates();
 
+    boolean messageMayBeMultiline();
+
     void sendMessage(String message);
 
     void sendMessageToPlayer(EntityPlayer player, String message);
