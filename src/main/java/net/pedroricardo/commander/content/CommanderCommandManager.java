@@ -32,9 +32,8 @@ public class CommanderCommandManager {
         WeatherCommand.register(DISPATCHER);
         SpawnCommand.register(DISPATCHER);
         PlaceCommand.register(DISPATCHER);
+        HelpCommand.register(DISPATCHER);
         // GiveCommand.register(DISPATCHER);
-        // HelpCommand.register(DISPATCHER);
-        // GenerateCommand.register(DISPATCHER);
         // ChunkCommand.register(DISPATCHER);
 
         registerLegacyCommands();
