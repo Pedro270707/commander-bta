@@ -7,7 +7,6 @@ import net.minecraft.core.lang.I18n;
 import net.pedroricardo.commander.CommanderHelper;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class WorldFeatureParameterTypes {
@@ -33,14 +32,7 @@ public class WorldFeatureParameterTypes {
     }
 
     private static Block parseBlock(StringReader reader, WorldFeatureParser parser) throws CommandSyntaxException {
-        parser.setSuggestions((builder, consumer) -> {
-            String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
-            for (Block block : Block.blocksList) {
-                if (block == null) continue;
-                CommanderHelper.getStringToSuggest(block.getKey(), remaining).ifPresent(builder::suggest);
-            }
-            return builder.buildFuture();
-        });
+        parser.setSuggestions(CommanderHelper.SUGGEST_BLOCKS);
 
         int cursor = reader.getCursor();
         final String string = reader.readString();

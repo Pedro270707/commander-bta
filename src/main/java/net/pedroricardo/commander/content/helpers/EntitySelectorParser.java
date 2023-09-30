@@ -260,12 +260,12 @@ public class EntitySelectorParser {
     }
 
     private CompletableFuture<Suggestions> suggestOpenOptions(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-        suggestionsBuilder.suggest(String.valueOf('['));
+        if (!this.reader.canRead()) suggestionsBuilder.suggest(String.valueOf('['));
         return suggestionsBuilder.buildFuture();
     }
 
     private CompletableFuture<Suggestions> suggestOptionsKeyOrClose(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-        suggestionsBuilder.suggest(String.valueOf(']'));
+        if (!this.reader.canRead()) suggestionsBuilder.suggest(String.valueOf(']'));
         EntitySelectorOptions.suggestNames(this, suggestionsBuilder);
         return suggestionsBuilder.buildFuture();
     }
@@ -276,8 +276,10 @@ public class EntitySelectorParser {
     }
 
     private CompletableFuture<Suggestions> suggestOptionsNextOrClose(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-        suggestionsBuilder.suggest(String.valueOf(','));
-        suggestionsBuilder.suggest(String.valueOf(']'));
+        if (!this.reader.canRead()) {
+            suggestionsBuilder.suggest(String.valueOf(','));
+            suggestionsBuilder.suggest(String.valueOf(']'));
+        }
         return suggestionsBuilder.buildFuture();
     }
 

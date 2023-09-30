@@ -12,10 +12,13 @@ import net.minecraft.core.entity.EntityDispatcher;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.util.collection.Pair;
 import net.pedroricardo.commander.CommanderHelper;
+import net.pedroricardo.commander.content.helpers.BlockArgumentParser;
+import net.pedroricardo.commander.content.helpers.WorldFeatureParser;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 public class BlockArgumentType implements ArgumentType<Pair<Block, Integer>> {
@@ -27,45 +30,26 @@ public class BlockArgumentType implements ArgumentType<Pair<Block, Integer>> {
 
     @Override
     public Pair<Block, Integer> parse(StringReader reader) throws CommandSyntaxException {
-        final String string = reader.readString();
-
-        Block block = null;
-        for (Block blockInList : Block.blocksList) {
-            if (blockInList == null) continue;
-            if (CommanderHelper.matchesKeyString(blockInList.getKey(), string)) {
-                block = blockInList;
-            }
-        }
-        if (reader.canRead() && reader.peek() == '[') {
-            reader.skip();
-            int cursor = reader.getCursor();
-            int metadata = reader.readInt();
-            if (metadata < 0) {
-                reader.setCursor(cursor);
-                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooLow().createWithContext(reader, metadata, 0);
-            } else if (metadata > 255) {
-                reader.setCursor(cursor);
-                throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooHigh().createWithContext(reader, metadata, 255);
-            }
-            if (reader.canRead() && reader.peek() == ']') {
-                reader.skip();
-                return Pair.of(block, metadata);
-            }
-        } else if ((!reader.canRead() || reader.canRead() && reader.peek() == ' ') && block != null) {
-            return Pair.of(block, 0);
-        }
-        throw new CommandSyntaxException(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument(), () -> I18n.getInstance().translateKey("argument_types.commander.block.invalid_block"));
+        BlockArgumentParser parser = new BlockArgumentParser(reader);
+        return parser.parse();
     }
 
-    // Suggest [ and ] later
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        String remaining = builder.getRemainingLowerCase();
-        for (Block block : Block.blocksList) {
-            if (block == null) continue;
-            CommanderHelper.getStringToSuggest(block.getKey(), remaining).ifPresent(builder::suggest);
-        }
-        return builder.buildFuture();
+        StringReader stringReader = new StringReader(builder.getInput());
+        stringReader.setCursor(builder.getStart());
+        BlockArgumentParser parser = new BlockArgumentParser(stringReader);
+        try {
+            parser.parse();
+        } catch (CommandSyntaxException ignored) {}
+        return parser.fillSuggestions(builder, suggestionsBuilder -> {
+            String remaining = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
+            for (Block block : Block.blocksList) {
+                if (block == null) continue;
+                CommanderHelper.getStringToSuggest(block.getKey(), remaining).ifPresent(suggestionsBuilder::suggest);
+            }
+            suggestionsBuilder.buildFuture();
+        });
     }
 
     @Override

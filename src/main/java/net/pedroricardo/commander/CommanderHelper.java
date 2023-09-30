@@ -6,6 +6,7 @@ import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.fabricmc.loader.impl.launch.knot.Knot;
+import net.minecraft.core.block.Block;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityDispatcher;
 import net.minecraft.core.entity.EntityLiving;
@@ -27,6 +28,14 @@ public class CommanderHelper {
     public static final Map<String, Class<? extends WorldFeature>> WORLD_FEATURES = new HashMap<>();
 
     public static final BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> NO_SUGGESTIONS = (builder, consumer) -> builder.buildFuture();
+    public static final BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> SUGGEST_BLOCKS = (builder, consumer) -> {
+        String remaining = builder.getRemaining().toLowerCase(Locale.ROOT);
+        for (Block block : Block.blocksList) {
+            if (block == null) continue;
+            CommanderHelper.getStringToSuggest(block.getKey(), remaining).ifPresent(builder::suggest);
+        }
+        return builder.buildFuture();
+    };
 
     private static Collection<Integer> IGNORABLE_KEYS = Arrays.asList(
             KeyEvent.VK_SHIFT,
