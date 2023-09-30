@@ -7,13 +7,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.core.block.Block;
-import net.minecraft.core.entity.Entity;
-import net.minecraft.core.entity.EntityDispatcher;
-import net.minecraft.core.lang.I18n;
-import net.minecraft.core.util.collection.Pair;
 import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.content.helpers.BlockArgumentParser;
-import net.pedroricardo.commander.content.helpers.WorldFeatureParser;
+import net.pedroricardo.commander.content.helpers.BlockInput;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,15 +17,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
-public class BlockArgumentType implements ArgumentType<Pair<Block, Integer>> {
+public class BlockArgumentType implements ArgumentType<BlockInput> {
     private static final List<String> EXAMPLES = Arrays.asList("tile.stone", "stone", "tile.log[1]");
 
-    public static ArgumentType<Pair<Block, Integer>> block() {
+    public static ArgumentType<BlockInput> block() {
         return new BlockArgumentType();
     }
 
     @Override
-    public Pair<Block, Integer> parse(StringReader reader) throws CommandSyntaxException {
+    public BlockInput parse(StringReader reader) throws CommandSyntaxException {
         BlockArgumentParser parser = new BlockArgumentParser(reader);
         return parser.parse();
     }

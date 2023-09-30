@@ -107,10 +107,6 @@ public class ClearCommand {
         for (Map.Entry<String, Tag<?>> entry : checkedStack.getData().getValue().entrySet()) {
             if (!input.getData().getValue().containsKey(entry.getKey())
             || (input.getData().getValue().get(entry.getKey()).getValue() != entry.getValue().getValue() && !input.getData().getValue().get(entry.getKey()).getValue().equals(entry.getValue().getValue()))) {
-                Commander.LOGGER.info(input.getData().getValue().containsKey(entry.getKey()) + "");
-                if (input.getData().getValue().containsKey(entry.getKey())) {
-                    Commander.LOGGER.info(input.getData().getValue().get(entry.getKey()) + ", " + entry.getValue());
-                }
                 return false;
             }
         }

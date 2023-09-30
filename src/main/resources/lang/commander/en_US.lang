@@ -1,7 +1,7 @@
 argument_types.commander.achievement.invalid_achievement=Invalid achievement ID
 argument_types.commander.entity_summon.invalid_entity=Invalid entity ID
 argument_types.commander.block.invalid_block=Invalid block ID
-argument_types.commander.block.invalid_item=Invalid item ID
+argument_types.commander.item.invalid_item=Invalid item ID
 argument_types.commander.entity.invalid_selector.single_player_only=Selector includes more than one entity, but command only accepts a single player as an argument
 argument_types.commander.entity.invalid_selector.single_entity_only=Selector includes more than one entity, but command only accepts a single entity as an argument
 argument_types.commander.entity.invalid_selector.player_only=Selector includes non-player entities, but command only accepts players as an argument

@@ -5,12 +5,20 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.Tag;
 import net.minecraft.core.block.Block;
+import net.minecraft.core.block.BlockTileEntity;
+import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.util.collection.Pair;
+import net.minecraft.core.world.World;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.*;
+import net.pedroricardo.commander.content.helpers.BlockInput;
 import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
+
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class SetBlockCommand {
@@ -24,12 +32,26 @@ public class SetBlockCommand {
                                 .executes(c -> {
                                     CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                                     IntegerCoordinates coordinates = c.getArgument("position", IntegerCoordinates.class);
-                                    Pair<Block, Integer> pair = c.getArgument("block", Pair.class);
+                                    BlockInput blockInput = c.getArgument("block", BlockInput.class);
+                                    World world = source.getWorld();
 
-                                    if (!source.getWorld().isBlockLoaded(coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source))) {
+                                    int x = coordinates.getX(source);
+                                    int y = coordinates.getY(source, true);
+                                    int z = coordinates.getZ(source);
+
+                                    if (!world.isBlockLoaded(x, y, z)) {
                                         throw FAILURE.create();
                                     } else {
-                                        source.getWorld().setBlockAndMetadataWithNotify(coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source), pair.getLeft().id, pair.getRight());
+                                        world.setBlockAndMetadataWithNotify(x, y, z, blockInput.getBlock().id, blockInput.getMetadata());
+                                        TileEntity tileEntity = source.getWorld().getBlockTileEntity(x, y, z);
+                                        if (tileEntity != null) {
+                                            CompoundTag tag = new CompoundTag();
+                                            tileEntity.writeToNBT(tag);
+                                            for (Map.Entry<String, Tag<?>> entry : blockInput.getTag().getValue().entrySet()) {
+                                                tag.put(entry.getKey(), entry.getValue());
+                                            }
+                                            tileEntity.readFromNBT(tag);
+                                        }
                                         source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.setblock.success", coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source)));
                                     }
 
