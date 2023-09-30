@@ -33,8 +33,8 @@ public class CommanderCommandManager {
         SpawnCommand.register(DISPATCHER);
         PlaceCommand.register(DISPATCHER);
         HelpCommand.register(DISPATCHER);
-        // GiveCommand.register(DISPATCHER);
-        // ChunkCommand.register(DISPATCHER);
+        ChunkCommand.register(DISPATCHER);
+        GiveCommand.register(DISPATCHER);
 
         registerLegacyCommands();
 
@@ -67,6 +67,10 @@ public class CommanderCommandManager {
         for (Command command : Commands.commands) {
             if (DISPATCHER.findNode(Collections.singletonList(command.getName())) == null) {
                 DISPATCHER.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal(command.getName())
+                        .executes(c -> {
+                            Commands.getCommand(command.getName()).execute(((CommanderCommandSource) c.getSource()).getCommandHandler(), ((CommanderCommandSource) c.getSource()).getCommandSender(), new String[]{});
+                            return com.mojang.brigadier.Command.SINGLE_SUCCESS;
+                        })
                         .then(RequiredArgumentBuilder.argument("command", StringArgumentType.greedyString())
                                 .executes(c -> {
                                     Commands.getCommand(command.getName()).execute(((CommanderCommandSource) c.getSource()).getCommandHandler(), ((CommanderCommandSource) c.getSource()).getCommandSender(), c.getArgument("command", String.class).split(" "));

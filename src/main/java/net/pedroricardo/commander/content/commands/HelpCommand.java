@@ -18,7 +18,7 @@ import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class HelpCommand {
-    private static final SimpleCommandExceptionType FAILURE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.help.failed"));
+    private static final SimpleCommandExceptionType FAILURE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.help.exception_failure"));
 
     private static final List<String> FUN = Arrays.asList(
             "Yolo",

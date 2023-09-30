@@ -10,6 +10,7 @@ import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.phys.Vec3d;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
+import net.pedroricardo.commander.content.helpers.ChunkCoordinates;
 import net.pedroricardo.commander.content.helpers.IntegerCoordinate;
 import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 
@@ -18,15 +19,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class IntegerCoordinatesArgumentType implements ArgumentType<IntegerCoordinates> {
-    private static final List<String> EXAMPLES = Arrays.asList("~ ~ ~", "0 0 0", "~ ~60 ~", "~-20 ~10 -25");
+public class ChunkCoordinatesArgumentType implements ArgumentType<ChunkCoordinates> {
+    private static final List<String> EXAMPLES = Arrays.asList("~ ~", "0 0 0", "~60 ~", "~-20 -25");
 
-    public static IntegerCoordinatesArgumentType intCoordinates() {
-        return new IntegerCoordinatesArgumentType();
+    public static ChunkCoordinatesArgumentType chunkCoordinates() {
+        return new ChunkCoordinatesArgumentType();
     }
 
     @Override
-    public IntegerCoordinates parse(StringReader reader) throws CommandSyntaxException {
+    public ChunkCoordinates parse(StringReader reader) throws CommandSyntaxException {
         int i = reader.getCursor();
         IntegerCoordinate x = IntegerCoordinate.parse(reader);
         if (!reader.canRead() || reader.peek() != ' ') {
@@ -42,22 +43,8 @@ public class IntegerCoordinatesArgumentType implements ArgumentType<IntegerCoord
             }
         }
         reader.skip();
-        IntegerCoordinate y = IntegerCoordinate.parse(reader);
-        if (!reader.canRead() || reader.peek() != ' ') {
-            if (reader.peek() == 'f' || reader.peek() == 'd') {
-                reader.skip();
-                if (!reader.canRead() || reader.peek() != ' ') {
-                    reader.setCursor(i);
-                    throw CommanderExceptions.incomplete().createWithContext(reader);
-                }
-            } else {
-                reader.setCursor(i);
-                throw CommanderExceptions.incomplete().createWithContext(reader);
-            }
-        }
-        reader.skip();
         IntegerCoordinate z = IntegerCoordinate.parse(reader);
-        return new IntegerCoordinates(x, y, z);
+        return new ChunkCoordinates(x, z);
     }
 
     @Override
@@ -68,13 +55,12 @@ public class IntegerCoordinatesArgumentType implements ArgumentType<IntegerCoord
         if (coordinates == null) return builder.buildFuture();
 
         int[] roundedCoordinates = new int[]{
-                MathHelper.floor_double(coordinates.xCoord),
-                MathHelper.floor_double(coordinates.yCoord),
-                MathHelper.floor_double(coordinates.zCoord)
+                MathHelper.floor_double(coordinates.xCoord / 16.0),
+                MathHelper.floor_double(coordinates.zCoord / 16.0)
         };
 
         if (string.isEmpty()) {
-            String allCoordinates = roundedCoordinates[0] + " " + roundedCoordinates[1] + " " + roundedCoordinates[2];
+            String allCoordinates = roundedCoordinates[0] + " " + roundedCoordinates[1];
             try {
                 this.parse(new StringReader(allCoordinates));
                 builder.suggest(String.valueOf(roundedCoordinates[0]));
@@ -84,22 +70,13 @@ public class IntegerCoordinatesArgumentType implements ArgumentType<IntegerCoord
         } else {
             String[] strings = string.split(" ");
             String allCoordinates;
-            switch (strings.length) {
-                case 1:
-                    allCoordinates = strings[0] + " " + roundedCoordinates[1] + " " + roundedCoordinates[2];
-                    try {
-                        this.parse(new StringReader(allCoordinates));
-                        builder.suggest(strings[0] + " " + roundedCoordinates[1]);
-                        builder.suggest(allCoordinates);
-                    } catch (CommandSyntaxException ignored) {}
-                    break;
-                case 2:
-                    allCoordinates = strings[0] + " " + strings[1] + " " + roundedCoordinates[2];
-                    try {
-                        this.parse(new StringReader(allCoordinates));
-                        builder.suggest(allCoordinates);
-                    } catch (CommandSyntaxException ignored) {}
-                    break;
+            if (strings.length == 1) {
+                allCoordinates = strings[0] + " " + roundedCoordinates[1];
+                try {
+                    this.parse(new StringReader(allCoordinates));
+                    builder.suggest(strings[0] + " " + roundedCoordinates[1]);
+                    builder.suggest(allCoordinates);
+                } catch (CommandSyntaxException ignored) {}
             }
         }
         return builder.buildFuture();

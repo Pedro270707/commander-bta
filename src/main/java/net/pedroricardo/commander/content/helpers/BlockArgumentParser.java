@@ -2,6 +2,7 @@ package net.pedroricardo.commander.content.helpers;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.core.block.Block;
@@ -9,12 +10,13 @@ import net.minecraft.core.lang.I18n;
 import net.minecraft.core.util.collection.Pair;
 import net.pedroricardo.commander.CommanderHelper;
 
-import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class BlockArgumentParser {
+    private static final SimpleCommandExceptionType INVALID_BLOCK = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.block.invalid_block"));
+
     private final StringReader reader;
     private int startPosition = 0;
 
@@ -43,7 +45,7 @@ public class BlockArgumentParser {
             }
         }
 
-        if (this.reader.canRead() && this.reader.peek() == '[') {
+        if (this.reader.canRead() && this.reader.peek() == '[' && block != null) {
             this.suggestions = CommanderHelper.NO_SUGGESTIONS;
             this.reader.skip();
             this.reader.skipWhitespace();
@@ -67,7 +69,8 @@ public class BlockArgumentParser {
             this.suggestions = this::suggestOpenMetadata;
             return Pair.of(block, 0);
         }
-        throw new CommandSyntaxException(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument(), () -> I18n.getInstance().translateKey("argument_types.commander.block.invalid_block"));
+        this.reader.setCursor(this.startPosition);
+        throw INVALID_BLOCK.createWithContext(this.reader);
     }
 
     private CompletableFuture<Suggestions> suggestOpenMetadata(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {

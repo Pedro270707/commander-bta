@@ -129,7 +129,7 @@ public class GuiChatSuggestions extends Gui {
 
     private List<String> getCommandUsage(int cursor) {
         List<String> commandUsage = new ArrayList<>();
-        if (this.parseResults == null || this.parseResults.getContext().getNodes().isEmpty()) return commandUsage;
+        if (this.parseResults == null || this.parseResults.getContext().getRootNode() == null) return commandUsage;
         for (Map.Entry<CommandNode<CommanderCommandSource>, String> entry : CommanderCommandManager.getDispatcher().getSmartUsage(this.parseResults.getContext().findSuggestionContext(cursor).parent, this.commandSource).entrySet()) {
             if (entry.getKey() instanceof LiteralCommandNode) continue;
             commandUsage.add(entry.getValue());
