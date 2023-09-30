@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 // TODO: ChunkCoordinateArgumentType
 // TODO: ItemStackArgumentType
-// TODO: WorldFeatureArgumentType
 
 public class Commander implements ModInitializer {
     public static final String MOD_ID = "commander";

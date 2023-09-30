@@ -12,8 +12,10 @@ import net.minecraft.core.world.LevelListener;
 import net.minecraft.core.world.World;
 import net.minecraft.core.world.generate.feature.WorldFeature;
 import net.pedroricardo.commander.content.CommanderCommandSource;
+import net.pedroricardo.commander.content.arguments.IntegerCoordinatesArgumentType;
 import net.pedroricardo.commander.content.arguments.WorldFeatureArgumentType;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
+import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 
 @SuppressWarnings("unchecked")
 public class PlaceCommand {
@@ -22,25 +24,30 @@ public class PlaceCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         CommandNode<Object> command = dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("place")
                 .then((RequiredArgumentBuilder) RequiredArgumentBuilder.argument("feature", WorldFeatureArgumentType.worldFeature())
-                    .executes(c -> {
-                        CommanderCommandSource source = (CommanderCommandSource) c.getSource();
-                        WorldFeature feature = c.getArgument("feature", WorldFeature.class);
-                        Vec3d coordinates = ((CommanderCommandSource) c.getSource()).getBlockCoordinates();
-                        World world = source.getWorld();
+                        .then((RequiredArgumentBuilder) RequiredArgumentBuilder.argument("position", IntegerCoordinatesArgumentType.intCoordinates())
+                                .executes(c -> {
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    WorldFeature feature = c.getArgument("feature", WorldFeature.class);
+                                    IntegerCoordinates coordinates = c.getArgument("position", IntegerCoordinates.class);
+                                    World world = source.getWorld();
 
-                        if (coordinates == null) throw CommanderExceptions.notInWorld().create();
+                                    if (coordinates == null) throw CommanderExceptions.notInWorld().create();
 
-                        boolean success = feature.generate(world, source.getWorld().rand, (int)coordinates.xCoord, (int)coordinates.yCoord, (int)coordinates.zCoord);
-                        if (success) {
-                            for (LevelListener listener : world.listeners) {
-                                listener.allChanged();
-                            }
-                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.place.success", feature.getClass().getSimpleName().substring(12)));
-                        } else {
-                            throw FAILURE.create();
-                        }
-                        return Command.SINGLE_SUCCESS;
-                    })));
+                                    int x = coordinates.getX(source);
+                                    int y = coordinates.getY(source, true);
+                                    int z = coordinates.getZ(source);
+
+                                    boolean success = feature.generate(world, source.getWorld().rand, x, y, z);
+                                    if (success) {
+                                        for (LevelListener listener : world.listeners) {
+                                            listener.allChanged();
+                                        }
+                                        source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.place.success", feature.getClass().getSimpleName().substring(12), x, y, z));
+                                    } else {
+                                        throw FAILURE.create();
+                                    }
+                                    return Command.SINGLE_SUCCESS;
+                                }))));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("generate")
                 .redirect(command));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("gen")
