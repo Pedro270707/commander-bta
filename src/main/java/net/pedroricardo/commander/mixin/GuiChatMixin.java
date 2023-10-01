@@ -5,19 +5,16 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
-import com.mojang.brigadier.tree.CommandNode;
-import com.mojang.brigadier.tree.LiteralCommandNode;
+import org.objectweb.asm.Opcodes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.text.TextFieldEditor;
 import net.minecraft.client.render.FontRenderer;
-import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.GuiHelper;
-import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
+import net.pedroricardo.commander.duck.EnvironmentWithManager;
 import net.pedroricardo.commander.gui.GuiChatSuggestions;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,12 +27,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @Mixin(value = GuiChat.class, remap = false)
-public class ShowCommandSuggestionsMixin {
+public class GuiChatMixin {
     @Mixin(value = GuiScreen.class, remap = false)
     private interface GuiScreenAccessor {
         @Accessor("fontRenderer")
@@ -98,8 +93,36 @@ public class ShowCommandSuggestionsMixin {
 
     @Inject(method = "keyTyped", at = @At("RETURN"))
     private void keyTyped(char c, int key, int mouseX, int mouseY, CallbackInfo ci) {
+        // 200: Up Arrow
+        // 208: Down Arrow
         this.suggestionsGui.keyTyped(c, key);
     }
+
+    @Inject(method = "keyTyped", at = @At(value = "JUMP", ordinal = 1), cancellable = true)
+    private void upArrowPressed(char c, int key, int mouseX, int mouseY, CallbackInfo ci) {
+        if (this.suggestionsGui.getCommandIndex() != -1) {
+            this.suggestionsGui.cycleThroughSuggestions(-1);
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "keyTyped", at = @At(value = "JUMP", ordinal = 5), cancellable = true)
+    private void downArrowPressed(char c, int key, int mouseX, int mouseY, CallbackInfo ci) {
+        if (this.suggestionsGui.getCommandIndex() != -1) {
+            this.suggestionsGui.cycleThroughSuggestions();
+            ci.cancel();
+        }
+    }
+
+    /*
+    @Inject(method = "keyTyped", at = @At(value = "JUMP", ordinal = 10), cancellable = true)
+    private void downArrowPressed(char c, int key, int mouseX, int mouseY, CallbackInfo ci) {
+        if (this.suggestionsGui.getCommandIndex() != -1) {
+            this.suggestionsGui.cycleThroughSuggestions();
+            ci.cancel();
+        }
+    }
+    */
 
     @Inject(method = "updateScreen", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void updateScreen(CallbackInfo ci, int dWheel) {
@@ -123,7 +146,7 @@ public class ShowCommandSuggestionsMixin {
         boolean isCommand = stringReader.canRead() && stringReader.peek() == '/';
         if (isCommand) {
             stringReader.skip();
-            CommandDispatcher<CommanderCommandSource> dispatcher = CommanderCommandManager.getDispatcher();
+            CommandDispatcher<CommanderCommandSource> dispatcher = ((EnvironmentWithManager)((GuiScreenAccessor)((GuiChat)(Object)this)).mc()).getManager().getDispatcher();
             if (this.parseResults == null) {
                 this.parseResults = dispatcher.parse(stringReader, this.suggestionsGui.getCommandSource());
             }

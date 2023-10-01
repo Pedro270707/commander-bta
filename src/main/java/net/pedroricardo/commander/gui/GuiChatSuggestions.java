@@ -18,6 +18,7 @@ import net.pedroricardo.commander.*;
 import net.pedroricardo.commander.content.CommanderClientCommandSource;
 import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
+import net.pedroricardo.commander.duck.EnvironmentWithManager;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 
@@ -60,7 +61,7 @@ public class GuiChatSuggestions extends Gui {
     public void drawScreen() {
         CommandSyntaxException parseException;
         if (!this.suggestions.isEmpty()) {
-            this.renderSuggestions(this.fontRenderer, this.tablessMessage, this.tablessCursor);
+            this.renderSuggestions(this.fontRenderer, this.tablessMessage);
         } else if (this.parseResults != null) {
             if (!this.parseResults.getExceptions().isEmpty()) {
                 int i = 0;
@@ -79,7 +80,7 @@ public class GuiChatSuggestions extends Gui {
         }
     }
 
-    private void renderSuggestions(FontRenderer fontRenderer, String message, int cursor) {
+    private void renderSuggestions(FontRenderer fontRenderer, String message) {
         int height = this.mc.resolution.scaledHeight;
         int mouseX = GuiHelper.getScaledMouseX(this.mc);
         int mouseY = GuiHelper.getScaledMouseY(this.mc) - 1;
@@ -130,7 +131,7 @@ public class GuiChatSuggestions extends Gui {
     private List<String> getCommandUsage(int cursor) {
         List<String> commandUsage = new ArrayList<>();
         if (this.parseResults == null || this.parseResults.getContext().getRootNode() == null || this.parseResults.getContext().getRange().getStart() > cursor) return commandUsage;
-        for (Map.Entry<CommandNode<CommanderCommandSource>, String> entry : CommanderCommandManager.getDispatcher().getSmartUsage(this.parseResults.getContext().findSuggestionContext(cursor).parent, this.commandSource).entrySet()) {
+        for (Map.Entry<CommandNode<CommanderCommandSource>, String> entry : ((EnvironmentWithManager)this.mc).getManager().getDispatcher().getSmartUsage(this.parseResults.getContext().findSuggestionContext(cursor).parent, this.commandSource).entrySet()) {
             if (entry.getKey() instanceof LiteralCommandNode) continue;
             commandUsage.add(entry.getValue());
         }
@@ -138,8 +139,13 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public void keyTyped(char c, int key) {
+        int mouseX = GuiHelper.getScaledMouseX(this.mc);
+        int mouseY = GuiHelper.getScaledMouseY(this.mc) - 1;
+
         if (key == 15) {
-            if (Keyboard.isKeyDown(42)) {
+            if (this.commandIndex == -1 && this.isHoveringOverSuggestions(mouseX, mouseY)) {
+                this.cycleToSuggestion(this.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY).get());
+            } else if (Keyboard.isKeyDown(42)) {
                 this.cycleThroughSuggestions(-1);
             } else {
                 this.cycleThroughSuggestions();
@@ -160,7 +166,7 @@ public class GuiChatSuggestions extends Gui {
         boolean bl = stringReader.canRead() && stringReader.peek() == '/';
         if (bl) {
             stringReader.skip();
-            CommandDispatcher<CommanderCommandSource> dispatcher = CommanderCommandManager.getDispatcher();
+            CommandDispatcher<CommanderCommandSource> dispatcher = ((EnvironmentWithManager)this.mc).getManager().getDispatcher();
             if (this.parseResults == null) {
                 this.parseResults = dispatcher.parse(stringReader, this.commandSource);
             }
@@ -180,7 +186,6 @@ public class GuiChatSuggestions extends Gui {
         if (this.pendingSuggestions != null && this.pendingSuggestions.isDone()) {
             Suggestions suggestions = this.pendingSuggestions.join();
             this.suggestions.addAll(suggestions.getList());
-            this.suggestions.addAll(CommanderHelper.getLegacySuggestionList(this.tablessMessage, this.tablessCursor));
         }
     }
 

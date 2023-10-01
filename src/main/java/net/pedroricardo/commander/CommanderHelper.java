@@ -76,21 +76,6 @@ public class CommanderHelper {
             KeyEvent.VK_STOP
     );
 
-    public static List<Suggestion> getLegacySuggestionList(String message, int cursor) {
-        List<Suggestion> list = new ArrayList<>();
-        String textBeforeCursor = message.substring(0, cursor);
-        if (textBeforeCursor.contains("/")) {
-            for (Command command : Commands.commands) {
-                List<String> path = new ArrayList<>();
-                path.add(command.getName());
-                if (CommanderCommandManager.getDispatcher().findNode(path) == null && command.getName().startsWith(textBeforeCursor.substring(1)) && !command.getName().equals(textBeforeCursor.substring(1))) {
-                    list.add(new Suggestion(new StringRange(1, 1 + command.getName().length()), command.getName()));
-                }
-            }
-        }
-        return list;
-    }
-
     public static boolean isIgnorableKey(int key) {
         return IGNORABLE_KEYS.contains(key);
     }

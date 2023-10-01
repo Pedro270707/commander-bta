@@ -6,6 +6,7 @@ import net.minecraft.client.entity.player.EntityPlayerSP;
 import net.minecraft.core.net.command.TextFormatting;
 import net.pedroricardo.commander.content.CommanderClientCommandSource;
 import net.pedroricardo.commander.content.CommanderCommandManager;
+import net.pedroricardo.commander.duck.EnvironmentWithManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
@@ -26,7 +27,7 @@ public class PreferCommanderCommandPlayerSPMixin {
         String command = s.substring(1);
         CommanderClientCommandSource clientCommandSource = new CommanderClientCommandSource(((EntityPlayerSPAccessor)((EntityPlayerSP)(Object)this)).mc());
         try {
-            CommanderCommandManager.execute(command, clientCommandSource);
+            ((EnvironmentWithManager)((EntityPlayerSPAccessor)((EntityPlayerSP)(Object)this)).mc()).getManager().execute(command, clientCommandSource);
         } catch (CommandSyntaxException e) {
             ((EntityPlayerSPAccessor)((EntityPlayerSP)(Object)this)).mc().thePlayer.sender.sendMessage(TextFormatting.RED + e.getMessage());
         }

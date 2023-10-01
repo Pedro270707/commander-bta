@@ -1,5 +1,6 @@
 package net.pedroricardo.commander;
 
+import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.pedroricardo.commander.content.*;
 import org.slf4j.Logger;
@@ -17,7 +18,6 @@ public class Commander implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("Commander initialized.");
-        CommanderCommandManager.init();
         CommanderHelper.init();
     }
 }

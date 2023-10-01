@@ -15,9 +15,15 @@ import java.util.Collections;
 
 @SuppressWarnings("unchecked")
 public class CommanderCommandManager {
-    private static final CommandDispatcher<CommanderCommandSource> DISPATCHER = new CommandDispatcher<>();
+    private final boolean isServer;
 
-    static {
+    public CommanderCommandManager(boolean isServer) {
+        this.isServer = isServer;
+    }
+
+    private final CommandDispatcher<CommanderCommandSource> DISPATCHER = new CommandDispatcher<>();
+
+    public void init() {
         AchievementCommand.register(DISPATCHER);
         ClearCommand.register(DISPATCHER);
         KillCommand.register(DISPATCHER);
@@ -36,17 +42,17 @@ public class CommanderCommandManager {
         ChunkCommand.register(DISPATCHER);
         GiveCommand.register(DISPATCHER);
 
-        registerLegacyCommands();
+        this.registerLegacyCommands();
 
 //        TestCommand.register(DISPATCHER);
     }
 
-    public static void execute(String s, CommanderCommandSource commandSource) throws CommandSyntaxException {
-        DISPATCHER.execute(s, commandSource);
+    public void execute(String s, CommanderCommandSource commandSource) throws CommandSyntaxException {
+        this.DISPATCHER.execute(s, commandSource);
     }
 
-    public static CommandDispatcher<CommanderCommandSource> getDispatcher() {
-        return DISPATCHER;
+    public CommandDispatcher<CommanderCommandSource> getDispatcher() {
+        return this.DISPATCHER;
     }
 
     @Nullable
@@ -63,10 +69,10 @@ public class CommanderCommandManager {
         return CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parseResults.getReader());
     }
 
-    private static void registerLegacyCommands() {
+    private void registerLegacyCommands() {
         for (Command command : Commands.commands) {
-            if (DISPATCHER.findNode(Collections.singletonList(command.getName())) == null) {
-                DISPATCHER.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal(command.getName())
+            if (this.DISPATCHER.findNode(Collections.singletonList(command.getName())) == null) {
+                this.DISPATCHER.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal(command.getName())
                         .executes(c -> {
                             Commands.getCommand(command.getName()).execute(((CommanderCommandSource) c.getSource()).getCommandHandler(), ((CommanderCommandSource) c.getSource()).getCommandSender(), new String[]{});
                             return com.mojang.brigadier.Command.SINGLE_SUCCESS;
@@ -78,8 +84,5 @@ public class CommanderCommandManager {
                                 })));
             }
         }
-    }
-
-    public static void init() {
     }
 }
