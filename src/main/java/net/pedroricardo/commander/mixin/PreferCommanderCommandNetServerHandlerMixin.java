@@ -31,7 +31,7 @@ public class PreferCommanderCommandNetServerHandlerMixin {
     private void handleSlashCommand(String s, CallbackInfo ci) {
         CommanderServerCommandSource serverCommandSource = new CommanderServerCommandSource(((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).mcServer(), ((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity());
         try {
-            ((EnvironmentWithManager)(((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).mcServer())).getManager().execute(s, serverCommandSource);
+            ((EnvironmentWithManager)(((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).mcServer())).getManager().execute(s.substring(1), serverCommandSource);
         } catch (CommandSyntaxException e) {
             ((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity().playerNetServerHandler.sendPacket(new Packet3Chat(TextFormatting.RED + e.getMessage(), AES.keyChain.get(((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity().username)));
         }

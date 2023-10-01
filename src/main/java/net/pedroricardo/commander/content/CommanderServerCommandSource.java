@@ -54,7 +54,7 @@ public class CommanderServerCommandSource implements CommanderCommandSource {
 
     @Override
     public boolean hasAdmin() {
-        return false;
+        return this.server.configManager.isOp(this.getSender().username);
     }
 
     @Override

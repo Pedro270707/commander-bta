@@ -5,14 +5,16 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "ClientManagerMixin",
+    "GuiChatMixin",
+    "GuiChatMixin$GuiScreenAccessor",
+    "GuiChatMixin$TextFieldEditorAccessor",
+    "PreferCommanderCommandConsoleMixin",
     "PreferCommanderCommandNetServerHandlerMixin",
     "PreferCommanderCommandNetServerHandlerMixin$NetServerHandlerAccessor",
     "PreferCommanderCommandPlayerSPMixin",
     "PreferCommanderCommandPlayerSPMixin$EntityPlayerSPAccessor",
+    "ServerFromWorldAccessor",
     "ServerManagerMixin",
-    "GuiChatMixin",
-    "GuiChatMixin$GuiScreenAccessor",
-    "GuiChatMixin$TextFieldEditorAccessor",
     "StatNameAccessor"
   ],
   "client": [

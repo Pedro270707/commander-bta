@@ -9,6 +9,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.lang.I18n;
+import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.util.helper.LogPrintStream;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
@@ -32,8 +33,8 @@ public class MessageCommand {
                                     List<? extends Entity> players = entitySelector.get(source);
 
                                     for (Entity player : players) {
-                                        source.sendMessage("§8§o" + I18n.getInstance().translateKeyAndFormat("commands.commander.message.outgoing", LogPrintStream.removeColorCodes(((EntityPlayer)player).getDisplayName()), message));
-                                        source.sendMessageToPlayer((EntityPlayer)player, "§8§o" + I18n.getInstance().translateKeyAndFormat("commands.commander.message.incoming", senderName, message));
+                                        source.sendMessage(TextFormatting.LIGHT_GRAY.toString() + TextFormatting.ITALIC.toString() + I18n.getInstance().translateKeyAndFormat("commands.commander.message.outgoing", LogPrintStream.removeColorCodes(((EntityPlayer)player).getDisplayName()), message));
+                                        source.sendMessageToPlayer((EntityPlayer)player, TextFormatting.LIGHT_GRAY.toString() + TextFormatting.ITALIC.toString() + I18n.getInstance().translateKeyAndFormat("commands.commander.message.incoming", senderName, message));
                                     }
 
                                     return Command.SINGLE_SUCCESS;

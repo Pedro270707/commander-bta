@@ -6,6 +6,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.suggestion.Suggestion;
+import net.minecraft.core.net.command.TextFormatting;
 import org.objectweb.asm.Opcodes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -56,11 +57,11 @@ public class GuiChatMixin {
     @Inject(method = "initGui", at = @At("TAIL"))
     private void initGui(CallbackInfo ci) {
         this.suggestionsGui = new GuiChatSuggestions(((GuiScreenAccessor)((GuiChat)(Object)this)).mc(), ((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor(), (GuiChat)(Object)this);
-        this.ARGUMENT_STYLES.add("§3");
-        this.ARGUMENT_STYLES.add("§4");
-        this.ARGUMENT_STYLES.add("§5");
-        this.ARGUMENT_STYLES.add("§6");
-        this.ARGUMENT_STYLES.add("§1");
+        this.ARGUMENT_STYLES.add(TextFormatting.LIGHT_BLUE.toString());
+        this.ARGUMENT_STYLES.add(TextFormatting.YELLOW.toString());
+        this.ARGUMENT_STYLES.add(TextFormatting.LIME.toString());
+        this.ARGUMENT_STYLES.add(TextFormatting.PINK.toString());
+        this.ARGUMENT_STYLES.add(TextFormatting.ORANGE.toString());
     }
 
     @Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiChat;drawString(Lnet/minecraft/client/render/FontRenderer;Ljava/lang/String;III)V", ordinal = 0, shift = At.Shift.BEFORE))
@@ -81,7 +82,7 @@ public class GuiChatMixin {
 
             if (suggestionToRender.getText().startsWith(((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor().getText().substring(suggestionToRender.getRange().getStart()))) {
                 int leftMargin = 3 + ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().getStringWidth(this.suggestionsGui.getMessage().substring(0, suggestionToRender.getRange().getStart()));
-                ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().drawStringWithShadow("§8" + suggestionToRender.getText(), leftMargin + 1, ((GuiChat) (Object) this).height - 12, 0xE0E0E0);
+                ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().drawStringWithShadow(TextFormatting.LIGHT_GRAY + suggestionToRender.getText(), leftMargin + 1, ((GuiChat) (Object) this).height - 12, 0xE0E0E0);
             }
         }
     }
@@ -146,7 +147,7 @@ public class GuiChatMixin {
         boolean isCommand = stringReader.canRead() && stringReader.peek() == '/';
         if (isCommand) {
             stringReader.skip();
-            CommandDispatcher<CommanderCommandSource> dispatcher = ((EnvironmentWithManager)((GuiScreenAccessor)((GuiChat)(Object)this)).mc()).getManager().getDispatcher();
+            CommandDispatcher<CommanderCommandSource> dispatcher = this.suggestionsGui.getManager().getDispatcher();
             if (this.parseResults == null) {
                 this.parseResults = dispatcher.parse(stringReader, this.suggestionsGui.getCommandSource());
             }
@@ -166,17 +167,17 @@ public class GuiChatMixin {
                 if ((l = Math.max(parsedArgument.getRange().getStart() - distanceFromCursorToTextStart, 0)) >= text.length()) break;
                 int m = Math.min(parsedArgument.getRange().getEnd() - distanceFromCursorToTextStart, text.length());
                 if (m <= 0) continue;
-                stringToDrawBuilder.append("§7").append(text, j, l);
+                stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, j, l);
                 stringToDrawBuilder.append(ARGUMENT_STYLES.get(k)).append(text, l, m);
                 j = m;
             }
             if (this.parseResults.getReader().canRead() && (n = Math.max(this.parseResults.getReader().getCursor() - distanceFromCursorToTextStart, 0)) < text.length()) {
                 int o = Math.min(n + this.parseResults.getReader().getRemainingLength(), text.length());
-                stringToDrawBuilder.append("§7").append(text, j, n);
-                stringToDrawBuilder.append("§e").append(text, n, o);
+                stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, j, n);
+                stringToDrawBuilder.append(TextFormatting.RED).append(text, n, o);
                 j = o;
             }
-            stringToDrawBuilder.append("§7").append(text.substring(j));
+            stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.substring(j));
             instance.drawString(fontRenderer, stringToDrawBuilder.toString(), x, y, argb);
         } else {
             instance.drawString(fontRenderer, text, x, y, argb);

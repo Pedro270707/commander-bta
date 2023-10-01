@@ -14,6 +14,7 @@ import net.pedroricardo.commander.content.helpers.ChunkCoordinates;
 public class ChunkCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("chunk")
+                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .then((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("reset")
                         .then(RequiredArgumentBuilder.argument("position", ChunkCoordinatesArgumentType.chunkCoordinates())
                                 .executes(c -> {

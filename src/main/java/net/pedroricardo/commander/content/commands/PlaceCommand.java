@@ -23,6 +23,7 @@ public class PlaceCommand {
 
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         CommandNode<Object> command = dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("place")
+                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .then((RequiredArgumentBuilder) RequiredArgumentBuilder.argument("feature", WorldFeatureArgumentType.worldFeature())
                         .then((RequiredArgumentBuilder) RequiredArgumentBuilder.argument("position", IntegerCoordinatesArgumentType.intCoordinates())
                                 .executes(c -> {

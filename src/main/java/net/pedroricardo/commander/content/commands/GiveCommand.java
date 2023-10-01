@@ -21,6 +21,7 @@ import java.util.List;
 public class GiveCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("give")
+                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.players())
                         .then(RequiredArgumentBuilder.argument("item", ItemStackArgumentType.itemStack())
                                 .executes(c -> {
