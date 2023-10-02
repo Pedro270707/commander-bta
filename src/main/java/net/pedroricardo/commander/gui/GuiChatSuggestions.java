@@ -15,11 +15,13 @@ import net.minecraft.client.gui.GuiTooltip;
 import net.minecraft.client.gui.text.TextFieldEditor;
 import net.minecraft.client.render.FontRenderer;
 import net.minecraft.core.net.command.TextFormatting;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.WorldServer;
 import net.pedroricardo.commander.*;
 import net.pedroricardo.commander.content.CommanderClientCommandSource;
 import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
+import net.pedroricardo.commander.content.CommanderServerCommandSource;
 import net.pedroricardo.commander.duck.EnvironmentWithManager;
 import net.pedroricardo.commander.mixin.ServerFromWorldAccessor;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +40,7 @@ public class GuiChatSuggestions extends Gui {
     private final GuiChat chat;
     private final Minecraft mc;
     private final FontRenderer fontRenderer;
-    private final CommanderClientCommandSource commandSource;
+    private final CommanderCommandSource commandSource;
     @Nullable
     private ParseResults<CommanderCommandSource> parseResults;
     @Nullable
@@ -53,7 +55,7 @@ public class GuiChatSuggestions extends Gui {
     public GuiChatSuggestions(Minecraft mc, TextFieldEditor textFieldEditor, GuiChat chat) {
         this.mc = mc;
         this.fontRenderer = this.mc.fontRenderer;
-        this.commandSource = new CommanderClientCommandSource(this.mc);
+        this.commandSource = this.getNewCommandSource();
         this.editor = textFieldEditor;
         this.chat = chat;
         this.tablessMessage = this.chat.getText();
@@ -66,6 +68,14 @@ public class GuiChatSuggestions extends Gui {
             return ((EnvironmentWithManager)((ServerFromWorldAccessor)((WorldServer)this.mc.theWorld)).mcServer()).getManager();
         }
         return ((EnvironmentWithManager)this.mc).getManager();
+    }
+
+    private CommanderCommandSource getNewCommandSource() {
+        if (this.mc.theWorld instanceof WorldServer) {
+            MinecraftServer server = ((ServerFromWorldAccessor)((WorldServer)this.mc.theWorld)).mcServer();
+            return new CommanderServerCommandSource(server, server.configManager.getPlayerEntity(this.mc.thePlayer.username));
+        }
+        return new CommanderClientCommandSource(this.mc);
     }
 
     public void drawScreen() {
@@ -141,7 +151,7 @@ public class GuiChatSuggestions extends Gui {
     private List<String> getCommandUsage(int cursor) {
         List<String> commandUsage = new ArrayList<>();
         if (this.parseResults == null || this.parseResults.getContext().getRootNode() == null || this.parseResults.getContext().getRange().getStart() > cursor) return commandUsage;
-        for (Map.Entry<CommandNode<CommanderCommandSource>, String> entry : this.getManager().getDispatcher().getSmartUsage(this.parseResults.getContext().findSuggestionContext(cursor).parent, this.commandSource).entrySet()) {
+        for (Map.Entry<CommandNode<CommanderCommandSource>, String> entry : this.getManager().getDispatcher().getSmartUsage(this.parseResults.getContext().findSuggestionContext(cursor).parent, this.getNewCommandSource()).entrySet()) {
             if (entry.getKey() instanceof LiteralCommandNode) continue;
             commandUsage.add(entry.getValue());
         }
@@ -152,10 +162,13 @@ public class GuiChatSuggestions extends Gui {
         int mouseX = GuiHelper.getScaledMouseX(this.mc);
         int mouseY = GuiHelper.getScaledMouseY(this.mc) - 1;
 
-        if (key == 15) {
+        int TAB = 15;
+        int LEFT_SHIFT = 42;
+
+        if (key == TAB) {
             if (this.commandIndex == -1 && this.isHoveringOverSuggestions(mouseX, mouseY)) {
                 this.cycleToSuggestion(this.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY).get());
-            } else if (Keyboard.isKeyDown(42)) {
+            } else if (Keyboard.isKeyDown(LEFT_SHIFT)) {
                 this.cycleThroughSuggestions(-1);
             } else {
                 this.cycleThroughSuggestions();
@@ -163,7 +176,7 @@ public class GuiChatSuggestions extends Gui {
             return;
         }
 
-        if (key == 42) return;
+        if (!this.shouldApplySuggestion(c, key)) return;
 
         this.resetAllManagerVariables();
         String text = this.editor.getText();
@@ -178,7 +191,7 @@ public class GuiChatSuggestions extends Gui {
             stringReader.skip();
             CommandDispatcher<CommanderCommandSource> dispatcher = this.getManager().getDispatcher();
             if (this.parseResults == null) {
-                this.parseResults = dispatcher.parse(stringReader, this.commandSource);
+                this.parseResults = dispatcher.parse(stringReader, this.getNewCommandSource());
             }
             if (cursor >= 1) {
                 this.pendingSuggestions = dispatcher.getCompletionSuggestions(this.parseResults, cursor);
@@ -189,6 +202,17 @@ public class GuiChatSuggestions extends Gui {
                 });
             }
         }
+    }
+
+    private boolean shouldApplySuggestion(char c, int key) {
+        return this.chat.isCharacterAllowed(c)
+                || ((key == 46 || key == 47) && (Keyboard.isKeyDown(29) || Keyboard.isKeyDown(157)))
+                || key == 199
+                || key == 207
+                || key == 203
+                || key == 205
+                || key == 14
+                || key == 211;
     }
 
     private void updateSuggestions() {
@@ -304,6 +328,6 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public CommanderCommandSource getCommandSource() {
-        return this.commandSource;
+        return this.getNewCommandSource();
     }
 }

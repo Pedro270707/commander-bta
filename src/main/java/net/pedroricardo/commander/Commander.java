@@ -2,6 +2,7 @@ package net.pedroricardo.commander;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
+import net.minecraft.core.net.packet.Packet138PlayerList;
 import net.pedroricardo.commander.content.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
