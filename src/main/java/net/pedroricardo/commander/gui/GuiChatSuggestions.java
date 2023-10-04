@@ -55,7 +55,7 @@ public class GuiChatSuggestions extends Gui {
     public GuiChatSuggestions(Minecraft mc, TextFieldEditor textFieldEditor, GuiChat chat) {
         this.mc = mc;
         this.fontRenderer = this.mc.fontRenderer;
-        this.commandSource = this.getNewCommandSource();
+        this.commandSource = new CommanderClientCommandSource(this.mc);
         this.editor = textFieldEditor;
         this.chat = chat;
         this.tablessMessage = this.chat.getText();
@@ -64,9 +64,9 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public CommanderCommandManager getManager() {
-        if (this.mc.theWorld instanceof WorldServer) {
-            return ((EnvironmentWithManager)((ServerFromWorldAccessor)((WorldServer)this.mc.theWorld)).mcServer()).getManager();
-        }
+        // if (this.mc.theWorld instanceof WorldServer) {
+            // return ((EnvironmentWithManager)((ServerFromWorldAccessor)((WorldServer)this.mc.theWorld)).mcServer()).getManager();
+        // }
         return ((EnvironmentWithManager)this.mc).getManager();
     }
 
@@ -151,7 +151,7 @@ public class GuiChatSuggestions extends Gui {
     private List<String> getCommandUsage(int cursor) {
         List<String> commandUsage = new ArrayList<>();
         if (this.parseResults == null || this.parseResults.getContext().getRootNode() == null || this.parseResults.getContext().getRange().getStart() > cursor) return commandUsage;
-        for (Map.Entry<CommandNode<CommanderCommandSource>, String> entry : this.getManager().getDispatcher().getSmartUsage(this.parseResults.getContext().findSuggestionContext(cursor).parent, this.getNewCommandSource()).entrySet()) {
+        for (Map.Entry<CommandNode<CommanderCommandSource>, String> entry : this.getManager().getDispatcher().getSmartUsage(this.parseResults.getContext().findSuggestionContext(cursor).parent, this.commandSource).entrySet()) {
             if (entry.getKey() instanceof LiteralCommandNode) continue;
             commandUsage.add(entry.getValue());
         }
@@ -191,7 +191,7 @@ public class GuiChatSuggestions extends Gui {
             stringReader.skip();
             CommandDispatcher<CommanderCommandSource> dispatcher = this.getManager().getDispatcher();
             if (this.parseResults == null) {
-                this.parseResults = dispatcher.parse(stringReader, this.getNewCommandSource());
+                this.parseResults = dispatcher.parse(stringReader, this.commandSource);
             }
             if (cursor >= 1) {
                 this.pendingSuggestions = dispatcher.getCompletionSuggestions(this.parseResults, cursor);
@@ -328,6 +328,6 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public CommanderCommandSource getCommandSource() {
-        return this.getNewCommandSource();
+        return this.commandSource;
     }
 }

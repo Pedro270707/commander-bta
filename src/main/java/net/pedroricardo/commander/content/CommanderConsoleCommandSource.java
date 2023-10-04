@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CommanderConsoleCommandSource implements CommanderCommandSource {
+public class CommanderConsoleCommandSource implements CommanderCommandSource, IServerCommandSource {
     private static final Logger LOGGER = Logger.getLogger("Minecraft");
 
     public final MinecraftServer server;
@@ -109,5 +109,10 @@ public class CommanderConsoleCommandSource implements CommanderCommandSource {
     @Override
     public @Deprecated CommandSender getCommandSender() {
         return new ConsoleCommandSender(this.server);
+    }
+
+    @Override
+    public MinecraftServer getServer() {
+        return this.server;
     }
 }

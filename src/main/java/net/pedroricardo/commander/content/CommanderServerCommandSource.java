@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CommanderServerCommandSource implements CommanderCommandSource {
+public class CommanderServerCommandSource implements CommanderCommandSource, IServerCommandSource {
     public final MinecraftServer server;
     public final EntityPlayerMP player;
 
@@ -109,5 +109,10 @@ public class CommanderServerCommandSource implements CommanderCommandSource {
     @Override
     public @Deprecated CommandSender getCommandSender() {
         return new ServerPlayerCommandSender(this.server, this.player);
+    }
+
+    @Override
+    public MinecraftServer getServer() {
+        return this.server;
     }
 }

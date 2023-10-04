@@ -4,13 +4,15 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.core.lang.I18n;
 
 public class CommanderExceptions {
-    private static final SimpleCommandExceptionType INCOMPLETE_ARGUMENT = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.incomplete"));
-    private static final SimpleCommandExceptionType NOT_IN_WORLD = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.not_in_world"));
+    private static final SimpleCommandExceptionType INCOMPLETE_ARGUMENT = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("exceptions.commander.incomplete"));
+    private static final SimpleCommandExceptionType NOT_IN_WORLD = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("exceptions.commander.not_in_world"));
     private static final SimpleCommandExceptionType EMPTY_SELECTOR = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.empty"));
     private static final SimpleCommandExceptionType INVALID_SELECTOR = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.generic"));
     private static final SimpleCommandExceptionType SINGLE_ENTITY_ONLY = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.single_entity_only"));
     private static final SimpleCommandExceptionType SINGLE_PLAYER_ONLY = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.single_player_only"));
     private static final SimpleCommandExceptionType PLAYER_ONLY = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.player_only"));
+    private static final SimpleCommandExceptionType SINGLE_PLAYER_WORLD_ONLY = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("exceptions.commander.single_player_world_only"));
+    private static final SimpleCommandExceptionType MULTIPLAYER_WORLD_ONLY = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("exceptions.commander.multiplayer_world_only"));
 
     public static SimpleCommandExceptionType incomplete() {
         return INCOMPLETE_ARGUMENT;
@@ -40,4 +42,11 @@ public class CommanderExceptions {
         return PLAYER_ONLY;
     }
 
+    public static SimpleCommandExceptionType singlePlayerWorldOnly() {
+        return SINGLE_PLAYER_WORLD_ONLY;
+    }
+
+    public static SimpleCommandExceptionType multiplayerWorldOnly() {
+        return MULTIPLAYER_WORLD_ONLY;
+    }
 }

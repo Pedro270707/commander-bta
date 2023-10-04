@@ -8,6 +8,7 @@
     "GuiChatMixin",
     "GuiChatMixin$GuiScreenAccessor",
     "GuiChatMixin$TextFieldEditorAccessor",
+    "NetServerHandlerAccessor",
     "PreferCommanderCommandConsoleMixin",
     "PreferCommanderCommandNetServerHandlerMixin",
     "PreferCommanderCommandNetServerHandlerMixin$NetServerHandlerAccessor",

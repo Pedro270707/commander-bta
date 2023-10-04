@@ -9,6 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.core.net.command.Command;
 import net.minecraft.core.net.command.Commands;
 import net.pedroricardo.commander.content.commands.*;
+import net.pedroricardo.commander.content.commands.server.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -44,6 +45,13 @@ public class CommanderCommandManager {
 
         this.registerLegacyCommands();
 
+        if (this.isServer) {
+            StopCommand.register(DISPATCHER);
+            OpCommand.register(DISPATCHER);
+            DeopCommand.register(DISPATCHER);
+            ListCommand.register(DISPATCHER);
+            DifficultyCommand.register(DISPATCHER);
+        }
 //        TestCommand.register(DISPATCHER);
     }
 

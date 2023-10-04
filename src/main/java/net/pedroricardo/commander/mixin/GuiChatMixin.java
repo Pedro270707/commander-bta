@@ -94,8 +94,6 @@ public class GuiChatMixin {
 
     @Inject(method = "keyTyped", at = @At("RETURN"))
     private void keyTyped(char c, int key, int mouseX, int mouseY, CallbackInfo ci) {
-        // 200: Up Arrow
-        // 208: Down Arrow
         this.suggestionsGui.keyTyped(c, key);
     }
 
@@ -114,16 +112,6 @@ public class GuiChatMixin {
             ci.cancel();
         }
     }
-
-    /*
-    @Inject(method = "keyTyped", at = @At(value = "JUMP", ordinal = 10), cancellable = true)
-    private void downArrowPressed(char c, int key, int mouseX, int mouseY, CallbackInfo ci) {
-        if (this.suggestionsGui.getCommandIndex() != -1) {
-            this.suggestionsGui.cycleThroughSuggestions();
-            ci.cancel();
-        }
-    }
-    */
 
     @Inject(method = "updateScreen", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void updateScreen(CallbackInfo ci, int dWheel) {
