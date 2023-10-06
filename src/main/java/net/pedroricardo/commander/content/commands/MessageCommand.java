@@ -11,6 +11,7 @@ import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.util.helper.LogPrintStream;
+import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
 import net.pedroricardo.commander.content.helpers.EntitySelector;
@@ -28,13 +29,13 @@ public class MessageCommand {
                                     EntitySelector entitySelector = c.getArgument("targets", EntitySelector.class);
                                     String message = c.getArgument("message", String.class);
 
-                                    String senderName = source.getSender() == null ? "Server" : LogPrintStream.removeColorCodes(source.getSender().getDisplayName());
+                                    String senderName = source.getSender() == null ? "Server" : CommanderHelper.getEntityName(source.getSender());
 
                                     List<? extends Entity> players = entitySelector.get(source);
 
                                     for (Entity player : players) {
                                         source.sendMessage(TextFormatting.LIGHT_GRAY.toString() + TextFormatting.ITALIC.toString() + I18n.getInstance().translateKeyAndFormat("commands.commander.message.outgoing", LogPrintStream.removeColorCodes(((EntityPlayer)player).getDisplayName()), message));
-                                        source.sendMessageToPlayer((EntityPlayer)player, TextFormatting.LIGHT_GRAY.toString() + TextFormatting.ITALIC.toString() + I18n.getInstance().translateKeyAndFormat("commands.commander.message.incoming", senderName, message));
+                                        source.sendMessage((EntityPlayer)player, TextFormatting.LIGHT_GRAY + (TextFormatting.ITALIC + I18n.getInstance().translateKeyAndFormat("commands.commander.message.incoming", senderName, message)));
                                     }
 
                                     return Command.SINGLE_SUCCESS;

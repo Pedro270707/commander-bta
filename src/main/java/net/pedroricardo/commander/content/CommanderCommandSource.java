@@ -1,6 +1,7 @@
 package net.pedroricardo.commander.content;
 
 import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.lang.I18n;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
 import net.minecraft.core.util.phys.Vec3d;
@@ -35,7 +36,15 @@ public interface CommanderCommandSource {
 
     void sendMessage(String message);
 
-    void sendMessageToPlayer(EntityPlayer player, String message);
+    void sendMessage(EntityPlayer player, String message);
+
+    default void sendTranslatableMessage(String message, Object... args) {
+        this.sendMessage(I18n.getInstance().translateKeyAndFormat(message, args));
+    }
+
+    default void sendTranslatableMessage(EntityPlayer player, String message, Object... args) {
+        this.sendMessage(player, I18n.getInstance().translateKeyAndFormat(message, args));
+    }
 
     World getWorld();
 

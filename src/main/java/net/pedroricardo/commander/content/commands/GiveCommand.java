@@ -8,7 +8,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.item.ItemStack;
-import net.minecraft.core.lang.I18n;
 import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
@@ -39,9 +38,9 @@ public class GiveCommand {
                                     }
 
                                     if (entities.size() == 1) {
-                                        source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.give.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), amount, itemStack.getDisplayName()));
+                                        source.sendTranslatableMessage("commands.commander.give.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), amount, itemStack.getDisplayName());
                                     } else {
-                                        source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.give.success_single_entity", entities.size(), amount, itemStack.getDisplayName()));
+                                        source.sendTranslatableMessage("commands.commander.give.success_single_entity", entities.size(), amount, itemStack.getDisplayName());
                                     }
 
                                     return Command.SINGLE_SUCCESS;
@@ -75,9 +74,9 @@ public class GiveCommand {
                                             }
 
                                             if (entities.size() == 1) {
-                                                source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.give.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), amount, itemStack.getDisplayName()));
+                                                source.sendTranslatableMessage("commands.commander.give.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), amount, itemStack.getDisplayName());
                                             } else {
-                                                source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.give.success_single_entity", entities.size(), amount, itemStack.getDisplayName()));
+                                                source.sendTranslatableMessage("commands.commander.give.success_single_entity", entities.size(), amount, itemStack.getDisplayName());
                                             }
 
                                             return Command.SINGLE_SUCCESS;

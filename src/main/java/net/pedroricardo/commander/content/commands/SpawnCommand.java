@@ -32,7 +32,7 @@ public class SpawnCommand {
 
                     if (sender.dimension != 0) source.movePlayerToDimension(sender, 0);
                     sender.absMoveTo(spawnCoordinates.x + 0.5, spawnCoordinates.y, spawnCoordinates.z + 0.5, sender.yRot, sender.xRot);
-                    source.sendMessage(I18n.getInstance().translateKey("commands.commander.spawn.success_self"));
+                    source.sendTranslatableMessage("commands.commander.spawn.success");
                     return Command.SINGLE_SUCCESS;
                 })
                 .then(RequiredArgumentBuilder.argument("players", EntityArgumentType.players())
@@ -48,10 +48,10 @@ public class SpawnCommand {
                                 if (((EntityPlayer)entity).dimension != 0) source.movePlayerToDimension((EntityPlayer) entity, 0);
                                 entity.absMoveTo(spawnCoordinates.x + 0.5, spawnCoordinates.y, spawnCoordinates.z + 0.5, entity.yRot, entity.xRot);
                                 if (entity == sender) {
-                                    source.sendMessageToPlayer((EntityPlayer) entity, I18n.getInstance().translateKey("commands.commander.spawn.success_self"));
+                                    source.sendTranslatableMessage("commands.commander.spawn.success");
                                 } else {
-                                    source.sendMessageToPlayer((EntityPlayer) entity, I18n.getInstance().translateKey("commands.commander.spawn.success_receiver"));
-                                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.spawn.success_other", CommanderHelper.getEntityName(entity)));
+                                    source.sendTranslatableMessage("commands.commander.spawn.success_receiver");
+                                    source.sendTranslatableMessage("commands.commander.spawn.success_other", CommanderHelper.getEntityName(entity));
                                 }
                             }
                             return Command.SINGLE_SUCCESS;

@@ -7,11 +7,8 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.Tag;
-import net.minecraft.core.block.Block;
-import net.minecraft.core.block.BlockTileEntity;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.lang.I18n;
-import net.minecraft.core.util.collection.Pair;
 import net.minecraft.core.world.World;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.*;
@@ -52,7 +49,7 @@ public class SetBlockCommand {
                                             }
                                             tileEntity.readFromNBT(tag);
                                         }
-                                        source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.setblock.success", coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source)));
+                                        source.sendTranslatableMessage("commands.commander.setblock.success", coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source));
                                     }
 
                                     return Command.SINGLE_SUCCESS;

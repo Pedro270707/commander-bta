@@ -5,7 +5,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
-import net.minecraft.core.lang.I18n;
 import net.minecraft.core.world.World;
 import net.minecraft.core.world.weather.Weather;
 import net.pedroricardo.commander.content.CommanderCommandSource;
@@ -26,7 +25,7 @@ public class WeatherCommand {
                             world.newWeather = weather;
                             world.weatherDuration = world.getRandomWeatherDuration();
                             world.weatherIntensity = 0;
-                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.weather.success", weather.getTranslatedName()));
+                            source.sendTranslatableMessage("commands.commander.weather.success", weather.getTranslatedName());
                             return Command.SINGLE_SUCCESS;
                         })
                         .then(RequiredArgumentBuilder.argument("duration", TimeArgumentType.time())
@@ -38,7 +37,7 @@ public class WeatherCommand {
                                     world.newWeather = weather;
                                     world.weatherDuration = c.getArgument("duration", Integer.class);
                                     world.weatherIntensity = 0;
-                                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.weather.success", weather.getTranslatedName()));
+                                    source.sendTranslatableMessage("commands.commander.weather.success", weather.getTranslatedName());
                                     return Command.SINGLE_SUCCESS;
                                 }))));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("w")

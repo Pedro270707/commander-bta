@@ -41,9 +41,6 @@ public abstract class ArgumentParser {
         if (metadata < 0) {
             this.reader.setCursor(cursor);
             throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooLow().createWithContext(this.reader, metadata, 0);
-        } else if (metadata > 255) {
-            this.reader.setCursor(cursor);
-            throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.integerTooHigh().createWithContext(this.reader, metadata, 255);
         }
         this.reader.skipWhitespace();
         this.suggestions = this::suggestCloseMetadata;

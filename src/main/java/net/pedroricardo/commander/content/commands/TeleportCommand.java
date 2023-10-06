@@ -6,7 +6,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.core.entity.Entity;
-import net.minecraft.core.lang.I18n;
 import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
@@ -29,7 +28,7 @@ public class TeleportCommand {
 
                             if (source.getSender() != null) {
                                 source.getSender().moveTo(targetCoordinates.getX(source), targetCoordinates.getY(source, true), targetCoordinates.getZ(source), source.getSender().yRot, source.getSender().xRot);
-                                source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_single_entity", source.getSender().getDisplayName(), targetCoordinates.getX(source), targetCoordinates.getY(source, true), targetCoordinates.getZ(source)));
+                                source.sendTranslatableMessage("commands.commander.teleport.location.success_single_entity", source.getSender().getDisplayName(), targetCoordinates.getX(source), targetCoordinates.getY(source, true), targetCoordinates.getZ(source));
                             } else {
                                 throw CommanderExceptions.notInWorld().create();
                             }
@@ -48,8 +47,12 @@ public class TeleportCommand {
                                         entity.moveTo(targetCoordinates.getX(source), targetCoordinates.getY(source, true), targetCoordinates.getZ(source), entity.yRot, entity.xRot);
                                     }
 
-                                    if (entities.size() == 1) source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), targetCoordinates.getX(source), targetCoordinates.getY(source, true), targetCoordinates.getZ(source)));
-                                    else if (entities.size() > 1) source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.location.success_multiple_entities", entities.size(), targetCoordinates.getX(source), targetCoordinates.getY(source, true), targetCoordinates.getZ(source)));
+                                    double x = targetCoordinates.getX(source);
+                                    double y = targetCoordinates.getY(source, true);
+                                    double z = targetCoordinates.getZ(source);
+
+                                    if (entities.size() == 1) source.sendTranslatableMessage("commands.commander.teleport.location.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), x, y, z);
+                                    else if (entities.size() > 1) source.sendTranslatableMessage("commands.commander.teleport.location.success_multiple_entities", entities.size(), x, y, z);
 
                                     return Command.SINGLE_SUCCESS;
                                 }))
@@ -65,8 +68,8 @@ public class TeleportCommand {
                                 entity.moveTo(targetEntity.x, targetEntity.y - targetEntity.heightOffset, targetEntity.z, entity.yRot, entity.xRot);
                             }
 
-                            if (entities.size() == 1) source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.entity.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), CommanderHelper.getEntityName(targetEntity)));
-                            else if (entities.size() > 1) source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.teleport.entity.success_multiple_entities", entities.size(), CommanderHelper.getEntityName(targetEntity)));
+                            if (entities.size() == 1) source.sendTranslatableMessage("commands.commander.teleport.entity.success_single_entity", CommanderHelper.getEntityName(entities.get(0)), CommanderHelper.getEntityName(targetEntity));
+                            else if (entities.size() > 1) source.sendTranslatableMessage("commands.commander.teleport.entity.success_multiple_entities", entities.size(), CommanderHelper.getEntityName(targetEntity));
 
                             return Command.SINGLE_SUCCESS;
                         }))));

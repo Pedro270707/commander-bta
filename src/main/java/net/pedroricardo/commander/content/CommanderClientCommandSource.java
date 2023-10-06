@@ -2,6 +2,7 @@ package net.pedroricardo.commander.content;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.entity.player.EntityPlayer;
+import net.minecraft.core.lang.I18n;
 import net.minecraft.core.net.command.ClientCommandHandler;
 import net.minecraft.core.net.command.ClientPlayerCommandSender;
 import net.minecraft.core.net.command.CommandHandler;
@@ -85,7 +86,7 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     }
 
     @Override
-    public void sendMessageToPlayer(EntityPlayer player, String message) {
+    public void sendMessage(EntityPlayer player, String message) {
         if (player == this.mc.thePlayer) {
             this.sendMessage(message);
         }

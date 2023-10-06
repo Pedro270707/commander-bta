@@ -81,7 +81,7 @@ public class CommanderConsoleCommandSource implements CommanderCommandSource, IS
     }
 
     @Override
-    public void sendMessageToPlayer(EntityPlayer player, String message) {
+    public void sendMessage(EntityPlayer player, String message) {
         this.server.configManager.sendPacketToPlayer(player.username, new Packet3Chat(message, AES.keyChain.get(player.username)));
     }
 

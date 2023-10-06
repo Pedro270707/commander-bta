@@ -119,6 +119,7 @@ public class EntitySelector {
         // Maximum amount of results
         listAfterPredicate = listAfterPredicate.subList(0, Math.min(listAfterPredicate.size(), this.maxResults));
 
+        if (listAfterPredicate.isEmpty()) throw CommanderExceptions.emptySelector().create();
         return listAfterPredicate;
     }
 

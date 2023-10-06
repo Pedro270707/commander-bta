@@ -3,10 +3,8 @@ package net.pedroricardo.commander.content.commands.server;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import net.minecraft.core.lang.I18n;
 import net.minecraft.server.MinecraftServer;
 import net.pedroricardo.commander.content.CommanderCommandSource;
-import net.pedroricardo.commander.content.CommanderServerCommandSource;
 import net.pedroricardo.commander.content.IServerCommandSource;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 
@@ -21,7 +19,7 @@ public class StopCommand {
 
                     MinecraftServer server = ((IServerCommandSource)source).getServer();
 
-                    source.sendMessage(I18n.getInstance().translateKey("commands.commander.stop.success"));
+                    source.sendTranslatableMessage("commands.commander.stop.success");
                     if (server.configManager != null) {
                         server.configManager.savePlayerStates();
                     }

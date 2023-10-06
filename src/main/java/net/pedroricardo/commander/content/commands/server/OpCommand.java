@@ -6,14 +6,11 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.core.entity.Entity;
-import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.lang.I18n;
-import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.core.net.packet.Packet72UpdatePlayerProfile;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.entity.player.EntityPlayerMP;
 import net.pedroricardo.commander.content.CommanderCommandSource;
-import net.pedroricardo.commander.content.CommanderServerCommandSource;
 import net.pedroricardo.commander.content.IServerCommandSource;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
@@ -44,8 +41,8 @@ public class OpCommand {
                                 if (!player.isOperator()) {
                                     oppedSomeone = true;
                                     server.configManager.opPlayer(player.username);
-                                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.op.success", player.username));
-                                    source.sendMessageToPlayer(player, I18n.getInstance().translateKey("commands.commander.op.success_receiver"));
+                                    source.sendTranslatableMessage("commands.commander.op.success", player.username);
+                                    source.sendTranslatableMessage(player, "commands.commander.op.success_receiver");
                                 }
                                 server.configManager.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
                             }

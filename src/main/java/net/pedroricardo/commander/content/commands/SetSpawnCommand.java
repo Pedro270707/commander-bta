@@ -25,6 +25,7 @@ public class SetSpawnCommand {
                             int z = coordinates.getZ(source);
 
                             source.getWorld().setSpawnPoint(new ChunkCoordinates(x, y, z));
+                            source.sendTranslatableMessage("commands.commander.setspawn.success", x, y, z);
 
                             return Command.SINGLE_SUCCESS;
                         })));

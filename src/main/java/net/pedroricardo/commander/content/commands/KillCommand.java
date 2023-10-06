@@ -32,7 +32,7 @@ public class KillCommand {
 
                     sender.killPlayer();
 
-                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.kill.single_entity", sender.getDisplayName()));
+                    source.sendTranslatableMessage("commands.commander.kill.single_entity", sender.getDisplayName());
 
                     return Command.SINGLE_SUCCESS;
                 })
@@ -45,8 +45,8 @@ public class KillCommand {
                             int entityCount = entities.size();
 
                             if (entityCount == 0) throw FAILURE.create();
-                            else if (entityCount == 1) source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.kill.single_entity", CommanderHelper.getEntityName(entities.get(0))));
-                            else source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.kill.multiple_entities", entityCount));
+                            else if (entityCount == 1) source.sendTranslatableMessage("commands.commander.kill.single_entity", CommanderHelper.getEntityName(entities.get(0)));
+                            else source.sendTranslatableMessage("commands.commander.kill.multiple_entities", entityCount);
 
                             for (Entity entity : entities) {
                                 if (entity instanceof EntityPlayer) {

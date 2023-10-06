@@ -4,7 +4,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.core.achievement.Achievement;
 import net.minecraft.core.achievement.AchievementList;
@@ -15,7 +14,6 @@ import net.minecraft.core.lang.I18n;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.AchievementArgumentType;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
-import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.ArrayList;
@@ -33,14 +31,11 @@ public class AchievementCommand {
                                 .then(RequiredArgumentBuilder.argument("achievement", AchievementArgumentType.achievement())
                                         .executes(c -> {
                                             CommanderCommandSource source = (CommanderCommandSource) c.getSource();
-                                            List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get((CommanderCommandSource) c.getSource());
+                                            List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get(source);
                                             Achievement achievement = c.getArgument("achievement", Achievement.class);
 
                                             if (entities.size() == 1 && ((EntityPlayer)entities.get(0)).getStat(achievement) != 0) {
                                                 throw PLAYER_ALREADY_HAS_ACHIEVEMENT.create();
-                                            }
-                                            if (entities.size() == 0) {
-                                                throw CommanderExceptions.emptySelector().create();
                                             }
 
                                             List<Achievement> achievements = new ArrayList<>();
@@ -62,11 +57,7 @@ public class AchievementCommand {
                                 .then(LiteralArgumentBuilder.literal("*")
                                         .executes(c -> {
                                             CommanderCommandSource source = (CommanderCommandSource) c.getSource();
-                                            List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get((CommanderCommandSource) c.getSource());
-
-                                            if (entities.size() == 0) {
-                                                throw CommanderExceptions.emptySelector().create();
-                                            }
+                                            List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get(source);
 
                                             for (Achievement achievement : AchievementList.achievementList) {
                                                 List<Achievement> achievements = new ArrayList<>();
@@ -87,23 +78,19 @@ public class AchievementCommand {
                                 }))))));
     }
 
-    private static void sendContextualMessage(CommanderCommandSource source, List<? extends Entity> entities, Achievement achievement) throws CommandSyntaxException {
-        if (entities.size() > 1) {
-            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.achievement.grant.success_multiple_entities", achievement.getStatName(), entities.size()));
-        } else if (entities.size() == 1) {
-            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.achievement.grant.success_single_entity", achievement.getStatName().trim(), ((EntityLiving)entities.get(0)).getDisplayName()));
+    private static void sendContextualMessage(CommanderCommandSource source, List<? extends Entity> entities, Achievement achievement) {
+        if (entities.size() == 1) {
+            source.sendTranslatableMessage("commands.commander.achievement.grant.success_single_entity", achievement.getStatName().trim(), ((EntityLiving)entities.get(0)).getDisplayName());
         } else {
-            throw CommanderExceptions.emptySelector().create();
+            source.sendTranslatableMessage("commands.commander.achievement.grant.success_multiple_entities", achievement.getStatName(), entities.size());
         }
     }
 
     private static void sendWildcardContextualMessage(CommanderCommandSource source, List<? extends Entity> entities) {
-        if (entities.size() > 1) {
-            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.achievement.grant.all.success_multiple_entities", entities.size()));
-        } else if (entities.size() == 1) {
-            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.achievement.grant.all.success_single_entity",  ((EntityLiving)entities.get(0)).getDisplayName()));
+        if (entities.size() == 1) {
+            source.sendTranslatableMessage("commands.commander.achievement.grant.all.success_single_entity",  ((EntityLiving)entities.get(0)).getDisplayName());
         } else {
-            source.sendMessage(I18n.getInstance().translateKey("commands.commander.achievement.grant.failure_empty_selector"));
+            source.sendTranslatableMessage("commands.commander.achievement.grant.all.success_multiple_entities", entities.size());
         }
     }
 }

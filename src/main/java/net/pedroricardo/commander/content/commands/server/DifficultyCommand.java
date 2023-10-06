@@ -3,20 +3,13 @@ package net.pedroricardo.commander.content.commands.server;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.core.entity.Entity;
 import net.minecraft.core.lang.I18n;
-import net.minecraft.core.net.packet.Packet72UpdatePlayerProfile;
 import net.minecraft.core.world.World;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.entity.player.EntityPlayerMP;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.IServerCommandSource;
-import net.pedroricardo.commander.content.arguments.EntityArgumentType;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
-import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,19 +22,19 @@ public class DifficultyCommand {
                     CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                     switch (source.getWorld().difficultySetting) {
                         case 0:
-                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.difficulty.query", I18n.getInstance().translateKey("options.difficulty.peaceful")));
+                            source.sendTranslatableMessage("commands.commander.difficulty.query.success", I18n.getInstance().translateKey("options.difficulty.peaceful"));
                             break;
                         case 1:
-                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.difficulty.query", I18n.getInstance().translateKey("options.difficulty.easy")));
+                            source.sendTranslatableMessage("commands.commander.difficulty.query.success", I18n.getInstance().translateKey("options.difficulty.easy"));
                             break;
                         case 2:
-                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.difficulty.query", I18n.getInstance().translateKey("options.difficulty.normal")));
+                            source.sendTranslatableMessage("commands.commander.difficulty.query.success", I18n.getInstance().translateKey("options.difficulty.normal"));
                             break;
                         case 3:
-                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.difficulty.query", I18n.getInstance().translateKey("options.difficulty.hard")));
+                            source.sendTranslatableMessage("commands.commander.difficulty.query.success", I18n.getInstance().translateKey("options.difficulty.hard"));
                             break;
                         default:
-                            source.sendMessage(I18n.getInstance().translateKey("commands.commander.difficulty.query.unknown"));
+                            source.sendTranslatableMessage("commands.commander.difficulty.query.success_unknown");
                             break;
                     }
                     return Command.SINGLE_SUCCESS;
@@ -79,7 +72,7 @@ public class DifficultyCommand {
             world.difficultySetting = difficulty;
         }
         server.difficulty = difficulty;
-        source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.difficulty.set", I18n.getInstance().translateKey("options.difficulty." + difficultyStrings.get(difficulty))));
+        source.sendTranslatableMessage("commands.commander.difficulty.set.success", I18n.getInstance().translateKey("options.difficulty." + difficultyStrings.get(difficulty)));
         return Command.SINGLE_SUCCESS;
     }
 }

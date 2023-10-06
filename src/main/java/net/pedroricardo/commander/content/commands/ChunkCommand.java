@@ -22,10 +22,14 @@ public class ChunkCommand {
                                     ChunkCoordinates chunkCoordinates = c.getArgument("position", ChunkCoordinates.class);
                                     World world = source.getWorld();
 
-                                    world.getChunkProvider().regenerateChunk(chunkCoordinates.getX(source), chunkCoordinates.getZ(source));
+                                    int x = chunkCoordinates.getX(source);
+                                    int z = chunkCoordinates.getZ(source);
+
+                                    world.getChunkProvider().regenerateChunk(x, z);
                                     for (LevelListener listener : world.listeners) {
                                         listener.allChanged();
                                     }
+                                    source.sendTranslatableMessage("commands.commander.chunk.reset.success", x, z);
                                     return Command.SINGLE_SUCCESS;
                                 }))));
     }

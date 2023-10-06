@@ -74,7 +74,7 @@ public class CommanderHelper {
     public static String getEntityName(Entity entity) {
         if (entity instanceof EntityLiving) {
             if (!LogPrintStream.removeColorCodes(((EntityLiving) entity).getDisplayName()).isEmpty()) {
-                return ((EntityLiving) entity).getDisplayName();
+                return LogPrintStream.removeColorCodes(((EntityLiving) entity).getDisplayName());
             }
         }
         return EntityDispatcher.getEntityString(entity);

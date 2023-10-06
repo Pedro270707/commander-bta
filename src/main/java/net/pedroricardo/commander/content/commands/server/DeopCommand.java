@@ -41,8 +41,8 @@ public class DeopCommand {
                                 if (player.isOperator()) {
                                     deoppedSomeone = true;
                                     server.configManager.deopPlayer(player.username);
-                                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.deop.success", player.username));
-                                    source.sendMessageToPlayer(player, I18n.getInstance().translateKey("commands.commander.deop.success_receiver"));
+                                    source.sendTranslatableMessage("commands.commander.deop.success", player.username);
+                                    source.sendTranslatableMessage(player, "commands.commander.deop.success_receiver");
                                 }
                                 server.configManager.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
                             }

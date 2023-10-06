@@ -7,7 +7,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.core.entity.Entity;
-import net.minecraft.core.lang.I18n;
 import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.core.world.World;
 import net.pedroricardo.commander.CommanderHelper;
@@ -30,7 +29,7 @@ public class SummonCommand {
 
                             Entity entity = summonEntityAt(c, coordinates.xCoord, coordinates.yCoord - source.getSender().heightOffset, coordinates.zCoord, 0.0f, 0.0f);
 
-                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.summon.success_single_entity", CommanderHelper.getEntityName(entity)));
+                            source.sendTranslatableMessage("commands.commander.summon.success_single_entity", CommanderHelper.getEntityName(entity));
 
                             return Command.SINGLE_SUCCESS;
                         })
@@ -41,7 +40,7 @@ public class SummonCommand {
 
                                     Entity entity = summonEntityAt(c, coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source), 0.0f, 0.0f);
 
-                                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.summon.success_single_entity", CommanderHelper.getEntityName(entity)));
+                                    source.sendTranslatableMessage("commands.commander.summon.success_single_entity", CommanderHelper.getEntityName(entity));
 
                                     return Command.SINGLE_SUCCESS;
                                 })
@@ -55,7 +54,7 @@ public class SummonCommand {
                                                 summonEntityAt(c, coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source), 0.0f, 0.0f);
                                             }
 
-                                            source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.summon.success_multiple_entities", amount));
+                                            source.sendTranslatableMessage("commands.commander.summon.success_multiple_entities", amount);
 
                                             return Command.SINGLE_SUCCESS;
                                         })))));

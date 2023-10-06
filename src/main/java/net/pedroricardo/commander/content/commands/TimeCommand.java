@@ -4,7 +4,6 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
-import net.minecraft.core.lang.I18n;
 import net.minecraft.core.world.LevelListener;
 import net.minecraft.core.world.World;
 import net.pedroricardo.commander.content.CommanderCommandSource;
@@ -19,21 +18,21 @@ public class TimeCommand {
                         .then(LiteralArgumentBuilder.literal("daytime")
                                 .executes(c -> {
                                     CommanderCommandSource source = (CommanderCommandSource) c.getSource();
-                                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.time.query", ((CommanderCommandSource)c.getSource()).getWorld().getWorldTime() % 24000L));
+                                    source.sendTranslatableMessage("commands.commander.time.query", ((CommanderCommandSource)c.getSource()).getWorld().getWorldTime() % 24000L);
 
                                     return Command.SINGLE_SUCCESS;
                                 }))
                         .then(LiteralArgumentBuilder.literal("gametime")
                                 .executes(c -> {
                                     CommanderCommandSource source = (CommanderCommandSource) c.getSource();
-                                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.time.query", source.getWorld().getWorldTime() % Integer.MAX_VALUE));
+                                    source.sendTranslatableMessage("commands.commander.time.query", source.getWorld().getWorldTime() % Integer.MAX_VALUE);
 
                                     return Command.SINGLE_SUCCESS;
                                 }))
                         .then(LiteralArgumentBuilder.literal("day")
                                 .executes(c -> {
                                     CommanderCommandSource source = (CommanderCommandSource) c.getSource();
-                                    source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.time.query", (int) Math.floor(source.getWorld().getWorldTime() / 24000L % Integer.MAX_VALUE)));
+                                    source.sendTranslatableMessage("commands.commander.time.query", (int) Math.floor(source.getWorld().getWorldTime() / 24000L % Integer.MAX_VALUE));
 
                                     return Command.SINGLE_SUCCESS;
                                 })))
@@ -88,7 +87,7 @@ public class TimeCommand {
         for (LevelListener listener : world.listeners) {
             listener.allChanged();
         }
-        source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.time.set", time));
+        source.sendTranslatableMessage("commands.commander.time.set", time);
     }
 
     private static void addWorldTime(CommanderCommandSource source, World world, long time) {

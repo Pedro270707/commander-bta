@@ -51,6 +51,12 @@ public class CommanderCommandManager {
             DeopCommand.register(DISPATCHER);
             ListCommand.register(DISPATCHER);
             DifficultyCommand.register(DISPATCHER);
+            ColorCommand.register(DISPATCHER);
+            NicknameCommand.register(DISPATCHER);
+            WhoIsCommand.register(DISPATCHER);
+            ScoreCommand.register(DISPATCHER);
+            MeCommand.register(DISPATCHER);
+            EmotesCommand.register(DISPATCHER);
         }
 //        TestCommand.register(DISPATCHER);
     }

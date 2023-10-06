@@ -7,7 +7,6 @@ import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.core.lang.I18n;
-import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.core.world.LevelListener;
 import net.minecraft.core.world.World;
 import net.minecraft.core.world.generate.feature.WorldFeature;
@@ -43,7 +42,7 @@ public class PlaceCommand {
                                         for (LevelListener listener : world.listeners) {
                                             listener.allChanged();
                                         }
-                                        source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.place.success", feature.getClass().getSimpleName().substring(12), x, y, z));
+                                        source.sendTranslatableMessage("commands.commander.place.success", feature.getClass().getSimpleName().substring(12), x, y, z);
                                     } else {
                                         throw FAILURE.create();
                                     }
