@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.core.net.command.Command;
 import net.minecraft.core.net.command.Commands;
 import net.pedroricardo.commander.content.commands.*;
@@ -43,8 +44,6 @@ public class CommanderCommandManager {
         ChunkCommand.register(DISPATCHER);
         GiveCommand.register(DISPATCHER);
 
-        this.registerLegacyCommands();
-
         if (this.isServer) {
             StopCommand.register(DISPATCHER);
             OpCommand.register(DISPATCHER);
@@ -58,6 +57,9 @@ public class CommanderCommandManager {
             MeCommand.register(DISPATCHER);
             EmotesCommand.register(DISPATCHER);
         }
+
+        this.registerLegacyCommands();
+
 //        TestCommand.register(DISPATCHER);
     }
 
@@ -86,7 +88,7 @@ public class CommanderCommandManager {
     private void registerLegacyCommands() {
         for (Command command : Commands.commands) {
             if (this.DISPATCHER.findNode(Collections.singletonList(command.getName())) == null) {
-                this.DISPATCHER.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal(command.getName())
+                CommandNode<Object> registeredCommand = this.DISPATCHER.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal(command.getName())
                         .executes(c -> {
                             Commands.getCommand(command.getName()).execute(((CommanderCommandSource) c.getSource()).getCommandHandler(), ((CommanderCommandSource) c.getSource()).getCommandSender(), new String[]{});
                             return com.mojang.brigadier.Command.SINGLE_SUCCESS;
@@ -96,6 +98,12 @@ public class CommanderCommandManager {
                                     Commands.getCommand(command.getName()).execute(((CommanderCommandSource) c.getSource()).getCommandHandler(), ((CommanderCommandSource) c.getSource()).getCommandSender(), c.getArgument("command", String.class).split(" "));
                                     return com.mojang.brigadier.Command.SINGLE_SUCCESS;
                                 })));
+                for (String alias : command.getNames().subList(1, command.getNames().size())) {
+                    if (this.DISPATCHER.findNode(Collections.singletonList(alias)) == null) {
+                        this.DISPATCHER.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal(alias)
+                                .redirect(registeredCommand));
+                    }
+                }
             }
         }
     }

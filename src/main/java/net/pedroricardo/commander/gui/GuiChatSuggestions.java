@@ -70,13 +70,13 @@ public class GuiChatSuggestions extends Gui {
         return ((EnvironmentWithManager)this.mc).getManager();
     }
 
-    private CommanderCommandSource getNewCommandSource() {
-        if (this.mc.theWorld instanceof WorldServer) {
-            MinecraftServer server = ((ServerFromWorldAccessor)((WorldServer)this.mc.theWorld)).mcServer();
-            return new CommanderServerCommandSource(server, server.configManager.getPlayerEntity(this.mc.thePlayer.username));
-        }
-        return new CommanderClientCommandSource(this.mc);
-    }
+//    private CommanderCommandSource getNewCommandSource() {
+//        if (this.mc.theWorld instanceof WorldServer) {
+//            MinecraftServer server = ((ServerFromWorldAccessor)((WorldServer)this.mc.theWorld)).mcServer();
+//            return new CommanderServerCommandSource(server, server.configManager.getPlayerEntity(this.mc.thePlayer.username));
+//        }
+//        return new CommanderClientCommandSource(this.mc);
+//    }
 
     public void drawScreen() {
         CommandSyntaxException parseException;
