@@ -15,15 +15,11 @@ import net.minecraft.client.gui.GuiTooltip;
 import net.minecraft.client.gui.text.TextFieldEditor;
 import net.minecraft.client.render.FontRenderer;
 import net.minecraft.core.net.command.TextFormatting;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.WorldServer;
 import net.pedroricardo.commander.*;
 import net.pedroricardo.commander.content.CommanderClientCommandSource;
 import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
-import net.pedroricardo.commander.content.CommanderServerCommandSource;
 import net.pedroricardo.commander.duck.EnvironmentWithManager;
-import net.pedroricardo.commander.mixin.ServerFromWorldAccessor;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 
@@ -107,7 +103,7 @@ public class GuiChatSuggestions extends Gui {
 
         int parameterStart = this.suggestions.get(0).getRange().getStart();
 
-        int leftMargin = 2;
+        int leftMargin = 16;
         if (Commander.suggestionsFollowParameters)
             leftMargin += fontRenderer.getStringWidth(message.substring(0, parameterStart)) + 1;
 
@@ -138,7 +134,7 @@ public class GuiChatSuggestions extends Gui {
 
     private void renderSingleSuggestionLine(FontRenderer fontRenderer, String text, int heightIndex, boolean followParameters) {
         int height = this.mc.resolution.scaledHeight - heightIndex * 12;
-        int leftMargin = 2;
+        int leftMargin = 16;
         int stringWidth = fontRenderer.getStringWidth(text);
 
         if (Commander.suggestionsFollowParameters && this.parseResults != null && followParameters)
@@ -242,12 +238,12 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public Optional<Integer> getIndexOfSuggestionBeingHoveredOver(int cursorX, int cursorY) {
-        if (this.suggestions.size() == 0) return Optional.empty();
+        if (this.suggestions.isEmpty()) return Optional.empty();
         int height = this.mc.resolution.scaledHeight;
 
         int parameterStart = this.suggestions.get(0).getRange().getStart();
 
-        int minX = 2;
+        int minX = 16;
         if (Commander.suggestionsFollowParameters)
             minX += fontRenderer.getStringWidth(this.tablessMessage.substring(0, parameterStart)) + 1;
 
@@ -290,7 +286,7 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public void cycleToSuggestion(int index) {
-        if (this.suggestions.size() == 0) return;
+        if (this.suggestions.isEmpty()) return;
         if (index < 0) index += this.suggestions.size();
         this.commandIndex = index % this.suggestions.size();
         Suggestion suggestion = this.suggestions.get(this.commandIndex);

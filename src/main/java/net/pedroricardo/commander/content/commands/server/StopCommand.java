@@ -20,11 +20,11 @@ public class StopCommand {
                     MinecraftServer server = ((IServerCommandSource)source).getServer();
 
                     source.sendTranslatableMessage("commands.commander.stop.success");
-                    if (server.configManager != null) {
-                        server.configManager.savePlayerStates();
+                    if (server.playerList != null) {
+                        server.playerList.savePlayerStates();
                     }
-                    for (int i = 0; i < server.worldMngr.length; ++i) {
-                        server.worldMngr[i].saveWorld(true, null);
+                    for (int i = 0; i < server.dimensionWorlds.length; ++i) {
+                        server.dimensionWorlds[i].saveWorld(true, null);
                     }
                     server.initiateShutdown();
                     return Command.SINGLE_SUCCESS;

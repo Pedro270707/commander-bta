@@ -23,15 +23,15 @@ public class ListCommand {
 
                     MinecraftServer server = ((IServerCommandSource)source).getServer();
 
-                    int playerCount = server.configManager.playerEntities.size();
+                    int playerCount = server.playerList.playerEntities.size();
                     if (playerCount < 100) {
                         if (playerCount == 0) throw FAILURE.create();
                         StringBuilder builder = new StringBuilder();
-                        for (int i = 0; i < server.configManager.playerEntities.size(); ++i) {
+                        for (int i = 0; i < server.playerList.playerEntities.size(); ++i) {
                             if (i > 0) {
                                 builder.append(", ");
                             }
-                            builder.append(CommanderHelper.getEntityName(server.configManager.playerEntities.get(i)));
+                            builder.append(CommanderHelper.getEntityName(server.playerList.playerEntities.get(i)));
                         }
                         if (playerCount == 1) {
                             source.sendTranslatableMessage("commands.commander.list.success_single", playerCount, builder.toString());

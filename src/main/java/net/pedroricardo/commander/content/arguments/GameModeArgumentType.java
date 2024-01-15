@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 public class GameModeArgumentType implements ArgumentType<Gamemode> {
-    private static final Collection<String> EXAMPLES = Arrays.asList(Gamemode.creative.languageKey, Gamemode.survival.languageKey);
+    private static final Collection<String> EXAMPLES = Arrays.asList(Gamemode.creative.getLanguageKey(), Gamemode.survival.getLanguageKey());
 
     public static ArgumentType<Gamemode> gameMode() {
         return new GameModeArgumentType();
@@ -27,7 +27,7 @@ public class GameModeArgumentType implements ArgumentType<Gamemode> {
         final String string = reader.readString();
 
         for (Gamemode gamemode : Gamemode.gamemodesList) {
-            if (CommanderHelper.matchesKeyString(gamemode.languageKey, string)) {
+            if (CommanderHelper.matchesKeyString(gamemode.getLanguageKey(), string)) {
                 return gamemode;
             }
         }
@@ -38,7 +38,7 @@ public class GameModeArgumentType implements ArgumentType<Gamemode> {
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         String remaining = builder.getRemainingLowerCase();
         for (Gamemode gamemode : Gamemode.gamemodesList) {
-            Optional<String> optional = CommanderHelper.getStringToSuggest(gamemode.languageKey, remaining);
+            Optional<String> optional = CommanderHelper.getStringToSuggest(gamemode.getLanguageKey(), remaining);
             optional.ifPresent(builder::suggest);
         }
         return builder.buildFuture();

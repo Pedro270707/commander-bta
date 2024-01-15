@@ -2,6 +2,7 @@ package net.pedroricardo.commander.content.commands;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
@@ -22,9 +23,7 @@ public class WeatherCommand {
                             World world = source.getWorld();
                             Weather weather = c.getArgument("weather", Weather.class);
 
-                            world.newWeather = weather;
-                            world.weatherDuration = world.getRandomWeatherDuration();
-                            world.weatherIntensity = 0;
+                            world.weatherManager.overrideWeather(weather);
                             source.sendTranslatableMessage("commands.commander.weather.success", weather.getTranslatedName());
                             return Command.SINGLE_SUCCESS;
                         })
@@ -34,12 +33,20 @@ public class WeatherCommand {
                                     World world = source.getWorld();
                                     Weather weather = c.getArgument("weather", Weather.class);
 
-                                    world.newWeather = weather;
-                                    world.weatherDuration = c.getArgument("duration", Integer.class);
-                                    world.weatherIntensity = 0;
+                                    world.weatherManager.overrideWeather(weather, c.getArgument("duration", Integer.class));
                                     source.sendTranslatableMessage("commands.commander.weather.success", weather.getTranslatedName());
                                     return Command.SINGLE_SUCCESS;
-                                }))));
+                                })
+                                .then(RequiredArgumentBuilder.argument("power", FloatArgumentType.floatArg())
+                                        .executes(c -> {
+                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            World world = source.getWorld();
+                                            Weather weather = c.getArgument("weather", Weather.class);
+
+                                            world.weatherManager.overrideWeather(weather, c.getArgument("duration", Integer.class), c.getArgument("power", Float.class));
+                                            source.sendTranslatableMessage("commands.commander.weather.success", weather.getTranslatedName());
+                                            return Command.SINGLE_SUCCESS;
+                                        })))));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("w")
                 .redirect(command));
     }

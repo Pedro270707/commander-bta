@@ -40,11 +40,11 @@ public class OpCommand {
                                 EntityPlayerMP player = (EntityPlayerMP) entity;
                                 if (!player.isOperator()) {
                                     oppedSomeone = true;
-                                    server.configManager.opPlayer(player.username);
+                                    server.playerList.opPlayer(player.username);
                                     source.sendTranslatableMessage("commands.commander.op.success", player.username);
                                     source.sendTranslatableMessage(player, "commands.commander.op.success_receiver");
                                 }
-                                server.configManager.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
+                                server.playerList.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
                             }
                             if (!oppedSomeone) {
                                 throw FAILURE.create();

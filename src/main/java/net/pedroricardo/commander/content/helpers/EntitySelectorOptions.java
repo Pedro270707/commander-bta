@@ -5,16 +5,15 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import net.minecraft.client.lang.text.ChainText;
+import net.minecraft.client.lang.text.Text;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityDispatcher;
 import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.lang.I18n;
-import net.minecraft.core.lang.text.Text;
-import net.minecraft.core.lang.text.TextTranslatable;
 import net.minecraft.core.player.gamemode.Gamemode;
 import net.minecraft.core.util.helper.LogPrintStream;
-import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.CommanderHelper;
 
 import java.util.*;
@@ -48,27 +47,27 @@ public class EntitySelectorOptions {
         EntitySelectorOptions.register("x", (parser) -> {
             double x = parser.getReader().readDouble();
             parser.setX(x);
-        }, entitySelectorParser -> entitySelectorParser.getX() == null, new TextTranslatable("argument_types.commander.entity.selector.options.x.description"));
+        }, entitySelectorParser -> entitySelectorParser.getX() == null, ChainText.text().trans("argument_types.commander.entity.selector.options.x.description"));
         EntitySelectorOptions.register("y", (parser) -> {
             double y = parser.getReader().readDouble();
             parser.setY(y);
-        }, entitySelectorParser -> entitySelectorParser.getY() == null, new TextTranslatable("argument_types.commander.entity.selector.options.y.description"));
+        }, entitySelectorParser -> entitySelectorParser.getY() == null, ChainText.text().trans("argument_types.commander.entity.selector.options.y.description"));
         EntitySelectorOptions.register("z", (parser) -> {
             double z = parser.getReader().readDouble();
             parser.setZ(z);
-        }, entitySelectorParser -> entitySelectorParser.getZ() == null, new TextTranslatable("argument_types.commander.entity.selector.options.z.description"));
+        }, entitySelectorParser -> entitySelectorParser.getZ() == null, ChainText.text().trans("argument_types.commander.entity.selector.options.z.description"));
         EntitySelectorOptions.register("dx", (parser) -> {
             double dx = parser.getReader().readDouble();
             parser.setDeltaX(dx);
-        }, entitySelectorParser -> entitySelectorParser.getDeltaX() == null, new TextTranslatable("argument_types.commander.entity.selector.options.dx.description"));
+        }, entitySelectorParser -> entitySelectorParser.getDeltaX() == null, ChainText.text().trans("argument_types.commander.entity.selector.options.dx.description"));
         EntitySelectorOptions.register("dy", (parser) -> {
             double dy = parser.getReader().readDouble();
             parser.setDeltaY(dy);
-        }, entitySelectorParser -> entitySelectorParser.getDeltaY() == null, new TextTranslatable("argument_types.commander.entity.selector.options.dy.description"));
+        }, entitySelectorParser -> entitySelectorParser.getDeltaY() == null, ChainText.text().trans("argument_types.commander.entity.selector.options.dy.description"));
         EntitySelectorOptions.register("dz", (parser) -> {
             double dz = parser.getReader().readDouble();
             parser.setDeltaZ(dz);
-        }, entitySelectorParser -> entitySelectorParser.getDeltaZ() == null, new TextTranslatable("argument_types.commander.entity.selector.options.dz.description"));
+        }, entitySelectorParser -> entitySelectorParser.getDeltaZ() == null, ChainText.text().trans("argument_types.commander.entity.selector.options.dz.description"));
         EntitySelectorOptions.register("name", (parser) -> {
                     int i = parser.getReader().getCursor();
                     boolean bl = parser.shouldInvertValue();
@@ -87,7 +86,7 @@ public class EntitySelectorOptions {
                         else if (entity instanceof EntityPlayer) return ((EntityPlayer)entity).username.equals(string) != bl;
                         else return LogPrintStream.removeColorCodes(((EntityLiving)entity).getDisplayName()).equals(string) != bl;
                     });
-                }, entitySelectorParser -> !entitySelectorParser.hasNameEquals(), new TextTranslatable("argument_types.commander.entity.selector.options.name.description"));
+                }, entitySelectorParser -> !entitySelectorParser.hasNameEquals(), ChainText.text().trans("argument_types.commander.entity.selector.options.name.description"));
         register("distance", (parser) -> {
             int cursor = parser.getReader().getCursor();
             MinMaxBounds.Doubles bounds = MinMaxBounds.Doubles.fromReader(parser.getReader());
@@ -96,7 +95,7 @@ public class EntitySelectorOptions {
                 throw NEGATIVE_DISTANCE.createWithContext(parser.getReader());
             }
             parser.setDistance(bounds);
-        }, parser -> parser.getDistance().isAny(), new TextTranslatable("argument_types.commander.entity.selector.options.distance.description"));
+        }, parser -> parser.getDistance().isAny(), ChainText.text().trans("argument_types.commander.entity.selector.options.distance.description"));
         register("type", (parser) -> {
             int cursor = parser.getReader().getCursor();
             boolean invert = parser.shouldInvertValue();
@@ -110,7 +109,7 @@ public class EntitySelectorOptions {
                 }
                 CommanderHelper.suggest("!Player", builder);
                 CommanderHelper.suggest("Player", builder);
-                for (String key : EntityDispatcher.stringToClassMapping.keySet()) {
+                for (String key : EntityDispatcher.keyToClassMap.keySet()) {
                     if (!key.toLowerCase(Locale.ROOT).startsWith(string)) continue;
                     CommanderHelper.suggest("!" + key, builder);
                     if (invert) continue;
@@ -130,14 +129,14 @@ public class EntitySelectorOptions {
             if (type.equals("Player")) {
                 parser.setLimitToType(EntityPlayer.class);
             } else {
-                if (EntityDispatcher.stringToClassMapping.containsKey(type)) {
-                    parser.setLimitToType(EntityDispatcher.stringToClassMapping.get(type));
+                if (EntityDispatcher.keyToClassMap.containsKey(type)) {
+                    parser.setLimitToType(EntityDispatcher.keyToClassMap.get(type));
                 } else {
                     parser.getReader().setCursor(cursor);
                     throw UNKNOWN_ENTITY_TYPE.createWithContext(parser.getReader(), type);
                 }
             }
-        }, parser -> !parser.hasType(), new TextTranslatable("argument_types.commander.entity.selector.options.type.description"));
+        }, parser -> !parser.hasType(), ChainText.text().trans("argument_types.commander.entity.selector.options.type.description"));
         register("limit", (parser) -> {
             int cursor = parser.getReader().getCursor();
             int limit = parser.getReader().readInt();
@@ -147,7 +146,7 @@ public class EntitySelectorOptions {
             }
             parser.setMaxResults(limit);
             parser.setHasLimit(true);
-        }, parser -> !parser.isCurrentEntity() && !parser.hasLimit(), new TextTranslatable("argument_types.commander.entity.selector.options.limit.description"));
+        }, parser -> !parser.isCurrentEntity() && !parser.hasLimit(), ChainText.text().trans("argument_types.commander.entity.selector.options.limit.description"));
         register("sort", (parser) -> {
             int i = parser.getReader().getCursor();
             String string = parser.getReader().readUnquotedString();
@@ -172,7 +171,7 @@ public class EntitySelectorOptions {
             }
             parser.setOrder(sort);
             parser.setSorted(true);
-        }, parser -> !parser.isSorted(), new TextTranslatable("argument_types.commander.entity.selector.options.sort.description"));
+        }, parser -> !parser.isSorted(), ChainText.text().trans("argument_types.commander.entity.selector.options.sort.description"));
         register("gamemode", (parser) -> {
             parser.setSuggestions((builder, consumer) -> {
                 String string = builder.getRemaining().toLowerCase(Locale.ROOT);
@@ -187,8 +186,8 @@ public class EntitySelectorOptions {
                     }
                 }
                 for (Gamemode gameMode : Gamemode.gamemodesList) {
-                    if (!CommanderHelper.getStringToSuggest(gameMode.languageKey, string).isPresent()) continue;
-                    String stringToSuggest = CommanderHelper.getStringToSuggest(gameMode.languageKey, string).get();
+                    if (!CommanderHelper.getStringToSuggest(gameMode.getLanguageKey(), string).isPresent()) continue;
+                    String stringToSuggest = CommanderHelper.getStringToSuggest(gameMode.getLanguageKey(), string).get();
                     if (bl2) {
                         builder.suggest("!" + stringToSuggest);
                     }
@@ -203,7 +202,7 @@ public class EntitySelectorOptions {
 
             Gamemode gamemode = null;
             for (Gamemode iteratedGameMode : Gamemode.gamemodesList) {
-                if (CommanderHelper.matchesKeyString(iteratedGameMode.languageKey, value)) {
+                if (CommanderHelper.matchesKeyString(iteratedGameMode.getLanguageKey(), value)) {
                     gamemode = iteratedGameMode;
                 }
             }
@@ -215,7 +214,7 @@ public class EntitySelectorOptions {
             parser.setIncludesEntities(false);
             parser.addPredicate((entity) -> {
                 if (!(entity instanceof EntityPlayer)) return false;
-                return CommanderHelper.matchesKeyString(((EntityPlayer) entity).gamemode.languageKey, value) != invert;
+                return CommanderHelper.matchesKeyString(((EntityPlayer) entity).gamemode.getLanguageKey(), value) != invert;
             });
 
             if (invert) {
@@ -223,7 +222,7 @@ public class EntitySelectorOptions {
             } else {
                 parser.setHasGamemodeEquals(true);
             }
-        }, parser -> !parser.hasGamemodeEquals(), new TextTranslatable("argument_types.commander.entity.selector.options.gamemode.description"));
+        }, parser -> !parser.hasGamemodeEquals(), ChainText.text().trans("argument_types.commander.entity.selector.options.gamemode.description"));
     }
 
     public static Modifier get(EntitySelectorParser entitySelectorParser, String string, int i) throws CommandSyntaxException {

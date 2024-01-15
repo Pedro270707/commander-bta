@@ -1,11 +1,9 @@
 package net.pedroricardo.commander.content;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
 import net.minecraft.core.net.command.ConsoleCommandSender;
-import net.minecraft.core.net.command.ServerPlayerCommandSender;
 import net.minecraft.core.net.packet.Packet3Chat;
 import net.minecraft.core.util.helper.AES;
 import net.minecraft.core.util.helper.LogPrintStream;
@@ -13,9 +11,7 @@ import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.core.world.World;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.entity.player.EntityPlayerMP;
-import net.pedroricardo.commander.Commander;
 import org.apache.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -34,7 +30,7 @@ public class CommanderConsoleCommandSource implements CommanderCommandSource, IS
     @Override
     public Collection<String> getPlayerNames() {
         List<String> list = new ArrayList<>();
-        for (EntityPlayer player : server.configManager.playerEntities) {
+        for (EntityPlayer player : server.playerList.playerEntities) {
             list.add(player.username);
         }
         return list;
@@ -82,22 +78,22 @@ public class CommanderConsoleCommandSource implements CommanderCommandSource, IS
 
     @Override
     public void sendMessage(EntityPlayer player, String message) {
-        this.server.configManager.sendPacketToPlayer(player.username, new Packet3Chat(message, AES.keyChain.get(player.username)));
+        this.server.playerList.sendPacketToPlayer(player.username, new Packet3Chat(message, AES.keyChain.get(player.username)));
     }
 
     @Override
     public World getWorld() {
-        return this.server.getWorldManager(0);
+        return this.server.getDimensionWorld(0);
     }
 
     @Override
     public World getWorld(int dimension) {
-        return this.server.getWorldManager(dimension);
+        return this.server.getDimensionWorld(dimension);
     }
 
     @Override
     public void movePlayerToDimension(EntityPlayer player, int dimension) {
-        if (player instanceof EntityPlayerMP) this.server.configManager.sendPlayerToOtherDimension((EntityPlayerMP) player, dimension);
+        if (player instanceof EntityPlayerMP) this.server.playerList.sendPlayerToOtherDimension((EntityPlayerMP) player, dimension);
         throw new IllegalStateException("Player is not an instance of EntityPlayerMP");
     }
 

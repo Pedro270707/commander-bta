@@ -78,7 +78,7 @@ public class ScoreCommand {
         if (!(source instanceof IServerCommandSource)) throw CommanderExceptions.multiplayerWorldOnly().create();
         MinecraftServer server = ((IServerCommandSource) source).getServer();
         player.score = score;
-        server.configManager.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
+        server.playerList.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
         if (player == source.getSender()) {
             source.sendTranslatableMessage("commands.commander.score.set.success", score);
         } else {

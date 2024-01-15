@@ -68,7 +68,7 @@ public class DifficultyCommand {
 
         MinecraftServer server = ((IServerCommandSource)source).getServer();
 
-        for (World world : server.worldMngr) {
+        for (World world : server.dimensionWorlds) {
             world.difficultySetting = difficulty;
         }
         server.difficulty = difficulty;

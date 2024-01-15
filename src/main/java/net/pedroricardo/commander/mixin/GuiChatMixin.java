@@ -54,7 +54,7 @@ public class GuiChatMixin {
     @Unique
     private final List<String> ARGUMENT_STYLES = new ArrayList<>();
 
-    @Inject(method = "initGui", at = @At("TAIL"))
+    @Inject(method = "init", at = @At("TAIL"))
     private void initGui(CallbackInfo ci) {
         this.suggestionsGui = new GuiChatSuggestions(((GuiScreenAccessor)((GuiChat)(Object)this)).mc(), ((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor(), (GuiChat)(Object)this);
         this.ARGUMENT_STYLES.add(TextFormatting.LIGHT_BLUE.toString());
@@ -81,7 +81,7 @@ public class GuiChatMixin {
             }
 
             if (suggestionToRender.getText().startsWith(((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor().getText().substring(suggestionToRender.getRange().getStart()))) {
-                int leftMargin = 3 + ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().getStringWidth(this.suggestionsGui.getMessage().substring(0, suggestionToRender.getRange().getStart()));
+                int leftMargin = 17 + ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().getStringWidth(this.suggestionsGui.getMessage().substring(0, suggestionToRender.getRange().getStart()));
                 ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().drawStringWithShadow(TextFormatting.LIGHT_GRAY + suggestionToRender.getText(), leftMargin + 1, ((GuiChat) (Object) this).height - 12, 0xE0E0E0);
             }
         }
@@ -113,8 +113,8 @@ public class GuiChatMixin {
         }
     }
 
-    @Inject(method = "updateScreen", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILHARD)
-    private void updateScreen(CallbackInfo ci, int dWheel) {
+    @Inject(method = "tick", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILHARD)
+    private void tick(CallbackInfo ci, int dWheel) {
         this.suggestionsGui.updateScreen(dWheel);
     }
 

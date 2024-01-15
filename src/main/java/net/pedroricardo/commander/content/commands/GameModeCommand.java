@@ -32,7 +32,7 @@ public class GameModeCommand {
                             }
 
                             source.getSender().setGamemode(gameMode);
-                            source.sendTranslatableMessage("commands.commander.gamemode.success_self", I18n.getInstance().translateKey(gameMode.languageKey + ".name"));
+                            source.sendTranslatableMessage("commands.commander.gamemode.success_self", I18n.getInstance().translateKey(gameMode.getLanguageKey() + ".name"));
                             return Command.SINGLE_SUCCESS;
                         })
                         .then(RequiredArgumentBuilder.argument("targets", EntityArgumentType.players())
@@ -52,9 +52,9 @@ public class GameModeCommand {
 
                                     if (entities.size() == 1) {
                                         if (entities.get(0) == source.getSender()) {
-                                            source.sendTranslatableMessage("commands.commander.gamemode.success_self", I18n.getInstance().translateKey(gameMode.languageKey + ".name"));
+                                            source.sendTranslatableMessage("commands.commander.gamemode.success_self", I18n.getInstance().translateKey(gameMode.getLanguageKey() + ".name"));
                                         } else {
-                                            source.sendTranslatableMessage("commands.commander.gamemode.success_other", CommanderHelper.getEntityName(entities.get(0)), I18n.getInstance().translateKey(gameMode.languageKey + ".name"));
+                                            source.sendTranslatableMessage("commands.commander.gamemode.success_other", CommanderHelper.getEntityName(entities.get(0)), I18n.getInstance().translateKey(gameMode.getLanguageKey() + ".name"));
                                         }
                                     }
                                     return Command.SINGLE_SUCCESS;

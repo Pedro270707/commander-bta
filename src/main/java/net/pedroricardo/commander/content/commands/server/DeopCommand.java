@@ -40,11 +40,11 @@ public class DeopCommand {
                                 EntityPlayerMP player = (EntityPlayerMP) entity;
                                 if (player.isOperator()) {
                                     deoppedSomeone = true;
-                                    server.configManager.deopPlayer(player.username);
+                                    server.playerList.deopPlayer(player.username);
                                     source.sendTranslatableMessage("commands.commander.deop.success", player.username);
                                     source.sendTranslatableMessage(player, "commands.commander.deop.success_receiver");
                                 }
-                                server.configManager.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
+                                server.playerList.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
                             }
                             if (!deoppedSomeone) {
                                 throw FAILURE.create();

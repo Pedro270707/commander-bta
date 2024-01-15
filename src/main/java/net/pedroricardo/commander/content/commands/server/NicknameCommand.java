@@ -41,7 +41,7 @@ public class NicknameCommand {
 
                                             player.nickname = nickname;
                                             player.hadNicknameSet = true;
-                                            player.mcServer.configManager.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
+                                            player.mcServer.playerList.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
                                             if (source.getSender() == player) {
                                                 source.sendTranslatableMessage("commands.commander.nickname.set.success", nickname);
                                             } else {
@@ -63,7 +63,7 @@ public class NicknameCommand {
 
                                     player.nickname = nickname;
                                     player.hadNicknameSet = true;
-                                    player.mcServer.configManager.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
+                                    player.mcServer.playerList.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
                                     if (source.getSender() == player) {
                                         source.sendTranslatableMessage("commands.commander.nickname.set.success", nickname);
                                     } else {

@@ -26,9 +26,9 @@ public class EntitySummonArgumentType implements ArgumentType<Class<? extends En
     public Class<? extends Entity> parse(StringReader reader) throws CommandSyntaxException {
         final String string = reader.readString();
 
-        for (String entityName : EntityDispatcher.stringToClassMapping.keySet()) {
+        for (String entityName : EntityDispatcher.keyToClassMap.keySet()) {
             if (entityName.equals(string)) {
-                return EntityDispatcher.stringToClassMapping.get(entityName);
+                return EntityDispatcher.keyToClassMap.get(entityName);
             }
         }
         throw new CommandSyntaxException(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument(), () -> I18n.getInstance().translateKey("argument_types.commander.entity_summon.invalid_entity"));
@@ -36,7 +36,7 @@ public class EntitySummonArgumentType implements ArgumentType<Class<? extends En
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-        for (String entityName : EntityDispatcher.stringToClassMapping.keySet()) {
+        for (String entityName : EntityDispatcher.keyToClassMap.keySet()) {
             if (entityName.toLowerCase().startsWith(builder.getRemainingLowerCase())) {
                 builder.suggest(entityName);
             }
