@@ -7,6 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.core.lang.I18n;
+import net.minecraft.core.net.command.commands.GenerateCommand;
 import net.minecraft.core.player.gamemode.Gamemode;
 import net.pedroricardo.commander.CommanderHelper;
 
@@ -27,7 +28,7 @@ public class GameModeArgumentType implements ArgumentType<Gamemode> {
         final String string = reader.readString();
 
         for (Gamemode gamemode : Gamemode.gamemodesList) {
-            if (CommanderHelper.matchesKeyString(gamemode.getLanguageKey(), string)) {
+            if (CommanderHelper.matchesKeyString(gamemode.getLanguageKey(), string) || string.equals(String.valueOf(gamemode.getId()))) {
                 return gamemode;
             }
         }
