@@ -23,7 +23,7 @@ import net.pedroricardo.commander.content.CommanderClientCommandSource;
 import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.RequestCommandManagerPacket;
-import net.pedroricardo.commander.duck.EnvironmentWithManager;
+import net.pedroricardo.commander.duck.ClassWithManager;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 import turniplabs.halplibe.helper.ModVersionHelper;
@@ -67,7 +67,7 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public CommanderCommandManager getManager() {
-        return ((EnvironmentWithManager)this.mc).getManager();
+        return this.mc.theWorld == null ? new CommanderCommandManager(false) : ((ClassWithManager)this.mc.theWorld).getManager();
     }
 
     public void drawScreen() {

@@ -7,18 +7,17 @@
     "GuiChatMixin",
     "PreferCommanderCommandPlayerSPMixin",
     "PreferCommanderCommandPlayerSPMixin$EntityPlayerSPAccessor",
-    "StatNameAccessor"
+    "StatNameAccessor",
+    "WorldManagerMixin"
   ],
   "server": [
     "PreferCommanderCommandConsoleMixin",
     "PreferCommanderCommandNetServerHandlerMixin",
     "PreferCommanderCommandNetServerHandlerMixin$NetServerHandlerAccessor",
     "ReceiveRequestCommandManagerPacketMixin",
-    "SendCommandManagerPacketMixin",
-    "ServerManagerMixin"
+    "SendCommandManagerPacketMixin"
   ],
   "client": [
-    "ClientManagerMixin",
     "GuiScreenAccessor",
     "GuiSleepMixin",
     "ReceiveCommandManagerPacketMixin",

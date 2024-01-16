@@ -1,16 +1,11 @@
 package net.pedroricardo.commander.mixin;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.EntityPlayerSP;
 import net.minecraft.core.net.ServerCommand;
-import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.server.MinecraftServer;
-import net.pedroricardo.commander.content.CommanderClientCommandSource;
 import net.pedroricardo.commander.content.CommanderConsoleCommandSource;
-import net.pedroricardo.commander.duck.EnvironmentWithManager;
+import net.pedroricardo.commander.duck.ClassWithManager;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -24,7 +19,7 @@ public class PreferCommanderCommandConsoleMixin {
         String command = serverCommand.command;
         CommanderConsoleCommandSource source = new CommanderConsoleCommandSource((MinecraftServer)(Object)this);
         try {
-            ((EnvironmentWithManager)((MinecraftServer)(Object)this)).getManager().execute(command, source);
+            ((ClassWithManager)((MinecraftServer)(Object)this).getDimensionWorld(0)).getManager().execute(command, source);
         } catch (CommandSyntaxException e) {
             source.sendMessage(e.getMessage());
         }

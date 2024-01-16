@@ -41,14 +41,14 @@ public class GuiChatMixin {
         int mouseY = GuiHelper.getScaledMouseY(((GuiScreenAccessor)((GuiChat)(Object)this)).mc()) - 1;
 
         if (this.shouldDrawSuggestionPreview()) {
-            Suggestion suggestionToRender;
+            Suggestion suggestionToRender = null;
             if (this.commander$suggestionsGui.isHoveringOverSuggestions(mouseX, mouseY)) {
                 suggestionToRender = this.commander$suggestionsGui.getSuggestions().get(this.commander$suggestionsGui.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY).get());
-            } else {
+            } else if (!this.commander$suggestionsGui.getSuggestions().isEmpty()) {
                 suggestionToRender = this.commander$suggestionsGui.getSuggestions().get(0);
             }
 
-            if (suggestionToRender.getText().startsWith(((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor().getText().substring(Math.min(suggestionToRender.getRange().getStart(), ((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor().getText().length())))) {
+            if (suggestionToRender != null && suggestionToRender.getText().startsWith(((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor().getText().substring(Math.min(suggestionToRender.getRange().getStart(), ((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor().getText().length())))) {
                 int leftMargin = 17 + ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().getStringWidth(this.commander$suggestionsGui.getMessage().substring(0, Math.min(suggestionToRender.getRange().getStart(), this.commander$suggestionsGui.getMessage().length())));
                 ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().drawStringWithShadow(TextFormatting.LIGHT_GRAY + suggestionToRender.getText(), leftMargin + 1, ((GuiChat) (Object) this).height - 12, 0xE0E0E0);
             }

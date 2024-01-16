@@ -7,9 +7,8 @@ import net.minecraft.core.util.helper.AES;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.entity.player.EntityPlayerMP;
 import net.minecraft.server.net.handler.NetServerHandler;
-import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderServerCommandSource;
-import net.pedroricardo.commander.duck.EnvironmentWithManager;
+import net.pedroricardo.commander.duck.ClassWithManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,7 +30,7 @@ public class PreferCommanderCommandNetServerHandlerMixin {
     private void handleSlashCommand(String s, CallbackInfo ci) {
         CommanderServerCommandSource serverCommandSource = new CommanderServerCommandSource(((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).mcServer(), ((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity());
         try {
-            ((EnvironmentWithManager)(((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).mcServer())).getManager().execute(s.substring(1), serverCommandSource);
+            ((ClassWithManager)((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity().world).getManager().execute(s.substring(1), serverCommandSource);
         } catch (CommandSyntaxException e) {
             ((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity().playerNetServerHandler.sendPacket(new Packet3Chat(TextFormatting.RED + e.getMessage(), AES.keyChain.get(((NetServerHandlerAccessor)((NetServerHandler)(Object)this)).playerEntity().username)));
         }
