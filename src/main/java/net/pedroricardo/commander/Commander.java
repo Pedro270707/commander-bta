@@ -14,7 +14,7 @@ import turniplabs.halplibe.util.GameStartEntrypoint;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Commander implements ModInitializer, DedicatedServerModInitializer, GameStartEntrypoint {
+public class Commander implements ModInitializer, DedicatedServerModInitializer {
     public static final String MOD_ID = "commander";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -42,16 +42,6 @@ public class Commander implements ModInitializer, DedicatedServerModInitializer,
 
     @Override
     public void onInitializeServer() {
-        LOGGER.info("Commander is installed on the server. Packets with suggestions will be sent to clients with Commander.");
-    }
-
-    @Override
-    public void beforeGameStart() {
-
-    }
-
-    @Override
-    public void afterGameStart() {
-
+        LOGGER.info("Commander is installed on the server. Packets with suggestions will be sent to clients with Commander. The lower the packet delay is, the faster packets will be sent to the client, so it will be less laggy for them.");
     }
 }

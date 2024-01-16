@@ -19,6 +19,9 @@
   "entrypoints": {
     "main": [
         "net.pedroricardo.commander.Commander"
+    ],
+    "server": [
+        "net.pedroricardo.commander.Commander"
     ]
   },
   "mixins": [
