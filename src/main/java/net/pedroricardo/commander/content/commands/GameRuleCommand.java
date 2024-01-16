@@ -11,6 +11,7 @@ import net.minecraft.core.data.gamerule.GameRule;
 import net.minecraft.core.data.gamerule.GameRuleBoolean;
 import net.minecraft.core.data.registry.Registries;
 import net.pedroricardo.commander.content.CommanderCommandSource;
+import net.pedroricardo.commander.content.arguments.GenericGameRuleArgumentType;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 
 @SuppressWarnings("unchecked")
@@ -27,9 +28,9 @@ public class GameRuleCommand {
                             return Command.SINGLE_SUCCESS;
                         });
             } else {
-                gameRuleValueArgument = RequiredArgumentBuilder.<CommanderCommandSource, String>argument("value", StringArgumentType.greedyString())
+                gameRuleValueArgument = RequiredArgumentBuilder.<CommanderCommandSource, Object>argument("value", GenericGameRuleArgumentType.gameRule(gameRule))
                         .executes(c -> {
-                            Object o = gameRule.parseFromString(StringArgumentType.getString(c, "value"));
+                            Object o = c.getArgument("value", Object.class);
                             if (o == null) throw CommanderExceptions.invalidGameRuleValue().create();
                             c.getSource().getWorld().getLevelData().getGameRules().setValue((GameRule<? super Object>) gameRule, o);
                             c.getSource().sendTranslatableMessage("commands.commander.gamerule.set", gameRule.getKey(), o);
