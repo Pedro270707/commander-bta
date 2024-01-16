@@ -64,6 +64,15 @@ public class CommandManagerPacket extends Packet {
         StringReader reader = new StringReader(text);
         if (cursor >= 1 && reader.canRead() && reader.read() == '/') {
             ParseResults<CommanderCommandSource> parseResults = dispatcher.parse(reader, source);
+            JsonObject readerJson = new JsonObject();
+            readerJson.addProperty("can_read", parseResults.getReader().canRead());
+            int readerCursor = Math.max(parseResults.getReader().getCursor(), 0);
+            readerJson.addProperty("cursor", readerCursor);
+            int remainingTextLength = Math.min(readerCursor + parseResults.getReader().getRemainingLength(), text.length());
+            readerJson.addProperty("remaining_text_length", remainingTextLength);
+            readerJson.addProperty("string", parseResults.getReader().getString());
+            object.add("reader", readerJson);
+
             CompletableFuture<Suggestions> pendingSuggestions = getCompletionSuggestions(parseResults, cursor, source);
             pendingSuggestions.thenRun(() -> {
                 if (pendingSuggestions.isDone()) {
@@ -100,7 +109,7 @@ public class CommandManagerPacket extends Packet {
                 }
             }
 
-            JsonObject lastChild = getLastChild(text, parseResults);
+            JsonObject lastChild = getLastChild(parseResults);
             object.add("last_child", lastChild);
         }
         object.add("suggestions", suggestions);
@@ -151,7 +160,7 @@ public class CommandManagerPacket extends Packet {
     }
 
     @NotNull
-    private static JsonObject getLastChild(String text, ParseResults<CommanderCommandSource> parseResults) {
+    private static JsonObject getLastChild(ParseResults<CommanderCommandSource> parseResults) {
         JsonObject lastChild = new JsonObject();
         CommandContextBuilder<CommanderCommandSource> builder = parseResults.getContext().getLastChild();
         JsonArray arguments = new JsonArray();
@@ -161,9 +170,8 @@ public class CommandManagerPacket extends Packet {
             range.addProperty("start", parsedArgument.getRange().getStart());
             range.addProperty("end", parsedArgument.getRange().getEnd());
             argument.add("range", range);
+            arguments.add(argument);
         }
-        int remainingTextLength = Math.min(Math.max(parseResults.getReader().getCursor(), 0) + parseResults.getReader().getRemainingLength(), text.length());
-        lastChild.addProperty("remaining_text_length", remainingTextLength);
         lastChild.add("arguments", arguments);
         return lastChild;
     }

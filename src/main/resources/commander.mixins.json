@@ -5,8 +5,6 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "GuiChatMixin",
-    "GuiChatMixin$GuiScreenAccessor",
-    "GuiChatMixin$TextFieldEditorAccessor",
     "PreferCommanderCommandPlayerSPMixin",
     "PreferCommanderCommandPlayerSPMixin$EntityPlayerSPAccessor",
     "StatNameAccessor"
@@ -21,7 +19,10 @@
   ],
   "client": [
     "ClientManagerMixin",
-    "ReceiveCommandManagerPacketMixin"
+    "GuiScreenAccessor",
+    "GuiSleepMixin",
+    "ReceiveCommandManagerPacketMixin",
+    "TextFieldEditorAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

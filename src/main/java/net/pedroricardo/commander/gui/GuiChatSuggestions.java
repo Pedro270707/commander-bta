@@ -17,9 +17,7 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiTooltip;
 import net.minecraft.client.gui.text.TextFieldEditor;
 import net.minecraft.client.render.FontRenderer;
-import net.minecraft.client.world.WorldClient;
 import net.minecraft.core.net.command.TextFormatting;
-import net.minecraft.server.world.WorldServer;
 import net.pedroricardo.commander.*;
 import net.pedroricardo.commander.content.CommanderClientCommandSource;
 import net.pedroricardo.commander.content.CommanderCommandManager;
@@ -28,6 +26,8 @@ import net.pedroricardo.commander.content.RequestCommandManagerPacket;
 import net.pedroricardo.commander.duck.EnvironmentWithManager;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
+import turniplabs.halplibe.helper.ModVersionHelper;
+import turniplabs.halplibe.util.version.EnumModList;
 
 import java.awt.*;
 import java.util.List;
@@ -35,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 public class GuiChatSuggestions extends Gui {
@@ -68,19 +67,8 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public CommanderCommandManager getManager() {
-        // if (this.mc.theWorld instanceof WorldServer) {
-            // return ((EnvironmentWithManager)((ServerFromWorldAccessor)((WorldServer)this.mc.theWorld)).mcServer()).getManager();
-        // }
         return ((EnvironmentWithManager)this.mc).getManager();
     }
-
-//    private CommanderCommandSource getNewCommandSource() {
-//        if (this.mc.theWorld instanceof WorldServer) {
-//            MinecraftServer server = ((ServerFromWorldAccessor)((WorldServer)this.mc.theWorld)).mcServer();
-//            return new CommanderServerCommandSource(server, server.configManager.getPlayerEntity(this.mc.thePlayer.username));
-//        }
-//        return new CommanderClientCommandSource(this.mc);
-//    }
 
     public void drawScreen() {
         CommandSyntaxException parseException;
@@ -103,7 +91,7 @@ public class GuiChatSuggestions extends Gui {
                 }
             }
         } else if (!Commander.serverSuggestions.isEmpty()) {
-            if (Commander.serverSuggestions.has("usage")) {
+            if (Commander.serverSuggestions.has("usage") && !Commander.serverSuggestions.getAsJsonArray("usage").isEmpty()) {
                 for (int i = 0; i < Commander.serverSuggestions.getAsJsonArray("usage").size(); i++) {
                     this.renderSingleSuggestionLine(this.mc.fontRenderer, TextFormatting.LIGHT_GRAY + Commander.serverSuggestions.getAsJsonArray("usage").get(i).getAsJsonObject().get("value").getAsString(), i, true);
                 }
@@ -204,8 +192,12 @@ public class GuiChatSuggestions extends Gui {
         boolean bl = stringReader.canRead() && stringReader.peek() == '/';
         if (bl) {
             if (this.mc.isMultiplayerWorld()) {
-                this.parseResults = null;
-                this.mc.getSendQueue().addToSendQueue(new RequestCommandManagerPacket(this.mc.thePlayer.username, text, cursor));
+                if (ModVersionHelper.isModPresent("commander", EnumModList.SERVER)) {
+                    this.parseResults = null;
+                    this.mc.getSendQueue().addToSendQueue(new RequestCommandManagerPacket(this.mc.thePlayer.username, text, cursor));
+                } else {
+                    Commander.serverSuggestions = CommanderHelper.getDefaultServerSuggestions();
+                }
             } else {
                 stringReader.skip();
                 CommandDispatcher<CommanderCommandSource> dispatcher = this.getManager().getDispatcher();

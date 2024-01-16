@@ -1,5 +1,7 @@
 package net.pedroricardo.commander;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.core.block.Block;
@@ -78,6 +80,19 @@ public class CommanderHelper {
             }
         }
         return EntityDispatcher.getEntityString(entity);
+    }
+
+    public static JsonObject getDefaultServerSuggestions() {
+        JsonObject serverSuggestions = new JsonObject();
+        serverSuggestions.add("suggestions", new JsonArray());
+        serverSuggestions.add("usage", new JsonArray());
+        JsonArray exceptions = new JsonArray();
+        JsonObject exception = new JsonObject();
+        exception.addProperty("value", "This server does not have Commander installed");
+        exceptions.add(exception);
+        serverSuggestions.add("exceptions", exceptions);
+        serverSuggestions.add("last_child", new JsonObject());
+        return serverSuggestions;
     }
 
     public static void init() {
