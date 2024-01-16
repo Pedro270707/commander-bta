@@ -74,6 +74,7 @@ public class TeleportCommand {
                             return Command.SINGLE_SUCCESS;
                         }))));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("tp")
+                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .redirect(command));
     }
 }

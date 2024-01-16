@@ -48,6 +48,7 @@ public class WeatherCommand {
                                             return Command.SINGLE_SUCCESS;
                                         })))));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("w")
+                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .redirect(command));
     }
 }

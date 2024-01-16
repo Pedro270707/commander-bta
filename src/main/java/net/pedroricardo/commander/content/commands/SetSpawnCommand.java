@@ -30,6 +30,7 @@ public class SetSpawnCommand {
                             return Command.SINGLE_SUCCESS;
                         })));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("setspawn")
+                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .redirect(command));
     }
 }

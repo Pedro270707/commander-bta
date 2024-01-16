@@ -7,20 +7,21 @@
     "GuiChatMixin",
     "GuiChatMixin$GuiScreenAccessor",
     "GuiChatMixin$TextFieldEditorAccessor",
-    "NetServerHandlerAccessor",
     "PreferCommanderCommandPlayerSPMixin",
     "PreferCommanderCommandPlayerSPMixin$EntityPlayerSPAccessor",
     "StatNameAccessor"
   ],
   "server": [
-    "ServerManagerMixin",
-    "ServerFromWorldAccessor",
     "PreferCommanderCommandConsoleMixin",
     "PreferCommanderCommandNetServerHandlerMixin",
-    "PreferCommanderCommandNetServerHandlerMixin$NetServerHandlerAccessor"
+    "PreferCommanderCommandNetServerHandlerMixin$NetServerHandlerAccessor",
+    "ReceiveRequestCommandManagerPacketMixin",
+    "SendCommandManagerPacketMixin",
+    "ServerManagerMixin"
   ],
   "client": [
-    "ClientManagerMixin"
+    "ClientManagerMixin",
+    "ReceiveCommandManagerPacketMixin"
   ],
   "injectors": {
     "defaultRequire": 1

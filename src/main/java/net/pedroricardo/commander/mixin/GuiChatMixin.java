@@ -1,5 +1,6 @@
 package net.pedroricardo.commander.mixin;
 
+import com.google.gson.JsonElement;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
@@ -7,6 +8,7 @@ import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.suggestion.Suggestion;
 import net.minecraft.core.net.command.TextFormatting;
+import net.pedroricardo.commander.Commander;
 import org.objectweb.asm.Opcodes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -15,7 +17,6 @@ import net.minecraft.client.gui.text.TextFieldEditor;
 import net.minecraft.client.render.FontRenderer;
 import net.pedroricardo.commander.GuiHelper;
 import net.pedroricardo.commander.content.CommanderCommandSource;
-import net.pedroricardo.commander.duck.EnvironmentWithManager;
 import net.pedroricardo.commander.gui.GuiChatSuggestions;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -123,10 +124,9 @@ public class GuiChatMixin {
         this.suggestionsGui.mouseClicked(x, y, button);
     }
 
+    // TODO: fix this on servers
     @Redirect(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiChat;drawString(Lnet/minecraft/client/render/FontRenderer;Ljava/lang/String;III)V", ordinal = 0))
     private void drawString(GuiChat instance, FontRenderer fontRenderer, String text, int x, int y, int argb) {
-        int cursor = ((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor().getCursor();
-
         if (this.parseResults != null && !this.parseResults.getReader().getString().equals(text)) {
             this.parseResults = null;
         }
@@ -134,39 +134,69 @@ public class GuiChatMixin {
         StringReader stringReader = new StringReader(text);
         boolean isCommand = stringReader.canRead() && stringReader.peek() == '/';
         if (isCommand) {
-            stringReader.skip();
-            CommandDispatcher<CommanderCommandSource> dispatcher = this.suggestionsGui.getManager().getDispatcher();
-            if (this.parseResults == null) {
-                this.parseResults = dispatcher.parse(stringReader, this.suggestionsGui.getCommandSource());
-            }
+            if (!Commander.serverSuggestions.isEmpty() && Commander.serverSuggestions.get("last_child").getAsJsonObject().get("arguments") != null) {
+                StringBuilder stringToDrawBuilder = new StringBuilder();
+//                int currentArgumentEnd = 0;
+//                int currentColor = -1;
+//                for (JsonElement jsonArgument : Commander.serverSuggestions.get("last_child").getAsJsonObject().get("arguments").getAsJsonArray()) {
+//                    int rangeStart;
+//                    if (++currentColor >= ARGUMENT_STYLES.size()) {
+//                        currentColor = 0;
+//                    }
+//                    if ((rangeStart = Math.max(jsonArgument.getAsJsonObject().get("range").getAsJsonObject().get("start").getAsInt(), 0)) >= text.length()) break;
+//                    int rangeEnd = Math.min(jsonArgument.getAsJsonObject().get("range").getAsJsonObject().get("end").getAsInt(), text.length());
+//                    if (rangeEnd <= 0 || rangeEnd <= rangeStart) continue;
+//                    System.out.println("a");
+//                    stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, currentArgumentEnd, rangeStart);
+//                    System.out.println("b");
+//                    stringToDrawBuilder.append(ARGUMENT_STYLES.get(currentColor)).append(text, rangeStart, rangeEnd);
+//                    currentArgumentEnd = rangeEnd;
+//                }
+//                if (currentArgumentEnd < text.length()) {
+//                    int remainingTextLength = Commander.serverSuggestions.get("last_child").getAsJsonObject().get("remaining_text_length").getAsInt();
+//                    stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, currentArgumentEnd, text.length());
+//                    if (text.length() < remainingTextLength) {
+//                        stringToDrawBuilder.append(TextFormatting.RED).append(text, remainingTextLength, text.length());
+//                    }
+//                    currentArgumentEnd = remainingTextLength;
+//                }
+//                stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.substring(currentArgumentEnd));
 
-            int distanceFromCursorToTextStart = 0;
-
-            StringBuilder stringToDrawBuilder = new StringBuilder();
-            CommandContextBuilder<CommanderCommandSource> builder = this.parseResults.getContext().getLastChild();
-            int n;
-            int j = 0;
-            int k = -1;
-            for (ParsedArgument<CommanderCommandSource, ?> parsedArgument : builder.getArguments().values()) {
-                int l;
-                if (++k >= ARGUMENT_STYLES.size()) {
-                    k = 0;
+                stringToDrawBuilder.append(text);
+                instance.drawString(fontRenderer, stringToDrawBuilder.toString(), x, y, argb);
+            } else {
+                stringReader.skip();
+                CommandDispatcher<CommanderCommandSource> dispatcher = this.suggestionsGui.getManager().getDispatcher();
+                if (this.parseResults == null) {
+                    this.parseResults = dispatcher.parse(stringReader, this.suggestionsGui.getCommandSource());
                 }
-                if ((l = Math.max(parsedArgument.getRange().getStart() - distanceFromCursorToTextStart, 0)) >= text.length()) break;
-                int m = Math.min(parsedArgument.getRange().getEnd() - distanceFromCursorToTextStart, text.length());
-                if (m <= 0) continue;
-                stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, j, l);
-                stringToDrawBuilder.append(ARGUMENT_STYLES.get(k)).append(text, l, m);
-                j = m;
+
+                StringBuilder stringToDrawBuilder = new StringBuilder();
+                CommandContextBuilder<CommanderCommandSource> builder = this.parseResults.getContext().getLastChild();
+                int readerCursor;
+                int currentArgumentEnd = 0;
+                int currentColor = -1;
+                for (ParsedArgument<CommanderCommandSource, ?> parsedArgument : builder.getArguments().values()) {
+                    int rangeStart;
+                    if (++currentColor >= ARGUMENT_STYLES.size()) {
+                        currentColor = 0;
+                    }
+                    if ((rangeStart = Math.max(parsedArgument.getRange().getStart(), 0)) >= text.length()) break;
+                    int rangeEnd = Math.min(parsedArgument.getRange().getEnd(), text.length());
+                    if (rangeEnd <= 0) continue;
+                    stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, currentArgumentEnd, rangeStart);
+                    stringToDrawBuilder.append(ARGUMENT_STYLES.get(currentColor)).append(text, rangeStart, rangeEnd);
+                    currentArgumentEnd = rangeEnd;
+                }
+                if (this.parseResults.getReader().canRead() && (readerCursor = Math.max(this.parseResults.getReader().getCursor(), 0)) < text.length()) {
+                    int remainingTextLength = Math.min(readerCursor + this.parseResults.getReader().getRemainingLength(), text.length());
+                    stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, currentArgumentEnd, readerCursor);
+                    stringToDrawBuilder.append(TextFormatting.RED).append(text, readerCursor, remainingTextLength);
+                    currentArgumentEnd = remainingTextLength;
+                }
+                stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.substring(currentArgumentEnd));
+                instance.drawString(fontRenderer, stringToDrawBuilder.toString(), x, y, argb);
             }
-            if (this.parseResults.getReader().canRead() && (n = Math.max(this.parseResults.getReader().getCursor() - distanceFromCursorToTextStart, 0)) < text.length()) {
-                int o = Math.min(n + this.parseResults.getReader().getRemainingLength(), text.length());
-                stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, j, n);
-                stringToDrawBuilder.append(TextFormatting.RED).append(text, n, o);
-                j = o;
-            }
-            stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.substring(j));
-            instance.drawString(fontRenderer, stringToDrawBuilder.toString(), x, y, argb);
         } else {
             instance.drawString(fontRenderer, text, x, y, argb);
         }

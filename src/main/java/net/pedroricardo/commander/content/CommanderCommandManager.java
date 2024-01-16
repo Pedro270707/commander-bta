@@ -59,8 +59,6 @@ public class CommanderCommandManager {
         }
 
         this.registerLegacyCommands();
-
-//        TestCommand.register(DISPATCHER);
     }
 
     public void execute(String s, CommanderCommandSource commandSource) throws CommandSyntaxException {

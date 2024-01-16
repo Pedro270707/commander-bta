@@ -18,6 +18,7 @@ import java.util.List;
 public class DifficultyCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("difficulty")
+                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .executes(c -> {
                     CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                     switch (source.getWorld().difficultySetting) {

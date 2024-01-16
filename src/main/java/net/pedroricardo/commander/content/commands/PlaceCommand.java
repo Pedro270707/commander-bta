@@ -49,8 +49,10 @@ public class PlaceCommand {
                                     return Command.SINGLE_SUCCESS;
                                 }))));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("generate")
+                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .redirect(command));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("gen")
+                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
                 .redirect(command));
     }
 }

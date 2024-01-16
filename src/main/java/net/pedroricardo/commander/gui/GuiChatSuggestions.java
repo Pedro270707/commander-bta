@@ -1,8 +1,11 @@
 package net.pedroricardo.commander.gui;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -14,11 +17,14 @@ import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiTooltip;
 import net.minecraft.client.gui.text.TextFieldEditor;
 import net.minecraft.client.render.FontRenderer;
+import net.minecraft.client.world.WorldClient;
 import net.minecraft.core.net.command.TextFormatting;
+import net.minecraft.server.world.WorldServer;
 import net.pedroricardo.commander.*;
 import net.pedroricardo.commander.content.CommanderClientCommandSource;
 import net.pedroricardo.commander.content.CommanderCommandManager;
 import net.pedroricardo.commander.content.CommanderCommandSource;
+import net.pedroricardo.commander.content.RequestCommandManagerPacket;
 import net.pedroricardo.commander.duck.EnvironmentWithManager;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
@@ -29,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("OptionalGetWithoutIsPresent")
 public class GuiChatSuggestions extends Gui {
@@ -57,6 +64,7 @@ public class GuiChatSuggestions extends Gui {
         this.tablessMessage = this.chat.getText();
         this.tablessCursor = this.editor.getCursor();
         this.tooltip = new GuiTooltip(this.mc);
+        Commander.serverSuggestions = new JsonObject();
     }
 
     public CommanderCommandManager getManager() {
@@ -76,8 +84,9 @@ public class GuiChatSuggestions extends Gui {
 
     public void drawScreen() {
         CommandSyntaxException parseException;
+
         if (!this.suggestions.isEmpty()) {
-            this.renderSuggestions(this.fontRenderer, this.tablessMessage);
+            this.renderSuggestions(this.fontRenderer, this.tablessMessage, this.suggestions.get(0).getRange().getStart());
         } else if (this.parseResults != null) {
             if (!this.parseResults.getExceptions().isEmpty()) {
                 int i = 0;
@@ -93,19 +102,29 @@ public class GuiChatSuggestions extends Gui {
                     this.renderSingleSuggestionLine(this.mc.fontRenderer, TextFormatting.LIGHT_GRAY + commandUsage.get(i), i, true);
                 }
             }
+        } else if (!Commander.serverSuggestions.isEmpty()) {
+            if (Commander.serverSuggestions.has("usage")) {
+                for (int i = 0; i < Commander.serverSuggestions.getAsJsonArray("usage").size(); i++) {
+                    this.renderSingleSuggestionLine(this.mc.fontRenderer, TextFormatting.LIGHT_GRAY + Commander.serverSuggestions.getAsJsonArray("usage").get(i).getAsJsonObject().get("value").getAsString(), i, true);
+                }
+            } else if (!Commander.serverSuggestions.getAsJsonArray("exceptions").isEmpty()) {
+                int i = 0;
+                for (JsonElement exception : Commander.serverSuggestions.getAsJsonArray("exceptions")) {
+                    this.renderSingleSuggestionLine(this.mc.fontRenderer, TextFormatting.RED + exception.getAsJsonObject().get("value").getAsString(), i, false);
+                    i++;
+                }
+            }
         }
     }
 
-    private void renderSuggestions(FontRenderer fontRenderer, String message) {
+    private void renderSuggestions(FontRenderer fontRenderer, String message, int start) {
         int height = this.mc.resolution.scaledHeight;
         int mouseX = GuiHelper.getScaledMouseX(this.mc);
         int mouseY = GuiHelper.getScaledMouseY(this.mc) - 1;
 
-        int parameterStart = this.suggestions.get(0).getRange().getStart();
-
         int leftMargin = 16;
         if (Commander.suggestionsFollowParameters)
-            leftMargin += fontRenderer.getStringWidth(message.substring(0, parameterStart)) + 1;
+            leftMargin += fontRenderer.getStringWidth(message.substring(0, Math.min(start, message.length()))) + 1;
 
         int largestSuggestion = 0;
         for (Suggestion suggestion : this.suggestions)
@@ -137,8 +156,8 @@ public class GuiChatSuggestions extends Gui {
         int leftMargin = 16;
         int stringWidth = fontRenderer.getStringWidth(text);
 
-        if (Commander.suggestionsFollowParameters && this.parseResults != null && followParameters)
-            leftMargin += fontRenderer.getStringWidth(this.tablessMessage.substring(0, this.parseResults.getContext().findSuggestionContext(this.tablessCursor).startPos)) + 1;
+        if (Commander.suggestionsFollowParameters && this.parseResults != null && followParameters && !this.tablessMessage.isEmpty() && this.tablessMessage.substring(0, Math.min(this.tablessMessage.length(), this.tablessCursor)).indexOf(' ') != -1)
+            leftMargin += fontRenderer.getStringWidth(this.tablessMessage.substring(0, this.tablessMessage.substring(0, Math.min(this.tablessMessage.length(), this.tablessCursor)).lastIndexOf(' ') + 1)) + 2;
 
         this.drawRect(leftMargin, height - 27, stringWidth + leftMargin + 1, height - 15, Integer.MIN_VALUE);
         fontRenderer.drawStringWithShadow(text, leftMargin + 1, height - 25, 0xE0E0E0);
@@ -184,19 +203,27 @@ public class GuiChatSuggestions extends Gui {
         StringReader stringReader = new StringReader(text);
         boolean bl = stringReader.canRead() && stringReader.peek() == '/';
         if (bl) {
-            stringReader.skip();
-            CommandDispatcher<CommanderCommandSource> dispatcher = this.getManager().getDispatcher();
-            if (this.parseResults == null) {
-                this.parseResults = dispatcher.parse(stringReader, this.commandSource);
+            if (this.mc.isMultiplayerWorld()) {
+                this.parseResults = null;
+                this.mc.getSendQueue().addToSendQueue(new RequestCommandManagerPacket(this.mc.thePlayer.username, text, cursor));
+            } else {
+                stringReader.skip();
+                CommandDispatcher<CommanderCommandSource> dispatcher = this.getManager().getDispatcher();
+                if (this.parseResults == null) {
+                    this.parseResults = dispatcher.parse(stringReader, this.commandSource);
+                }
+                if (cursor >= 1) {
+                    this.pendingSuggestions = dispatcher.getCompletionSuggestions(this.parseResults, cursor);
+                    this.pendingSuggestions.thenRun(() -> {
+                        if (this.pendingSuggestions.isDone()) {
+                            this.updateSuggestions();
+                        }
+                    });
+                }
             }
-            if (cursor >= 1) {
-                this.pendingSuggestions = dispatcher.getCompletionSuggestions(this.parseResults, cursor);
-                this.pendingSuggestions.thenRun(() -> {
-                    if (this.pendingSuggestions.isDone()) {
-                        this.updateSuggestions();
-                    }
-                });
-            }
+        } else {
+            this.suggestions = new ArrayList<>();
+            Commander.serverSuggestions = new JsonObject();
         }
     }
 
@@ -213,13 +240,27 @@ public class GuiChatSuggestions extends Gui {
 
     private void updateSuggestions() {
         this.suggestions = new ArrayList<>();
-        if (this.pendingSuggestions != null && this.pendingSuggestions.isDone()) {
+        if (!this.tablessMessage.startsWith("/")) return;
+        if (!Commander.serverSuggestions.isEmpty()) {
+            for (JsonElement jsonSuggestion : Commander.serverSuggestions.getAsJsonArray("suggestions")) {
+                Suggestion suggestion;
+                if (jsonSuggestion.getAsJsonObject().has("tooltip")) {
+                    suggestion = new Suggestion(new StringRange(jsonSuggestion.getAsJsonObject().get("range").getAsJsonObject().get("start").getAsInt(), jsonSuggestion.getAsJsonObject().get("range").getAsJsonObject().get("end").getAsInt()), jsonSuggestion.getAsJsonObject().get("value").getAsString(), () -> jsonSuggestion.getAsJsonObject().get("tooltip").getAsString());
+                } else {
+                    suggestion = new Suggestion(new StringRange(jsonSuggestion.getAsJsonObject().get("range").getAsJsonObject().get("start").getAsInt(), jsonSuggestion.getAsJsonObject().get("range").getAsJsonObject().get("end").getAsInt()), jsonSuggestion.getAsJsonObject().get("value").getAsString());
+                }
+                if (suggestion.getRange().getStart() > 0 && this.tablessCursor <= this.tablessMessage.length() && suggestion.getText().startsWith(this.tablessMessage.substring(Math.min(suggestion.getRange().getStart(), this.tablessMessage.length()), Math.min(this.tablessMessage.length(), this.tablessCursor)))) {
+                    this.suggestions.add(suggestion);
+                }
+            }
+        } else if (this.pendingSuggestions != null && this.pendingSuggestions.isDone()) {
             Suggestions suggestions = this.pendingSuggestions.join();
             this.suggestions.addAll(suggestions.getList());
         }
     }
 
     public void updateScreen(int dWheel) {
+        this.updateSuggestions();
         int cursorX = GuiHelper.getScaledMouseX(this.mc);
         int cursorY = GuiHelper.getScaledMouseY(this.mc);
         if (this.isHoveringOverSuggestions(cursorX, cursorY) && dWheel != 0) {
@@ -245,7 +286,7 @@ public class GuiChatSuggestions extends Gui {
 
         int minX = 16;
         if (Commander.suggestionsFollowParameters)
-            minX += fontRenderer.getStringWidth(this.tablessMessage.substring(0, parameterStart)) + 1;
+            minX += this.fontRenderer.getStringWidth(this.tablessMessage.substring(0, Math.min(parameterStart, this.tablessMessage.length()))) + 1;
 
         int largestSuggestion = 0;
         for (Suggestion suggestion : this.suggestions)
