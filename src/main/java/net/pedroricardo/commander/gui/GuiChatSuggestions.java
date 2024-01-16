@@ -19,10 +19,7 @@ import net.minecraft.client.gui.text.TextFieldEditor;
 import net.minecraft.client.render.FontRenderer;
 import net.minecraft.core.net.command.TextFormatting;
 import net.pedroricardo.commander.*;
-import net.pedroricardo.commander.content.CommanderClientCommandSource;
-import net.pedroricardo.commander.content.CommanderCommandManager;
-import net.pedroricardo.commander.content.CommanderCommandSource;
-import net.pedroricardo.commander.content.RequestCommandManagerPacket;
+import net.pedroricardo.commander.content.*;
 import net.pedroricardo.commander.duck.ClassWithManager;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
@@ -91,14 +88,14 @@ public class GuiChatSuggestions extends Gui {
                 }
             }
         } else if (!Commander.serverSuggestions.isEmpty()) {
-            if (Commander.serverSuggestions.has("usage") && !Commander.serverSuggestions.getAsJsonArray("usage").isEmpty()) {
-                for (int i = 0; i < Commander.serverSuggestions.getAsJsonArray("usage").size(); i++) {
-                    this.renderSingleSuggestionLine(this.mc.fontRenderer, TextFormatting.LIGHT_GRAY + Commander.serverSuggestions.getAsJsonArray("usage").get(i).getAsJsonObject().get("value").getAsString(), i, true);
+            if (Commander.serverSuggestions.has(CommandManagerPacketKeys.USAGE) && !Commander.serverSuggestions.getAsJsonArray(CommandManagerPacketKeys.USAGE).isEmpty()) {
+                for (int i = 0; i < Commander.serverSuggestions.getAsJsonArray(CommandManagerPacketKeys.USAGE).size(); i++) {
+                    this.renderSingleSuggestionLine(this.mc.fontRenderer, TextFormatting.LIGHT_GRAY + Commander.serverSuggestions.getAsJsonArray(CommandManagerPacketKeys.USAGE).get(i).getAsJsonObject().get(CommandManagerPacketKeys.VALUE).getAsString(), i, true);
                 }
-            } else if (!Commander.serverSuggestions.getAsJsonArray("exceptions").isEmpty()) {
+            } else if (!Commander.serverSuggestions.getAsJsonArray(CommandManagerPacketKeys.EXCEPTIONS).isEmpty()) {
                 int i = 0;
-                for (JsonElement exception : Commander.serverSuggestions.getAsJsonArray("exceptions")) {
-                    this.renderSingleSuggestionLine(this.mc.fontRenderer, TextFormatting.RED + exception.getAsJsonObject().get("value").getAsString(), i, false);
+                for (JsonElement exception : Commander.serverSuggestions.getAsJsonArray(CommandManagerPacketKeys.EXCEPTIONS)) {
+                    this.renderSingleSuggestionLine(this.mc.fontRenderer, TextFormatting.RED + exception.getAsJsonObject().get(CommandManagerPacketKeys.VALUE).getAsString(), i, false);
                     i++;
                 }
             }
@@ -234,12 +231,12 @@ public class GuiChatSuggestions extends Gui {
         this.suggestions = new ArrayList<>();
         if (!this.tablessMessage.startsWith("/")) return;
         if (!Commander.serverSuggestions.isEmpty()) {
-            for (JsonElement jsonSuggestion : Commander.serverSuggestions.getAsJsonArray("suggestions")) {
+            for (JsonElement jsonSuggestion : Commander.serverSuggestions.getAsJsonArray(CommandManagerPacketKeys.SUGGESTIONS)) {
                 Suggestion suggestion;
-                if (jsonSuggestion.getAsJsonObject().has("tooltip")) {
-                    suggestion = new Suggestion(new StringRange(jsonSuggestion.getAsJsonObject().get("range").getAsJsonObject().get("start").getAsInt(), jsonSuggestion.getAsJsonObject().get("range").getAsJsonObject().get("end").getAsInt()), jsonSuggestion.getAsJsonObject().get("value").getAsString(), () -> jsonSuggestion.getAsJsonObject().get("tooltip").getAsString());
+                if (jsonSuggestion.getAsJsonObject().has(CommandManagerPacketKeys.TOOLTIP)) {
+                    suggestion = new Suggestion(new StringRange(jsonSuggestion.getAsJsonObject().get(CommandManagerPacketKeys.RANGE).getAsJsonObject().get(CommandManagerPacketKeys.RANGE_START).getAsInt(), jsonSuggestion.getAsJsonObject().get(CommandManagerPacketKeys.RANGE).getAsJsonObject().get(CommandManagerPacketKeys.RANGE_END).getAsInt()), jsonSuggestion.getAsJsonObject().get(CommandManagerPacketKeys.VALUE).getAsString(), () -> jsonSuggestion.getAsJsonObject().get(CommandManagerPacketKeys.TOOLTIP).getAsString());
                 } else {
-                    suggestion = new Suggestion(new StringRange(jsonSuggestion.getAsJsonObject().get("range").getAsJsonObject().get("start").getAsInt(), jsonSuggestion.getAsJsonObject().get("range").getAsJsonObject().get("end").getAsInt()), jsonSuggestion.getAsJsonObject().get("value").getAsString());
+                    suggestion = new Suggestion(new StringRange(jsonSuggestion.getAsJsonObject().get(CommandManagerPacketKeys.RANGE).getAsJsonObject().get(CommandManagerPacketKeys.RANGE_START).getAsInt(), jsonSuggestion.getAsJsonObject().get(CommandManagerPacketKeys.RANGE).getAsJsonObject().get(CommandManagerPacketKeys.RANGE_END).getAsInt()), jsonSuggestion.getAsJsonObject().get(CommandManagerPacketKeys.VALUE).getAsString());
                 }
                 if (suggestion.getRange().getStart() > 0 && this.tablessCursor <= this.tablessMessage.length() && suggestion.getText().startsWith(this.tablessMessage.substring(Math.min(suggestion.getRange().getStart(), this.tablessMessage.length()), Math.min(this.tablessMessage.length(), this.tablessCursor)))) {
                     this.suggestions.add(suggestion);

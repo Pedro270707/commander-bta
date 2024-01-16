@@ -12,6 +12,7 @@ import net.pedroricardo.commander.Commander;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.render.FontRenderer;
 import net.pedroricardo.commander.GuiHelper;
+import net.pedroricardo.commander.content.CommandManagerPacketKeys;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.gui.GuiChatSuggestions;
 import org.jetbrains.annotations.Nullable;
@@ -58,7 +59,7 @@ public class GuiChatMixin {
     @Unique
     private boolean shouldDrawSuggestionPreview() {
         boolean basedOnParseResults = this.commander$suggestionsGui.getParseResults() != null && (this.commander$suggestionsGui.getCursor() == this.commander$suggestionsGui.getParseResults().getReader().getString().trim().length() || this.commander$suggestionsGui.getCursor() == this.commander$suggestionsGui.getParseResults().getReader().getString().length());
-        boolean basedOnServer = Commander.serverSuggestions.has("reader") && (this.commander$suggestionsGui.getCursor() == Commander.serverSuggestions.getAsJsonObject("reader").get("string").getAsString().trim().length() || this.commander$suggestionsGui.getCursor() == Commander.serverSuggestions.getAsJsonObject("reader").get("string").getAsString().length());
+        boolean basedOnServer = Commander.serverSuggestions.has(CommandManagerPacketKeys.READER) && (this.commander$suggestionsGui.getCursor() == Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_STRING).getAsString().trim().length() || this.commander$suggestionsGui.getCursor() == Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_STRING).getAsString().length());
         return basedOnParseResults || basedOnServer;
     }
 
@@ -107,14 +108,14 @@ public class GuiChatMixin {
         StringReader stringReader = new StringReader(text);
         boolean isCommand = stringReader.canRead() && stringReader.peek() == '/';
         if (isCommand) {
-            if (!text.isEmpty() && !Commander.serverSuggestions.isEmpty() && Commander.serverSuggestions.get("last_child") != null && Commander.serverSuggestions.get("last_child").getAsJsonObject().get("arguments") != null) {
+            if (!text.isEmpty() && !Commander.serverSuggestions.isEmpty() && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD) != null && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD).getAsJsonObject().get(CommandManagerPacketKeys.ARGUMENTS) != null) {
                 StringBuilder stringToDrawBuilder = new StringBuilder();
                 int currentArgumentEnd = 1;
                 int currentColor = 0;
                 stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.charAt(0));
-                for (JsonElement jsonElement : Commander.serverSuggestions.getAsJsonObject("last_child").getAsJsonArray("arguments")) {
-                    int rangeStart = jsonElement.getAsJsonObject().getAsJsonObject("range").get("start").getAsInt();
-                    int rangeEnd = jsonElement.getAsJsonObject().getAsJsonObject("range").get("end").getAsInt();
+                for (JsonElement jsonElement : Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.LAST_CHILD).getAsJsonArray(CommandManagerPacketKeys.ARGUMENTS)) {
+                    int rangeStart = jsonElement.getAsJsonObject().getAsJsonObject(CommandManagerPacketKeys.RANGE).get(CommandManagerPacketKeys.RANGE_START).getAsInt();
+                    int rangeEnd = jsonElement.getAsJsonObject().getAsJsonObject(CommandManagerPacketKeys.RANGE).get(CommandManagerPacketKeys.RANGE_END).getAsInt();
 
                     stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, Math.min(currentArgumentEnd, text.length()), Math.min(rangeStart, text.length()));
                     stringToDrawBuilder.append(Commander.ARGUMENT_STYLES.get(currentColor)).append(text, Math.min(rangeStart, text.length()), Math.min(rangeEnd, text.length()));
@@ -124,10 +125,10 @@ public class GuiChatMixin {
                         currentColor = 0;
                     }
                 }
-                if (Commander.serverSuggestions.getAsJsonObject("reader").get("can_read").getAsBoolean() && currentArgumentEnd < text.length()) {
-                    int remainingTextLength = Commander.serverSuggestions.getAsJsonObject("reader").get("remaining_text_length").getAsInt();
-                    stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, currentArgumentEnd, Math.min(Commander.serverSuggestions.getAsJsonObject("reader").get("cursor").getAsInt(), text.length()));
-                    stringToDrawBuilder.append(TextFormatting.RED).append(text, Math.min(Commander.serverSuggestions.getAsJsonObject("reader").get("cursor").getAsInt(), text.length()), Math.min(remainingTextLength, text.length()));
+                if (Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_CAN_READ).getAsBoolean() && currentArgumentEnd < text.length()) {
+                    int remainingTextLength = Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_REMAINING_TEXT_LENGTH).getAsInt();
+                    stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, currentArgumentEnd, Math.min(Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_CURSOR).getAsInt(), text.length()));
+                    stringToDrawBuilder.append(TextFormatting.RED).append(text, Math.min(Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_CURSOR).getAsInt(), text.length()), Math.min(remainingTextLength, text.length()));
                     currentArgumentEnd = remainingTextLength;
                 }
                 stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.substring(Math.min(currentArgumentEnd, text.length())));

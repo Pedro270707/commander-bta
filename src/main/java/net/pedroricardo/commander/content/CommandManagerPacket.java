@@ -65,26 +65,26 @@ public class CommandManagerPacket extends Packet {
         if (cursor >= 1 && reader.canRead() && reader.read() == '/') {
             ParseResults<CommanderCommandSource> parseResults = dispatcher.parse(reader, source);
             JsonObject readerJson = new JsonObject();
-            readerJson.addProperty("can_read", parseResults.getReader().canRead());
+            readerJson.addProperty(CommandManagerPacketKeys.READER_CAN_READ, parseResults.getReader().canRead());
             int readerCursor = Math.max(parseResults.getReader().getCursor(), 0);
-            readerJson.addProperty("cursor", readerCursor);
+            readerJson.addProperty(CommandManagerPacketKeys.READER_CURSOR, readerCursor);
             int remainingTextLength = Math.min(readerCursor + parseResults.getReader().getRemainingLength(), text.length());
-            readerJson.addProperty("remaining_text_length", remainingTextLength);
-            readerJson.addProperty("string", parseResults.getReader().getString());
-            object.add("reader", readerJson);
+            readerJson.addProperty(CommandManagerPacketKeys.READER_REMAINING_TEXT_LENGTH, remainingTextLength);
+            readerJson.addProperty(CommandManagerPacketKeys.READER_STRING, parseResults.getReader().getString());
+            object.add(CommandManagerPacketKeys.READER, readerJson);
 
             CompletableFuture<Suggestions> pendingSuggestions = getCompletionSuggestions(parseResults, cursor, source);
             pendingSuggestions.thenRun(() -> {
                 if (pendingSuggestions.isDone()) {
                     for (Suggestion suggestion : pendingSuggestions.join().getList()) {
                         JsonObject suggestionJson = new JsonObject();
-                        suggestionJson.addProperty("value", suggestion.getText());
+                        suggestionJson.addProperty(CommandManagerPacketKeys.VALUE, suggestion.getText());
                         JsonObject range = new JsonObject();
-                        range.addProperty("start", suggestion.getRange().getStart());
-                        range.addProperty("end", suggestion.getRange().getEnd());
-                        suggestionJson.add("range", range);
+                        range.addProperty(CommandManagerPacketKeys.RANGE_START, suggestion.getRange().getStart());
+                        range.addProperty(CommandManagerPacketKeys.RANGE_END, suggestion.getRange().getEnd());
+                        suggestionJson.add(CommandManagerPacketKeys.RANGE, range);
                         if (suggestion.getTooltip() != null)
-                            suggestionJson.addProperty("tooltip", suggestion.getTooltip().getString());
+                            suggestionJson.addProperty(CommandManagerPacketKeys.TOOLTIP, suggestion.getTooltip().getString());
                         suggestions.add(suggestionJson);
                     }
                 }
@@ -93,28 +93,28 @@ public class CommandManagerPacket extends Packet {
             if (!parseResults.getExceptions().isEmpty()) {
                 for (CommandSyntaxException entry : parseResults.getExceptions().values()) {
                     JsonObject exceptionJson = new JsonObject();
-                    exceptionJson.addProperty("value", entry.getMessage());
+                    exceptionJson.addProperty(CommandManagerPacketKeys.VALUE, entry.getMessage());
                     exceptions.add(exceptionJson);
                 }
             } else if (parseException != null) {
                 JsonObject exceptionJson = new JsonObject();
-                exceptionJson.addProperty("value", parseException.getMessage());
+                exceptionJson.addProperty(CommandManagerPacketKeys.VALUE, parseException.getMessage());
                 exceptions.add(exceptionJson);
             } else if (parseResults.getContext().getRootNode() != null && parseResults.getContext().getRange().getStart() <= cursor) {
                 JsonObject commandUsage = new JsonObject();
                 for (Map.Entry<CommandNode<CommanderCommandSource>, String> entry : dispatcher.getSmartUsage(parseResults.getContext().findSuggestionContext(cursor).parent, source).entrySet()) {
                     if (entry.getKey() instanceof LiteralCommandNode) continue;
-                    commandUsage.addProperty("value", entry.getValue());
+                    commandUsage.addProperty(CommandManagerPacketKeys.VALUE, entry.getValue());
                     usage.add(commandUsage);
                 }
             }
 
             JsonObject lastChild = getLastChild(parseResults);
-            object.add("last_child", lastChild);
+            object.add(CommandManagerPacketKeys.LAST_CHILD, lastChild);
         }
-        object.add("suggestions", suggestions);
-        object.add("exceptions", exceptions);
-        object.add("usage", usage);
+        object.add(CommandManagerPacketKeys.SUGGESTIONS, suggestions);
+        object.add(CommandManagerPacketKeys.EXCEPTIONS, exceptions);
+        object.add(CommandManagerPacketKeys.USAGE, usage);
         return object;
     }
 
@@ -167,12 +167,12 @@ public class CommandManagerPacket extends Packet {
         for (ParsedArgument<CommanderCommandSource, ?> parsedArgument : builder.getArguments().values()) {
             JsonObject argument = new JsonObject();
             JsonObject range = new JsonObject();
-            range.addProperty("start", parsedArgument.getRange().getStart());
-            range.addProperty("end", parsedArgument.getRange().getEnd());
-            argument.add("range", range);
+            range.addProperty(CommandManagerPacketKeys.RANGE_START, parsedArgument.getRange().getStart());
+            range.addProperty(CommandManagerPacketKeys.RANGE_END, parsedArgument.getRange().getEnd());
+            argument.add(CommandManagerPacketKeys.RANGE, range);
             arguments.add(argument);
         }
-        lastChild.add("arguments", arguments);
+        lastChild.add(CommandManagerPacketKeys.ARGUMENTS, arguments);
         return lastChild;
     }
 
