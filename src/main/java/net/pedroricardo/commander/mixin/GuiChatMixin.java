@@ -15,7 +15,6 @@ import net.pedroricardo.commander.GuiHelper;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.gui.GuiChatSuggestions;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.Sys;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -41,13 +40,7 @@ public class GuiChatMixin {
         int mouseX = GuiHelper.getScaledMouseX(((GuiScreenAccessor)((GuiChat)(Object)this)).mc());
         int mouseY = GuiHelper.getScaledMouseY(((GuiScreenAccessor)((GuiChat)(Object)this)).mc()) - 1;
 
-        if (this.commander$suggestionsGui != null && !this.commander$suggestionsGui.getSuggestions().isEmpty()
-                && ((this.commander$suggestionsGui.getParseResults() != null
-                && (this.commander$suggestionsGui.getCursor() == this.commander$suggestionsGui.getParseResults().getReader().getString().trim().length()
-                    || this.commander$suggestionsGui.getCursor() == this.commander$suggestionsGui.getParseResults().getReader().getString().length()))
-        ||
-                Commander.serverSuggestions.has("reader") && this.commander$suggestionsGui.getCursor() == Commander.serverSuggestions.getAsJsonObject("reader").get("string").getAsString().trim().length()
-        || this.commander$suggestionsGui.getCursor() == Commander.serverSuggestions.getAsJsonObject("reader").get("string").getAsString().length())) {
+        if (this.shouldDrawSuggestionPreview()) {
             Suggestion suggestionToRender;
             if (this.commander$suggestionsGui.isHoveringOverSuggestions(mouseX, mouseY)) {
                 suggestionToRender = this.commander$suggestionsGui.getSuggestions().get(this.commander$suggestionsGui.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY).get());
@@ -60,6 +53,13 @@ public class GuiChatMixin {
                 ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().drawStringWithShadow(TextFormatting.LIGHT_GRAY + suggestionToRender.getText(), leftMargin + 1, ((GuiChat) (Object) this).height - 12, 0xE0E0E0);
             }
         }
+    }
+
+    @Unique
+    private boolean shouldDrawSuggestionPreview() {
+        boolean basedOnParseResults = this.commander$suggestionsGui.getParseResults() != null && (this.commander$suggestionsGui.getCursor() == this.commander$suggestionsGui.getParseResults().getReader().getString().trim().length() || this.commander$suggestionsGui.getCursor() == this.commander$suggestionsGui.getParseResults().getReader().getString().length());
+        boolean basedOnServer = Commander.serverSuggestions.has("reader") && (this.commander$suggestionsGui.getCursor() == Commander.serverSuggestions.getAsJsonObject("reader").get("string").getAsString().trim().length() || this.commander$suggestionsGui.getCursor() == Commander.serverSuggestions.getAsJsonObject("reader").get("string").getAsString().length());
+        return basedOnParseResults || basedOnServer;
     }
 
     @Inject(method = "drawScreen", at = @At("TAIL"))
