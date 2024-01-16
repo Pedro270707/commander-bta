@@ -17,7 +17,7 @@ import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 @SuppressWarnings("unchecked")
 public class GameRuleCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        final LiteralArgumentBuilder<CommanderCommandSource> argumentBuilder = (LiteralArgumentBuilder) LiteralArgumentBuilder.literal("gamerule").requires(c -> ((CommanderCommandSource)c).hasAdmin());
+        final LiteralArgumentBuilder<CommanderCommandSource> argumentBuilder = (LiteralArgumentBuilder) LiteralArgumentBuilder.literal("gamerule").requires(source -> ((CommanderCommandSource)source).hasAdmin());
         for (final GameRule<?> gameRule : Registries.GAME_RULES) {
             RequiredArgumentBuilder<CommanderCommandSource, ?> gameRuleValueArgument;
             if (gameRule instanceof GameRuleBoolean) {
@@ -39,7 +39,7 @@ public class GameRuleCommand {
             }
             argumentBuilder.then(LiteralArgumentBuilder.<CommanderCommandSource>literal(gameRule.getKey())
                     .executes(c -> {
-                        c.getSource().sendTranslatableMessage("commands.commander.gamerule.get", gameRule.getKey(), ((CommanderCommandSource)c).getWorld().getGameRule(gameRule));
+                        c.getSource().sendTranslatableMessage("commands.commander.gamerule.get", gameRule.getKey(), c.getSource().getWorld().getGameRule(gameRule));
                         return Command.SINGLE_SUCCESS;
                     })
                     .then(gameRuleValueArgument));
