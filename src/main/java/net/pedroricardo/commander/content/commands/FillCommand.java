@@ -103,8 +103,6 @@ public class FillCommand {
         return (int) (MathHelper.abs(first.getX(source) - second.getX(source)) * MathHelper.abs(first.getY(source, true) - second.getY(source, true)) * MathHelper.abs(first.getZ(source) - second.getZ(source)));
     }
 
-
-
     public static int fillReplace(CommanderCommandSource source, World world, IntegerCoordinates first, IntegerCoordinates second, BlockInput block) throws CommandSyntaxException {
         return fillReplace(source, world, first, second, block, null);
     }
@@ -114,6 +112,7 @@ public class FillCommand {
     }
 
     public static int fillReplace(CommanderCommandSource source, World world, IntegerCoordinates first, IntegerCoordinates second, BlockInput block, @Nullable BlockInput blockToReplace, boolean destroy) throws CommandSyntaxException {
+        world.editingBlocks = true;
         int minX = Math.min(first.getX(source), second.getX(source));
         int minY = Math.min(first.getY(source, true), second.getY(source, true));
         int minZ = Math.min(first.getZ(source), second.getZ(source));
@@ -133,11 +132,13 @@ public class FillCommand {
                 }
             }
         }
+        world.editingBlocks = false;
 
         return blocksFilled;
     }
 
     public static int fillHollow(CommanderCommandSource source, World world, IntegerCoordinates first, IntegerCoordinates second, BlockInput block) throws CommandSyntaxException {
+        world.editingBlocks = true;
         int minX = Math.min(first.getX(source), second.getX(source));
         int minY = Math.min(first.getY(source, true), second.getY(source, true));
         int minZ = Math.min(first.getZ(source), second.getZ(source));
@@ -158,11 +159,13 @@ public class FillCommand {
                 }
             }
         }
+        world.editingBlocks = false;
 
         return blocksFilled;
     }
 
     public static int fillOutline(CommanderCommandSource source, World world, IntegerCoordinates first, IntegerCoordinates second, BlockInput block) throws CommandSyntaxException {
+        world.editingBlocks = true;
         int minX = Math.min(first.getX(source), second.getX(source));
         int minY = Math.min(first.getY(source, true), second.getY(source, true));
         int minZ = Math.min(first.getZ(source), second.getZ(source));
@@ -180,6 +183,7 @@ public class FillCommand {
                 }
             }
         }
+        world.editingBlocks = false;
 
         return blocksFilled;
     }
