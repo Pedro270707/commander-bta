@@ -283,7 +283,7 @@ public class CloneCommand {
             int offsetDestinationY = destinationY + entry.getKey().getY(source, true);
             int offsetDestinationZ = destinationZ + entry.getKey().getZ(source);
             if (filter == null || (destination.getWorld().getBlockId(offsetDestinationX, offsetDestinationY, offsetDestinationZ) == filter.getBlockId() && destination.getWorld().getBlockMetadata(offsetDestinationX, offsetDestinationY, offsetDestinationZ) == filter.getMetadata())) {
-                ++clonedBlocks;
+                if (destination.getWorld().getBlockId(offsetDestinationX, offsetDestinationY, offsetDestinationZ) != entry.getValue().getBlockId() || destination.getWorld().getBlockMetadata(offsetDestinationX, offsetDestinationY, offsetDestinationZ) != entry.getValue().getMetadata()) ++clonedBlocks;
                 destination.getWorld().setBlockAndMetadataWithNotify(offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getBlockId(), entry.getValue().getMetadata());
                 if (entry.getValue().getTileEntity() != null) destination.getWorld().setBlockTileEntity(offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getTileEntity());
             }
