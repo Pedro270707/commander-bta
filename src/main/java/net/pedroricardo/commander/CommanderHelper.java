@@ -2,6 +2,7 @@ package net.pedroricardo.commander;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.core.block.Block;
@@ -9,7 +10,10 @@ import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityDispatcher;
 import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.util.helper.LogPrintStream;
+import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.world.generate.feature.WorldFeature;
+import net.pedroricardo.commander.content.CommanderCommandSource;
+import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -93,6 +97,10 @@ public class CommanderHelper {
         serverSuggestions.add("exceptions", exceptions);
         serverSuggestions.add("last_child", new JsonObject());
         return serverSuggestions;
+    }
+
+    public static int getVolume(CommanderCommandSource source, IntegerCoordinates first, IntegerCoordinates second) throws CommandSyntaxException {
+        return (int) (MathHelper.abs(first.getX(source) - second.getX(source)) * MathHelper.abs(first.getY(source, true) - second.getY(source, true)) * MathHelper.abs(first.getZ(source) - second.getZ(source)));
     }
 
     public static void init() {

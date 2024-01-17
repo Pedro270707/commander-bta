@@ -45,6 +45,7 @@ public class CommanderCommandManager {
         GiveCommand.register(DISPATCHER);
         GameRuleCommand.register(DISPATCHER);
         FillCommand.register(DISPATCHER);
+        CloneCommand.register(DISPATCHER);
 
         if (this.isServer) {
             StopCommand.register(DISPATCHER);

@@ -8,7 +8,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.core.achievement.Achievement;
 import net.minecraft.core.achievement.AchievementList;
-import net.minecraft.core.block.Block;
 import net.minecraft.core.lang.I18n;
 import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.mixin.StatNameAccessor;

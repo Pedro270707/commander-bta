@@ -13,7 +13,7 @@ public class CommanderExceptions {
     private static final SimpleCommandExceptionType PLAYER_ONLY = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("argument_types.commander.entity.invalid_selector.player_only"));
     private static final SimpleCommandExceptionType SINGLE_PLAYER_WORLD_ONLY = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("exceptions.commander.single_player_world_only"));
     private static final SimpleCommandExceptionType MULTIPLAYER_WORLD_ONLY = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("exceptions.commander.multiplayer_world_only"));
-    private static final SimpleCommandExceptionType INVALID_GAME_RULE_VALUE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("exceptions.commander.invalid_game_rule_value"));
+    private static final SimpleCommandExceptionType VOLUME_TOO_LARGE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("exceptions.commander.volume_too_large"));
 
     public static SimpleCommandExceptionType incomplete() {
         return INCOMPLETE_ARGUMENT;
@@ -51,7 +51,7 @@ public class CommanderExceptions {
         return MULTIPLAYER_WORLD_ONLY;
     }
 
-    public static SimpleCommandExceptionType invalidGameRuleValue() {
-        return INVALID_GAME_RULE_VALUE;
+    public static SimpleCommandExceptionType volumeTooLarge() {
+        return VOLUME_TOO_LARGE;
     }
 }

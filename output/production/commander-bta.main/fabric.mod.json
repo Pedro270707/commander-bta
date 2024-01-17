@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "commander",
+  "version": "1.2.2",
+
+  "name": "Commander",
+  "description": "This mod overhauls the command system.",
+  "authors": [
+    "Pedro Ricardo"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": ""
+  },
+
+  "license": "CC0-1.0",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+        "net.pedroricardo.commander.Commander"
+    ],
+    "server": [
+        "net.pedroricardo.commander.Commander"
+    ]
+  },
+  "mixins": [
+      "commander.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.13.3"
+  },
+  "suggests": {
+  },
+
+  "accessWidener": "commander.accesswidener"
+}

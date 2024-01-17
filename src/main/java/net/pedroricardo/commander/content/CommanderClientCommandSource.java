@@ -99,7 +99,7 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
 
     @Override
     public World getWorld(int dimension) {
-        return this.mc.theWorld;
+        return this.mc.theWorld.dimension.id == dimension ? this.mc.theWorld : new World(this.mc.theWorld, Dimension.getDimensionList().get(dimension));
     }
 
     public void movePlayerToDimension(EntityPlayer player, int dimension) {

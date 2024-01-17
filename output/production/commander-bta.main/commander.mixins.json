@@ -1,0 +1,29 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.pedroricardo.commander.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "GuiChatMixin",
+    "PreferCommanderCommandPlayerSPMixin",
+    "PreferCommanderCommandPlayerSPMixin$EntityPlayerSPAccessor",
+    "StatNameAccessor",
+    "WorldManagerMixin"
+  ],
+  "server": [
+    "PreferCommanderCommandConsoleMixin",
+    "PreferCommanderCommandNetServerHandlerMixin",
+    "PreferCommanderCommandNetServerHandlerMixin$NetServerHandlerAccessor",
+    "ReceiveRequestCommandManagerPacketMixin",
+    "SendCommandManagerPacketMixin"
+  ],
+  "client": [
+    "GuiScreenAccessor",
+    "GuiSleepMixin",
+    "ReceiveCommandManagerPacketMixin",
+    "TextFieldEditorAccessor"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
