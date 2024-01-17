@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Environment(EnvType.SERVER)
-@Mixin(NetServerHandler.class)
+@Mixin(value = NetServerHandler.class, remap = false)
 public abstract class ReceiveRequestCommandManagerPacketMixin extends NetHandler implements RequestCommandManagerPacketHandler {
     @Shadow private MinecraftServer mcServer;
 
