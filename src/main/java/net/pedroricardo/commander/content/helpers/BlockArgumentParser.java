@@ -37,8 +37,6 @@ public class BlockArgumentParser extends ArgumentParser {
         this.suggestions = this::suggestBlocks;
         this.parseBlock();
 
-        if (this.block == null) throw INVALID_BLOCK.createWithContext(this.reader);
-
         this.suggestions = this::suggestOpenMetadataOrTag;
         if (this.reader.canRead() && this.reader.peek() == '[') {
             this.metadata = this.parseMetadata();
@@ -48,20 +46,22 @@ public class BlockArgumentParser extends ArgumentParser {
             this.tag = this.parseTag();
         }
 
-        if (this.block != null) {
-            return new BlockInput(this.block, this.metadata, this.tag);
-        }
-        throw INVALID_BLOCK.createWithContext(this.reader);
+        return new BlockInput(this.block, this.metadata, this.tag);
     }
 
     private void parseBlock() throws CommandSyntaxException {
         String string = this.reader.readString();
+        boolean isAir = false;
         for (Block blockInList : Block.blocksList) {
             if (blockInList == null) continue;
             if (CommanderHelper.matchesKeyString(blockInList.getKey(), string)) {
                 this.block = blockInList;
+            } else if (CommanderHelper.matchesKeyString("tile.air", string)) {
+                this.block = null;
+                isAir = true;
             }
         }
+        if (this.block == null && !isAir) throw INVALID_BLOCK.createWithContext(this.reader);
     }
 
     public CompletableFuture<Suggestions> fillSuggestions(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {

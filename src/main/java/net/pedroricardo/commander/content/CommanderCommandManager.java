@@ -44,6 +44,7 @@ public class CommanderCommandManager {
         ChunkCommand.register(DISPATCHER);
         GiveCommand.register(DISPATCHER);
         GameRuleCommand.register(DISPATCHER);
+        FillCommand.register(DISPATCHER);
 
         if (this.isServer) {
             StopCommand.register(DISPATCHER);

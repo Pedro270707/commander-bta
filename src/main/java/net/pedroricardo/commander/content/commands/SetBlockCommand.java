@@ -39,7 +39,7 @@ public class SetBlockCommand {
                                     if (!world.isBlockLoaded(x, y, z)) {
                                         throw FAILURE.create();
                                     } else {
-                                        world.setBlockAndMetadataWithNotify(x, y, z, blockInput.getBlock().id, blockInput.getMetadata());
+                                        world.setBlockAndMetadataWithNotify(x, y, z, blockInput.getBlockId(), blockInput.getMetadata());
                                         TileEntity tileEntity = source.getWorld().getBlockTileEntity(x, y, z);
                                         if (tileEntity != null) {
                                             CompoundTag tag = new CompoundTag();

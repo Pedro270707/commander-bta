@@ -43,6 +43,7 @@ public class BlockArgumentType implements ArgumentType<BlockInput> {
             for (Block block : Block.blocksList) {
                 if (block == null) continue;
                 CommanderHelper.getStringToSuggest(block.getKey(), remaining).ifPresent(suggestionsBuilder::suggest);
+                CommanderHelper.getStringToSuggest("tile.air", remaining).ifPresent(suggestionsBuilder::suggest);
             }
             suggestionsBuilder.buildFuture();
         });

@@ -3,7 +3,6 @@ package net.pedroricardo.commander.content.commands;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.tree.CommandNode;
@@ -12,7 +11,6 @@ import net.minecraft.core.data.gamerule.GameRuleBoolean;
 import net.minecraft.core.data.registry.Registries;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.GenericGameRuleArgumentType;
-import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 
 @SuppressWarnings("unchecked")
 public class GameRuleCommand {
@@ -31,7 +29,6 @@ public class GameRuleCommand {
                 gameRuleValueArgument = RequiredArgumentBuilder.<CommanderCommandSource, Object>argument("value", GenericGameRuleArgumentType.gameRule(gameRule))
                         .executes(c -> {
                             Object o = c.getArgument("value", Object.class);
-                            if (o == null) throw CommanderExceptions.invalidGameRuleValue().create();
                             c.getSource().getWorld().getLevelData().getGameRules().setValue((GameRule<? super Object>) gameRule, o);
                             c.getSource().sendTranslatableMessage("commands.commander.gamerule.set", gameRule.getKey(), o);
                             return Command.SINGLE_SUCCESS;
