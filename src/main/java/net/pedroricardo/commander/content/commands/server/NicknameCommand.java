@@ -34,7 +34,7 @@ public class NicknameCommand {
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             String nickname = c.getArgument("nickname", String.class);
                                             if (nickname.length() > 16) throw NICKNAME_TOO_LARGE.create();
-                                            if (nickname.length() < 1) throw NICKNAME_TOO_SMALL.create();
+                                            if (nickname.isEmpty()) throw NICKNAME_TOO_SMALL.create();
                                             List<? extends Entity> entities = entitySelector.get(source);
 
                                             EntityPlayerMP player = (EntityPlayerMP) entities.get(0);
@@ -55,7 +55,7 @@ public class NicknameCommand {
                                     CommanderCommandSource source = (CommanderCommandSource) c.getSource();
                                     String nickname = c.getArgument("nickname", String.class);
                                     if (nickname.length() > 16) throw NICKNAME_TOO_LARGE.create();
-                                    if (nickname.length() < 1) throw NICKNAME_TOO_SMALL.create();
+                                    if (nickname.isEmpty()) throw NICKNAME_TOO_SMALL.create();
 
                                     EntityPlayerMP player = (EntityPlayerMP) source.getSender();
 
@@ -64,12 +64,9 @@ public class NicknameCommand {
                                     player.nickname = nickname;
                                     player.hadNicknameSet = true;
                                     player.mcServer.playerList.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
-                                    if (source.getSender() == player) {
-                                        source.sendTranslatableMessage("commands.commander.nickname.set.success", nickname);
-                                    } else {
-                                        source.sendTranslatableMessage("commands.commander.nickname.set.success_other", player.username, nickname);
-                                        source.sendTranslatableMessage(player, "commands.commander.nickname.set.success_receiver", nickname);
-                                    }
+
+                                    source.sendTranslatableMessage("commands.commander.nickname.set.success", nickname);
+
                                     return Command.SINGLE_SUCCESS;
                                 })))
                 .then(LiteralArgumentBuilder.literal("get")
@@ -82,7 +79,43 @@ public class NicknameCommand {
 
                                     source.sendTranslatableMessage("commands.commander.nickname.get.success", player.username, player.nickname);
                                     return Command.SINGLE_SUCCESS;
-                                }))));
+                                })))
+                .then(LiteralArgumentBuilder.literal("reset")
+                        .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.player())
+                                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+                                .executes(c -> {
+                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
+                                    List<? extends Entity> entities = entitySelector.get(source);
+
+                                    EntityPlayerMP player = (EntityPlayerMP) entities.get(0);
+
+                                    player.nickname = "";
+                                    player.hadNicknameSet = false;
+                                    player.mcServer.playerList.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
+                                    if (source.getSender() == player) {
+                                        source.sendTranslatableMessage("commands.commander.nickname.reset.success");
+                                    } else {
+                                        source.sendTranslatableMessage("commands.commander.nickname.reset.success_other", player.username);
+                                        source.sendTranslatableMessage(player, "commands.commander.nickname.reset.success_receiver");
+                                    }
+                                    return Command.SINGLE_SUCCESS;
+                                }))
+                        .executes(c -> {
+                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+
+                            EntityPlayerMP player = (EntityPlayerMP) source.getSender();
+
+                            if (player == null) throw CommanderExceptions.notInWorld().create();
+
+                            player.nickname = "";
+                            player.hadNicknameSet = false;
+                            player.mcServer.playerList.sendPacketToAllPlayers(new Packet72UpdatePlayerProfile(player.username, player.nickname, player.score, player.chatColor, true, player.isOperator()));
+
+                            source.sendTranslatableMessage("commands.commander.nickname.reset.success", player.username);
+
+                            return Command.SINGLE_SUCCESS;
+                        })));
         dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("nick")
                 .redirect(command));
     }
