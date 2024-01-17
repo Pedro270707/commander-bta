@@ -30,6 +30,8 @@ import java.util.Map;
 public class CloneCommand {
     private static final SimpleCommandExceptionType INSIDE_CLONED_AREA = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.clone.exception_inside_cloned_area"));
     private static final SimpleCommandExceptionType DESTINATION_NOT_LOADED = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.clone.exception_destination_not_loaded"));
+    private static final SimpleCommandExceptionType SOURCE_NOT_LOADED = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.clone.exception_source_not_loaded"));
+    private static final SimpleCommandExceptionType NOWHERE_LOADED = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.clone.exception_nowhere_loaded"));
 
 //    public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
 //        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("clone")
@@ -146,54 +148,74 @@ public class CloneCommand {
 //    }
 
     public static void register(CommandDispatcher<CommanderCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("clone").requires((source) ->
-            ((CommanderCommandSource)source).hasAdmin()
-        )).then(beginEndDestinationAndModeSuffix((source) ->
-            (source.getSource()).getWorld()
-        ))).then(LiteralArgumentBuilder.literal("from").then(((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("sourceDimension", DimensionArgumentType.dimension())).then(beginEndDestinationAndModeSuffix(c ->
-            c.getSource().getWorld(c.getArgument("sourceDimension", Dimension.class).id)
-        )))));
+        commandDispatcher.register((LiteralArgumentBuilder)(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("clone")
+                .requires((source) -> ((CommanderCommandSource)source).hasAdmin()))
+                .then(beginEndDestinationAndModeSuffix(c -> {
+                    return c.getSource().getWorld();
+                })))
+                .then(LiteralArgumentBuilder.literal("from")
+                        .then(((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("sourceDimension", DimensionArgumentType.dimension()))
+                                .then(beginEndDestinationAndModeSuffix(c -> {
+                                    return c.getSource().getWorld(c.getArgument("sourceDimension", Dimension.class).id);
+                                })))));
     }
 
     private static ArgumentBuilder<CommanderCommandSource, ?> beginEndDestinationAndModeSuffix(CommandFunction<CommandContext<CommanderCommandSource>, World> commandFunction) {
-        return RequiredArgumentBuilder.argument("begin", IntegerCoordinatesArgumentType.intCoordinates()).then((((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("end", IntegerCoordinatesArgumentType.intCoordinates())).then(destinationAndModeSuffix(commandFunction, (commandContext) ->
-            commandContext.getSource().getWorld()
-        ))).then(LiteralArgumentBuilder.literal("to").then(((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("targetDimension", DimensionArgumentType.dimension())).then(destinationAndModeSuffix(commandFunction, c ->
-            c.getSource().getWorld(c.getArgument("targetDimension", Dimension.class).id)
-        )))));
+        return RequiredArgumentBuilder.argument("begin", IntegerCoordinatesArgumentType.intCoordinates())
+                .then((((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("end", IntegerCoordinatesArgumentType.intCoordinates()))
+                        .then(destinationAndModeSuffix(commandFunction, c -> {
+                            return c.getSource().getWorld();
+                        })))
+                        .then(LiteralArgumentBuilder.literal("to")
+                                .then(((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("targetDimension", DimensionArgumentType.dimension()))
+                                        .then(destinationAndModeSuffix(commandFunction, c -> {
+                                            return c.getSource().getWorld(c.getArgument("targetDimension", Dimension.class).id);
+                                        })))));
     }
 
-    private static WorldAndPosition getWorldAndPosition(CommandContext<CommanderCommandSource> commandContext, World world, String string) throws CommandSyntaxException {
+    private static WorldAndPosition getWorldAndPosition(CommandContext<CommanderCommandSource> commandContext, World world, String string) {
         IntegerCoordinates coordinates = commandContext.getArgument(string, IntegerCoordinates.class);
         return new WorldAndPosition(world, coordinates);
     }
 
     private static ArgumentBuilder<CommanderCommandSource, ?> destinationAndModeSuffix(CommandFunction<CommandContext<CommanderCommandSource>, World> commandFunction, CommandFunction<CommandContext<CommanderCommandSource>, World> commandFunction2) {
-        CommandFunction<CommandContext, WorldAndPosition> commandFunction3 = (commandContext) ->
-            getWorldAndPosition(commandContext, commandFunction.apply(commandContext), "begin");
-        CommandFunction<CommandContext, WorldAndPosition> commandFunction4 = (commandContext) ->
-            getWorldAndPosition(commandContext, commandFunction.apply(commandContext), "end");
-        CommandFunction<CommandContext, WorldAndPosition> commandFunction5 = (commandContext) ->
-            getWorldAndPosition(commandContext, commandFunction2.apply(commandContext), "destination");
-        return ((((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("destination", IntegerCoordinatesArgumentType.intCoordinates()).executes(c -> clone((CommanderCommandSource)c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), null, CloneMode.NORMAL))).then(wrapWithCloneMode(commandFunction3, commandFunction4, commandFunction5, (commandContext) -> null, ((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("replace")).executes((commandContext) -> {
-            return clone((CommanderCommandSource)commandContext.getSource(), commandFunction3.apply(commandContext), commandFunction4.apply(commandContext), commandFunction5.apply(commandContext), null, CloneMode.NORMAL);
-        })))).then(wrapWithCloneMode(commandFunction3, commandFunction4, commandFunction5, commandContext -> new BlockInput(null, 0, new CompoundTag()), ((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("masked")).executes((commandContext) -> {
-            return clone((CommanderCommandSource)commandContext.getSource(), commandFunction3.apply(commandContext), commandFunction4.apply(commandContext), commandFunction5.apply(commandContext), new BlockInput(null, 0, new CompoundTag()), CloneMode.NORMAL);
-        })))).then(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("filtered")).then(wrapWithCloneMode(commandFunction3, commandFunction4, commandFunction5, (commandContext) -> {
-            return (BlockInput) commandContext.getArgument("filter", BlockInput.class);
-        }, RequiredArgumentBuilder.argument("filter", BlockArgumentType.block()).executes((commandContext) -> {
-            return clone((CommanderCommandSource)commandContext.getSource(), commandFunction3.apply(commandContext), commandFunction4.apply(commandContext), commandFunction5.apply(commandContext), commandContext.getArgument("filter", BlockInput.class), CloneMode.NORMAL);
-        }))));
+        CommandFunction<CommandContext, WorldAndPosition> commandFunction3 = c -> getWorldAndPosition(c, commandFunction.apply(c), "begin");
+        CommandFunction<CommandContext, WorldAndPosition> commandFunction4 = c -> getWorldAndPosition(c, commandFunction.apply(c), "end");
+        CommandFunction<CommandContext, WorldAndPosition> commandFunction5 = c -> getWorldAndPosition(c, commandFunction2.apply(c), "destination");
+        return ((((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("destination", IntegerCoordinatesArgumentType.intCoordinates())
+                .executes(c -> {
+                    return clone((CommanderCommandSource)c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), null, CloneMode.NORMAL);
+                }))
+                .then(wrapWithCloneMode(commandFunction3, commandFunction4, commandFunction5, (commandContext) -> null, ((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("replace"))
+                        .executes(c -> {
+                            return clone((CommanderCommandSource)c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), null, CloneMode.NORMAL);
+                        }))))
+                .then(wrapWithCloneMode(commandFunction3, commandFunction4, commandFunction5, commandContext -> new BlockInput(null, 0, new CompoundTag()), ((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("masked"))
+                        .executes(c -> {
+                            return clone((CommanderCommandSource)c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), new BlockInput(null, 0, new CompoundTag()), CloneMode.NORMAL);
+                        }))))
+                .then(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("filtered"))
+                        .then(wrapWithCloneMode(commandFunction3, commandFunction4, commandFunction5, c -> {
+                            return (BlockInput) c.getArgument("filter", BlockInput.class);
+                            }, RequiredArgumentBuilder.argument("filter", BlockArgumentType.block())
+                                .executes(c -> {
+                                    return clone((CommanderCommandSource)c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), c.getArgument("filter", BlockInput.class), CloneMode.NORMAL);
+                                }))));
     }
 
     private static ArgumentBuilder wrapWithCloneMode(CommandFunction<CommandContext, WorldAndPosition> commandFunction, CommandFunction<CommandContext, WorldAndPosition> commandFunction2, CommandFunction<CommandContext, WorldAndPosition> commandFunction3, CommandFunction<CommandContext, BlockInput> commandFunction4, ArgumentBuilder argumentBuilder) {
-        return argumentBuilder.then(LiteralArgumentBuilder.literal("force").executes((commandContext) -> {
-            return clone((CommanderCommandSource)commandContext.getSource(), commandFunction.apply(commandContext), commandFunction2.apply(commandContext), commandFunction3.apply(commandContext), commandFunction4.apply(commandContext), CloneMode.FORCE);
-        })).then(LiteralArgumentBuilder.literal("move").executes((commandContext) -> {
-            return clone((CommanderCommandSource)commandContext.getSource(), commandFunction.apply(commandContext), commandFunction2.apply(commandContext), commandFunction3.apply(commandContext), commandFunction4.apply(commandContext), CloneMode.MOVE);
-        })).then(LiteralArgumentBuilder.literal("normal").executes((commandContext) -> {
-            return clone((CommanderCommandSource)commandContext.getSource(), commandFunction.apply(commandContext), commandFunction2.apply(commandContext), commandFunction3.apply(commandContext), commandFunction4.apply(commandContext), CloneMode.NORMAL);
-        }));
+        return argumentBuilder.then(LiteralArgumentBuilder.literal("force")
+                .executes(c -> {
+                    return clone((CommanderCommandSource)c.getSource(), commandFunction.apply(c), commandFunction2.apply(c), commandFunction3.apply(c), commandFunction4.apply(c), CloneMode.FORCE);
+                }))
+                .then(LiteralArgumentBuilder.literal("move")
+                        .executes(c -> {
+                            return clone((CommanderCommandSource)c.getSource(), commandFunction.apply(c), commandFunction2.apply(c), commandFunction3.apply(c), commandFunction4.apply(c), CloneMode.MOVE);
+                        }))
+                .then(LiteralArgumentBuilder.literal("normal")
+                        .executes(c -> {
+                            return clone((CommanderCommandSource)c.getSource(), commandFunction.apply(c), commandFunction2.apply(c), commandFunction3.apply(c), commandFunction4.apply(c), CloneMode.NORMAL);
+                        }));
     }
 
     @FunctionalInterface
@@ -219,10 +241,6 @@ public class CloneCommand {
         }
     }
 
-//    public static int clone(CommanderCommandSource source, World sourceWorld, World destinationWorld, IntegerCoordinates start, IntegerCoordinates end, IntegerCoordinates destination, CloneMode cloneMode) throws CommandSyntaxException {
-//        return clone(source, sourceWorld, destinationWorld, start, end, destination, cloneMode, null);
-//    }
-
     public static int clone(CommanderCommandSource source, WorldAndPosition start, WorldAndPosition end, WorldAndPosition destination, @Nullable BlockInput filter, CloneMode cloneMode) throws CommandSyntaxException {
         int minX = Math.min(start.getPosition().getX(source), end.getPosition().getX(source));
         int minY = Math.min(start.getPosition().getY(source, true), end.getPosition().getY(source, true));
@@ -234,7 +252,6 @@ public class CloneCommand {
         int destinationX = destination.getPosition().getX(source);
         int destinationY = destination.getPosition().getY(source, true);
         int destinationZ = destination.getPosition().getZ(source);
-        if (!destination.getWorld().isBlockLoaded(destinationX, destinationY, destinationZ)) throw DESTINATION_NOT_LOADED.create();
 
         if (cloneMode == CloneMode.NORMAL && new AABB(minX, minY, minZ, maxX, maxY, maxZ).isVecInside(Vec3d.createVector(destinationX, destinationY, destinationZ)) && start.getWorld() == destination.getWorld()) {
             throw INSIDE_CLONED_AREA.create();
@@ -245,6 +262,10 @@ public class CloneCommand {
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
+                    if (!start.getWorld().isBlockLoaded(x, y, z)) {
+                        if (!destination.getWorld().isBlockLoaded(destinationX, destinationY, destinationZ)) throw NOWHERE_LOADED.create();
+                        else throw SOURCE_NOT_LOADED.create();
+                    }
                     map.put(new IntegerCoordinates(new IntegerCoordinate(false, x - minX), new IntegerCoordinate(false, y - minY), new IntegerCoordinate(false, z - minZ)), new ClonedBlock(start.getWorld().getBlock(x, y, z), start.getWorld().getBlockMetadata(x, y, z), start.getWorld().getBlockTileEntity(x, y, z)));
                     if (cloneMode == CloneMode.MOVE) {
                         start.getWorld().setBlockWithNotify(x, y, z, 0);
@@ -252,6 +273,7 @@ public class CloneCommand {
                 }
             }
         }
+        if (!destination.getWorld().isBlockLoaded(destinationX, destinationY, destinationZ)) throw DESTINATION_NOT_LOADED.create();
         start.getWorld().editingBlocks = false;
 
         int clonedBlocks = 0;

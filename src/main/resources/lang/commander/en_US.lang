@@ -135,5 +135,7 @@ commands.commander.fill.success_single=Filled %s block
 commands.commander.fill.success_multiple=Filled %s blocks
 commands.commander.clone.exception_inside_cloned_area=Destination is inside the cloned area
 commands.commander.clone.exception_destination_not_loaded=Destination is not loaded
+commands.commander.clone.exception_source_not_loaded=Source is not loaded
+commands.commander.clone.exception_nowhere_loaded=Source and destination are not loaded
 commands.commander.clone.success_single=%s block cloned
 commands.commander.clone.success_multiple=%s blocks cloned
