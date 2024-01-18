@@ -2,5 +2,6 @@
 .idea/
 build/
 out/
+output/
 run/
 run-server/
