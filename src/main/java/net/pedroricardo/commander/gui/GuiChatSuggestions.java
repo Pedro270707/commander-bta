@@ -116,9 +116,6 @@ public class GuiChatSuggestions extends Gui {
         int mouseY = GuiHelper.getScaledMouseY(this.mc) - 1;
 
         int leftMargin = this.xSupplier.get(this.textField, this, this.mc, Commander.suggestionsFollowParameters);
-//        int leftMargin = 16;
-//        if (Commander.suggestionsFollowParameters)
-//            leftMargin += fontRenderer.getStringWidth(message.substring(0, Math.min(start, message.length()))) + 1;
 
         int largestSuggestion = 0;
         for (Suggestion suggestion : this.suggestions)
@@ -173,10 +170,6 @@ public class GuiChatSuggestions extends Gui {
         } else {
             minY += heightIndex * 12;
         }
-
-//        int leftMargin = 16;
-//        if (Commander.suggestionsFollowParameters && followParameters && !this.tablessMessage.isEmpty() && this.tablessMessage.substring(0, Math.min(this.tablessMessage.length(), this.tablessCursor)).indexOf(' ') != -1)
-//            leftMargin += fontRenderer.getStringWidth(this.tablessMessage.substring(0, this.tablessMessage.substring(0, Math.min(this.tablessMessage.length(), this.tablessCursor)).lastIndexOf(' ') + 1)) + 2;
 
         this.drawRect(leftMargin, minY, stringWidth + leftMargin + 1, minY + 12, Integer.MIN_VALUE);
         fontRenderer.drawStringWithShadow(text, leftMargin + 1, minY + 2, 0xE0E0E0);
@@ -303,12 +296,7 @@ public class GuiChatSuggestions extends Gui {
     public Optional<Integer> getIndexOfSuggestionBeingHoveredOver(int cursorX, int cursorY) {
         if (this.suggestions.isEmpty() || this.hidden) return Optional.empty();
 
-//        int parameterStart = this.suggestions.get(0).getRange().getStart();
-
         int minX = this.xSupplier.get(this.textField, this, this.mc, Commander.suggestionsFollowParameters);
-//        int minX = 16;
-//        if (Commander.suggestionsFollowParameters)
-//            minX += this.fontRenderer.getStringWidth(this.tablessMessage.substring(0, Math.min(parameterStart, this.tablessMessage.length()))) + 1;
 
         int largestSuggestion = 0;
         for (Suggestion suggestion : this.suggestions)
