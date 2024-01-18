@@ -62,7 +62,8 @@ public class CommandManagerPacket extends Packet {
         final JsonArray exceptions = new JsonArray();
         final JsonArray usage = new JsonArray();
         StringReader reader = new StringReader(text);
-        if (cursor >= 1 && reader.canRead() && reader.read() == '/') {
+        if (reader.canRead()) {
+            if (reader.peek() == '/') reader.skip();
             ParseResults<CommanderCommandSource> parseResults = dispatcher.parse(reader, source);
             JsonObject readerJson = new JsonObject();
             readerJson.addProperty(CommandManagerPacketKeys.READER_CAN_READ, parseResults.getReader().canRead());

@@ -14,6 +14,7 @@ import net.minecraft.client.render.FontRenderer;
 import net.pedroricardo.commander.GuiHelper;
 import net.pedroricardo.commander.content.CommandManagerPacketKeys;
 import net.pedroricardo.commander.content.CommanderCommandSource;
+import net.pedroricardo.commander.gui.AlignmentType;
 import net.pedroricardo.commander.gui.GuiChatSuggestions;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,7 +34,7 @@ public class GuiChatMixin {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void initGui(CallbackInfo ci) {
-        this.commander$suggestionsGui = new GuiChatSuggestions(((GuiScreenAccessor)((GuiChat)(Object)this)).mc(), ((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor(), (GuiChat)(Object)this);
+        this.commander$suggestionsGui = new GuiChatSuggestions(((GuiScreenAccessor)((GuiChat)(Object)this)).mc(), ((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor(), (GuiChat)(Object)this, (parent, child, minecraft, followParameters) -> 16 + (followParameters ? ((GuiScreenAccessor) this).fontRenderer().getStringWidth(this.commander$suggestionsGui.getMessage().substring(0, Math.min(this.commander$suggestionsGui.getSuggestionRangeStart(), this.commander$suggestionsGui.getMessage().length()))) + 1 : 0), (parent, child, minecraft, followParameters) -> minecraft.resolution.scaledHeight - 14, AlignmentType.BOTTOM_LEFT);
     }
 
     @Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiChat;drawString(Lnet/minecraft/client/render/FontRenderer;Ljava/lang/String;III)V", ordinal = 0, shift = At.Shift.BEFORE))
@@ -75,17 +76,35 @@ public class GuiChatMixin {
 
     @Inject(method = "keyTyped", at = @At(value = "JUMP", ordinal = 1), cancellable = true)
     private void upArrowPressed(char c, int key, int mouseX, int mouseY, CallbackInfo ci) {
-        if (this.commander$suggestionsGui != null && this.commander$suggestionsGui.getCommandIndex() != -1) {
-            this.commander$suggestionsGui.cycleThroughSuggestions(-1);
-            ci.cancel();
+        if (this.commander$suggestionsGui != null) {
+            if (this.commander$suggestionsGui.getCommandIndex() != -1) {
+                this.commander$suggestionsGui.cycleThroughSuggestions(-1);
+                ci.cancel();
+            }
+        }
+    }
+
+    @Inject(method = "keyTyped", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/text/TextFieldEditor;setCursor(I)V", ordinal = 1))
+    private void commander$upArrowPressedUpdateSuggestions(char c, int key, int mouseX, int mouseY, CallbackInfo ci) {
+        if (this.commander$suggestionsGui != null) {
+            this.commander$suggestionsGui.updateSuggestions();
         }
     }
 
     @Inject(method = "keyTyped", at = @At(value = "JUMP", ordinal = 5), cancellable = true)
     private void downArrowPressed(char c, int key, int mouseX, int mouseY, CallbackInfo ci) {
-        if (this.commander$suggestionsGui != null && this.commander$suggestionsGui.getCommandIndex() != -1) {
-            this.commander$suggestionsGui.cycleThroughSuggestions();
-            ci.cancel();
+        if (this.commander$suggestionsGui != null) {
+            if (this.commander$suggestionsGui.getCommandIndex() != -1) {
+                this.commander$suggestionsGui.cycleThroughSuggestions();
+                ci.cancel();
+            }
+        }
+    }
+
+    @Inject(method = "keyTyped", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/text/TextFieldEditor;setCursor(I)V", ordinal = 4))
+    private void commander$downArrowPressedUpdateSuggestions(char c, int key, int mouseX, int mouseY, CallbackInfo ci) {
+        if (this.commander$suggestionsGui != null) {
+            this.commander$suggestionsGui.updateSuggestions();
         }
     }
 
