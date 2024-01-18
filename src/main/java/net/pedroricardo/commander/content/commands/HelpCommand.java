@@ -15,7 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("unchecked")
 public class HelpCommand {
     private static final SimpleCommandExceptionType FAILURE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.help.exception_failure"));
 
@@ -33,28 +32,31 @@ public class HelpCommand {
     );
 
     public static void register(CommandDispatcher<CommanderCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("help").executes(c -> {
-            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
-            Map<CommandNode<CommanderCommandSource>, String> map = commandDispatcher.getSmartUsage(commandDispatcher.getRoot(), source);
-            if (!source.messageMayBeMultiline()) {
-                int index = source.getWorld().rand.nextInt(FUN.size());
-                source.sendMessage("pr_ib says: " + FUN.get(index));
-                return 0;
-            }
-            for (String string : map.values()) {
-                source.sendMessage("/" + string);
-            }
-            return map.size();
-        })).then(RequiredArgumentBuilder.argument("command", StringArgumentType.greedyString()).executes(commandContext -> {
-            ParseResults<CommanderCommandSource> parseResults = commandDispatcher.parse(StringArgumentType.getString(commandContext, "command"), (CommanderCommandSource)commandContext.getSource());
-            if (parseResults.getContext().getNodes().isEmpty()) {
-                throw FAILURE.create();
-            }
-            Map<CommandNode<CommanderCommandSource>, String> map = commandDispatcher.getSmartUsage(Iterables.getLast(parseResults.getContext().getNodes()).getNode(), (CommanderCommandSource)commandContext.getSource());
-            for (String string : map.values()) {
-                ((CommanderCommandSource)commandContext.getSource()).sendMessage("/" + parseResults.getReader().getString() + " " + string);
-            }
-            return map.size();
-        })));
+        commandDispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("help")
+                .executes(c -> {
+                    CommanderCommandSource source = c.getSource();
+                    Map<CommandNode<CommanderCommandSource>, String> map = commandDispatcher.getSmartUsage(commandDispatcher.getRoot(), source);
+                    if (!source.messageMayBeMultiline()) {
+                        int index = source.getWorld().rand.nextInt(FUN.size());
+                        source.sendMessage("pr_ib says: " + FUN.get(index));
+                        return 0;
+                    }
+                    for (String string : map.values()) {
+                        source.sendMessage("/" + string);
+                    }
+                    return map.size();
+                })
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, String>argument("command", StringArgumentType.greedyString())
+                        .executes(commandContext -> {
+                            ParseResults<CommanderCommandSource> parseResults = commandDispatcher.parse(StringArgumentType.getString(commandContext, "command"), commandContext.getSource());
+                            if (parseResults.getContext().getNodes().isEmpty()) {
+                                throw FAILURE.create();
+                            }
+                            Map<CommandNode<CommanderCommandSource>, String> map = commandDispatcher.getSmartUsage(Iterables.getLast(parseResults.getContext().getNodes()).getNode(), commandContext.getSource());
+                            for (String string : map.values()) {
+                                commandContext.getSource().sendMessage("/" + parseResults.getReader().getString() + " " + string);
+                            }
+                            return map.size();
+                        })));
     }
 }

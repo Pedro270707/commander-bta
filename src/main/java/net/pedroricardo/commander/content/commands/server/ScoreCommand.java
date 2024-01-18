@@ -19,22 +19,21 @@ import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class ScoreCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("score")
-                .then(LiteralArgumentBuilder.literal("get")
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("score")
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("get")
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             EntityPlayer player = source.getSender();
                             if (player == null) throw CommanderExceptions.notInWorld().create();
                             source.sendTranslatableMessage("commands.commander.score.get.success", player.score);
                             return player.score;
                         })
-                        .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.player())
-                                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("target", EntityArgumentType.player())
+                                .requires(CommanderCommandSource::hasAdmin)
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                     EntityPlayer player = (EntityPlayer) entitySelector.get(source).get(0);
                                     if (player == source.getSender()) {
@@ -44,12 +43,12 @@ public class ScoreCommand {
                                     }
                                     return player.score;
                                 })))
-                .then(LiteralArgumentBuilder.literal("set")
-                        .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                        .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.players())
-                                .then(RequiredArgumentBuilder.argument("score", IntegerArgumentType.integer(0, Integer.MAX_VALUE))
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("set")
+                        .requires(CommanderCommandSource::hasAdmin)
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("target", EntityArgumentType.players())
+                                .then(RequiredArgumentBuilder.<CommanderCommandSource, Integer>argument("score", IntegerArgumentType.integer(0, Integer.MAX_VALUE))
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             int score = c.getArgument("score", Integer.class);
@@ -58,12 +57,12 @@ public class ScoreCommand {
                                             }
                                             return score;
                                         }))))
-                .then(LiteralArgumentBuilder.literal("add")
-                        .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                        .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.players())
-                                .then(RequiredArgumentBuilder.argument("score", IntegerArgumentType.integer(0, Integer.MAX_VALUE))
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("add")
+                        .requires(CommanderCommandSource::hasAdmin)
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("target", EntityArgumentType.players())
+                                .then(RequiredArgumentBuilder.<CommanderCommandSource, Integer>argument("score", IntegerArgumentType.integer(0, Integer.MAX_VALUE))
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             int score = c.getArgument("score", Integer.class);

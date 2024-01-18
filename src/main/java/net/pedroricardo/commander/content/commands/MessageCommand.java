@@ -18,14 +18,13 @@ import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class MessageCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        CommandNode<Object> command = dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("message")
-                .then(RequiredArgumentBuilder.argument("targets", EntityArgumentType.players())
-                        .then(RequiredArgumentBuilder.argument("message", StringArgumentType.greedyString())
+        CommandNode<CommanderCommandSource> command = dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("message")
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("targets", EntityArgumentType.players())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, String>argument("message", StringArgumentType.greedyString())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     EntitySelector entitySelector = c.getArgument("targets", EntitySelector.class);
                                     String message = c.getArgument("message", String.class);
 
@@ -40,11 +39,11 @@ public class MessageCommand {
 
                                     return Command.SINGLE_SUCCESS;
                                 }))));
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("msg")
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("msg")
                 .redirect(command));
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("whisper")
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("whisper")
                 .redirect(command));
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("tell")
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("tell")
                 .redirect(command));
     }
 }

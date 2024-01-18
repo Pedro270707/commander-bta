@@ -18,16 +18,15 @@ import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class OpCommand {
     private static final SimpleCommandExceptionType FAILURE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.op.exception_failure"));
 
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("op")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.players())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("op")
+                .requires(CommanderCommandSource::hasAdmin)
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("target", EntityArgumentType.players())
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             if (!(source instanceof IServerCommandSource)) throw CommanderExceptions.multiplayerWorldOnly().create();
 
                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);

@@ -9,69 +9,68 @@ import net.minecraft.core.world.World;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.TimeArgumentType;
 
-@SuppressWarnings("unchecked")
 public class TimeCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("time")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then(LiteralArgumentBuilder.literal("query")
-                        .then(LiteralArgumentBuilder.literal("daytime")
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("time")
+                .requires(CommanderCommandSource::hasAdmin)
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("query")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("daytime")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
-                                    source.sendTranslatableMessage("commands.commander.time.query", ((CommanderCommandSource)c.getSource()).getWorld().getWorldTime() % 24000L);
+                                    CommanderCommandSource source = c.getSource();
+                                    source.sendTranslatableMessage("commands.commander.time.query", c.getSource().getWorld().getWorldTime() % 24000L);
 
                                     return Command.SINGLE_SUCCESS;
                                 }))
-                        .then(LiteralArgumentBuilder.literal("gametime")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("gametime")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     source.sendTranslatableMessage("commands.commander.time.query", source.getWorld().getWorldTime() % Integer.MAX_VALUE);
 
                                     return Command.SINGLE_SUCCESS;
                                 }))
-                        .then(LiteralArgumentBuilder.literal("day")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("day")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
-                                    source.sendTranslatableMessage("commands.commander.time.query", (int) Math.floor(source.getWorld().getWorldTime() / 24000L % Integer.MAX_VALUE));
+                                    CommanderCommandSource source = c.getSource();
+                                    source.sendTranslatableMessage("commands.commander.time.query", source.getWorld().getWorldTime() / 24000L % Integer.MAX_VALUE);
 
                                     return Command.SINGLE_SUCCESS;
                                 })))
-                .then(LiteralArgumentBuilder.literal("set")
-                        .then(RequiredArgumentBuilder.argument("time", TimeArgumentType.time())
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("set")
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, Integer>argument("time", TimeArgumentType.time())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     int time = c.getArgument("time", Integer.class);
                                     setWorldTime(source, source.getWorld(), time);
                                     return Command.SINGLE_SUCCESS;
                                 }))
-                        .then(LiteralArgumentBuilder.literal("day")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("day")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     setDayTime(source, source.getWorld(), 1000);
                                     return Command.SINGLE_SUCCESS;
                                 }))
-                        .then(LiteralArgumentBuilder.literal("noon")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("noon")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     setDayTime(source, source.getWorld(), 6000);
                                     return Command.SINGLE_SUCCESS;
                                 }))
-                        .then(LiteralArgumentBuilder.literal("night")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("night")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     setDayTime(source, source.getWorld(), 13000);
                                     return Command.SINGLE_SUCCESS;
                                 }))
-                        .then(LiteralArgumentBuilder.literal("midnight")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("midnight")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     setDayTime(source, source.getWorld(), 18000);
                                     return Command.SINGLE_SUCCESS;
                                 })))
-                .then(LiteralArgumentBuilder.literal("add")
-                        .then(RequiredArgumentBuilder.argument("time", TimeArgumentType.time())
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("add")
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, Integer>argument("time", TimeArgumentType.time())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     int time = c.getArgument("time", Integer.class);
                                     addWorldTime(source, source.getWorld(), time);
                                     return Command.SINGLE_SUCCESS;

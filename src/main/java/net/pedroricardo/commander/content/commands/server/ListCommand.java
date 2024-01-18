@@ -11,14 +11,13 @@ import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.IServerCommandSource;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 
-@SuppressWarnings("unchecked")
 public class ListCommand {
     private static final SimpleCommandExceptionType FAILURE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.list.exception_failure"));
 
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("list")
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("list")
                 .executes(c -> {
-                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                    CommanderCommandSource source = c.getSource();
                     if (!(source instanceof IServerCommandSource)) throw CommanderExceptions.multiplayerWorldOnly().create();
 
                     MinecraftServer server = ((IServerCommandSource)source).getServer();

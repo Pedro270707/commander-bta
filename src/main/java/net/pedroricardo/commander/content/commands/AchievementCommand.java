@@ -19,18 +19,17 @@ import net.pedroricardo.commander.content.helpers.EntitySelector;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class AchievementCommand {
     private static final SimpleCommandExceptionType PLAYER_ALREADY_HAS_ACHIEVEMENT = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.achievement.grant.exception_already_has_achievement"));
 
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("achievement"))
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then(((LiteralArgumentBuilder)LiteralArgumentBuilder.<CommanderCommandSource>literal("grant"))
-                        .then(RequiredArgumentBuilder.argument("entities", EntityArgumentType.players())
-                                .then(RequiredArgumentBuilder.argument("achievement", AchievementArgumentType.achievement())
+        dispatcher.register(((LiteralArgumentBuilder.<CommanderCommandSource>literal("achievement"))
+                .requires(CommanderCommandSource::hasAdmin)
+                .then((LiteralArgumentBuilder.<CommanderCommandSource>literal("grant"))
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("entities", EntityArgumentType.players())
+                                .then(RequiredArgumentBuilder.<CommanderCommandSource, Achievement>argument("achievement", AchievementArgumentType.achievement())
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get(source);
                                             Achievement achievement = c.getArgument("achievement", Achievement.class);
 
@@ -54,9 +53,9 @@ public class AchievementCommand {
 
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("*")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("*")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             List<? extends Entity> entities = c.getArgument("entities", EntitySelector.class).get(source);
 
                                             for (Achievement achievement : AchievementList.achievementList) {

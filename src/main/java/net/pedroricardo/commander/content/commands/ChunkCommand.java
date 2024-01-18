@@ -10,7 +10,6 @@ import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.ChunkCoordinatesArgumentType;
 import net.pedroricardo.commander.content.helpers.Coordinates2D;
 
-@SuppressWarnings("unchecked")
 public class ChunkCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("chunk")

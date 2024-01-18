@@ -11,14 +11,13 @@ import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.IServerCommandSource;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 
-@SuppressWarnings("unchecked")
 public class MeCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("me")
-                .then(RequiredArgumentBuilder.argument("asterisk", BoolArgumentType.bool())
-                        .then(RequiredArgumentBuilder.argument("message", StringArgumentType.greedyString())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("me")
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, Boolean>argument("asterisk", BoolArgumentType.bool())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, String>argument("message", StringArgumentType.greedyString())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     String message = StringArgumentType.getString(c, "message");
                                     boolean asterisk = BoolArgumentType.getBool(c, "asterisk");
                                     if (!(source instanceof IServerCommandSource)) throw CommanderExceptions.multiplayerWorldOnly().create();
@@ -26,9 +25,9 @@ public class MeCommand {
                                     ((IServerCommandSource) source).getServer().playerList.sendEncryptedChatToAllPlayers((asterisk ? "* " : "") + senderName + message);
                                     return Command.SINGLE_SUCCESS;
                                 })))
-                .then(RequiredArgumentBuilder.argument("message", StringArgumentType.greedyString())
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, String>argument("message", StringArgumentType.greedyString())
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             String message = StringArgumentType.getString(c, "message");
                             if (!(source instanceof IServerCommandSource)) throw CommanderExceptions.multiplayerWorldOnly().create();
                             String senderName = source.getSender() == null ? "Server" : CommanderHelper.getEntityName(source.getSender());

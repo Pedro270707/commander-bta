@@ -16,17 +16,16 @@ import net.pedroricardo.commander.content.arguments.WorldFeatureArgumentType;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 
-@SuppressWarnings("unchecked")
 public class PlaceCommand {
     private static final SimpleCommandExceptionType FAILURE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.place.exception_failure"));
 
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        CommandNode<Object> command = dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("place")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then((RequiredArgumentBuilder) RequiredArgumentBuilder.argument("feature", WorldFeatureArgumentType.worldFeature())
-                        .then((RequiredArgumentBuilder) RequiredArgumentBuilder.argument("position", IntegerCoordinatesArgumentType.intCoordinates())
+        CommandNode<CommanderCommandSource> command = dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("place")
+                .requires(CommanderCommandSource::hasAdmin)
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, WorldFeature>argument("feature", WorldFeatureArgumentType.worldFeature())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, IntegerCoordinates>argument("position", IntegerCoordinatesArgumentType.intCoordinates())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     WorldFeature feature = c.getArgument("feature", WorldFeature.class);
                                     IntegerCoordinates coordinates = c.getArgument("position", IntegerCoordinates.class);
                                     World world = source.getWorld();
@@ -48,11 +47,11 @@ public class PlaceCommand {
                                     }
                                     return Command.SINGLE_SUCCESS;
                                 }))));
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("generate")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("generate")
+                .requires(CommanderCommandSource::hasAdmin)
                 .redirect(command));
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("gen")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("gen")
+                .requires(CommanderCommandSource::hasAdmin)
                 .redirect(command));
     }
 }

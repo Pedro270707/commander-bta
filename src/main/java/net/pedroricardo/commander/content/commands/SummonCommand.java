@@ -16,16 +16,15 @@ import net.pedroricardo.commander.content.arguments.Vec3dArgumentType;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import net.pedroricardo.commander.content.helpers.DoubleCoordinates;
 
-@SuppressWarnings("unchecked")
 public class SummonCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("summon")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then(RequiredArgumentBuilder.argument("entity", EntitySummonArgumentType.entity())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("summon")
+                .requires(CommanderCommandSource::hasAdmin)
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, Class<? extends Entity>>argument("entity", EntitySummonArgumentType.entity())
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             Vec3d coordinates = source.getCoordinates(false);
-                            if (coordinates == null) throw CommanderExceptions.notInWorld().create();
+                            if (source.getSender() == null || coordinates == null) throw CommanderExceptions.notInWorld().create();
 
                             Entity entity = summonEntityAt(c, coordinates.xCoord, coordinates.yCoord - source.getSender().heightOffset, coordinates.zCoord, 0.0f, 0.0f);
 
@@ -33,9 +32,9 @@ public class SummonCommand {
 
                             return Command.SINGLE_SUCCESS;
                         })
-                        .then(RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, DoubleCoordinates>argument("position", Vec3dArgumentType.vec3d())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     DoubleCoordinates coordinates = c.getArgument("position", DoubleCoordinates.class);
 
                                     Entity entity = summonEntityAt(c, coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source), 0.0f, 0.0f);
@@ -44,9 +43,9 @@ public class SummonCommand {
 
                                     return Command.SINGLE_SUCCESS;
                                 })
-                                .then(RequiredArgumentBuilder.argument("amount", IntegerArgumentType.integer(1, 255))
+                                .then(RequiredArgumentBuilder.<CommanderCommandSource, Integer>argument("amount", IntegerArgumentType.integer(1, 255))
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             DoubleCoordinates coordinates = c.getArgument("position", DoubleCoordinates.class);
                                             int amount = c.getArgument("amount", Integer.class);
 
@@ -60,17 +59,18 @@ public class SummonCommand {
                                         })))));
     }
 
-    private static Entity summonEntityAt(CommandContext<Object> c, double x, double y, double z, float yaw, float pitch) {
+    @SuppressWarnings({"SameParameterValue", "unchecked"})
+    private static Entity summonEntityAt(CommandContext<CommanderCommandSource> c, double x, double y, double z, float yaw, float pitch) {
         Class<? extends Entity> entityClass = c.getArgument("entity", Class.class);
         Entity entity;
         try {
-            entity = entityClass.getConstructor(World.class).newInstance(((CommanderCommandSource)c.getSource()).getWorld());
+            entity = entityClass.getConstructor(World.class).newInstance(c.getSource().getWorld());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         entity.spawnInit();
         entity.moveTo(x, y, z, yaw, pitch);
-        ((CommanderCommandSource)c.getSource()).getWorld().entityJoinedWorld(entity);
+        c.getSource().getWorld().entityJoinedWorld(entity);
         return entity;
     }
 }

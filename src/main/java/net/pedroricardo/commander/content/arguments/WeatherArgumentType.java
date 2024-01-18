@@ -19,7 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class WeatherArgumentType implements ArgumentType<Weather> {
     private static final Collection<String> EXAMPLES = Arrays.asList(Weather.overworldClear.languageKey, Weather.overworldFog.languageKey);
 
-    public static ArgumentType<Weather> weather() {
+    public static WeatherArgumentType weather() {
         return new WeatherArgumentType();
     }
 

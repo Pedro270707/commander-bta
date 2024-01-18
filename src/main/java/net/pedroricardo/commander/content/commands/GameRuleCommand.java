@@ -12,10 +12,9 @@ import net.minecraft.core.data.registry.Registries;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.GenericGameRuleArgumentType;
 
-@SuppressWarnings("unchecked")
 public class GameRuleCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        final LiteralArgumentBuilder<CommanderCommandSource> argumentBuilder = (LiteralArgumentBuilder) LiteralArgumentBuilder.literal("gamerule").requires(source -> ((CommanderCommandSource)source).hasAdmin());
+        final LiteralArgumentBuilder<CommanderCommandSource> argumentBuilder = LiteralArgumentBuilder.<CommanderCommandSource>literal("gamerule").requires(CommanderCommandSource::hasAdmin);
         for (final GameRule<?> gameRule : Registries.GAME_RULES) {
             RequiredArgumentBuilder<CommanderCommandSource, ?> gameRuleValueArgument;
             if (gameRule instanceof GameRuleBoolean) {
@@ -41,9 +40,9 @@ public class GameRuleCommand {
                     })
                     .then(gameRuleValueArgument));
         }
-        CommandNode commandNode = dispatcher.register(argumentBuilder);
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("gr")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+        CommandNode<CommanderCommandSource> commandNode = dispatcher.register(argumentBuilder);
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("gr")
+                .requires(CommanderCommandSource::hasAdmin)
                 .redirect(commandNode));
     }
 }

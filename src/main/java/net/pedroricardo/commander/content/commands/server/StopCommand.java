@@ -8,13 +8,12 @@ import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.IServerCommandSource;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 
-@SuppressWarnings("unchecked")
 public class StopCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("stop")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("stop")
+                .requires(CommanderCommandSource::hasAdmin)
                 .executes(c -> {
-                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                    CommanderCommandSource source = c.getSource();
                     if (!(source instanceof IServerCommandSource)) throw CommanderExceptions.multiplayerWorldOnly().create();
 
                     MinecraftServer server = ((IServerCommandSource)source).getServer();

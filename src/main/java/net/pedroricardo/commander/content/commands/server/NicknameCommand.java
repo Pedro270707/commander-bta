@@ -18,19 +18,18 @@ import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class NicknameCommand {
     private static final SimpleCommandExceptionType NICKNAME_TOO_LARGE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.nickname.exception_too_large"));
     private static final SimpleCommandExceptionType NICKNAME_TOO_SMALL = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.nickname.exception_too_small"));
 
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        CommandNode<Object> command = dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("nickname")
-                .then(LiteralArgumentBuilder.literal("set")
-                        .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.player())
-                                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                                .then(RequiredArgumentBuilder.argument("nickname", StringArgumentType.greedyString())
+        CommandNode<CommanderCommandSource> command = dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("nickname")
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("set")
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("target", EntityArgumentType.player())
+                                .requires(CommanderCommandSource::hasAdmin)
+                                .then(RequiredArgumentBuilder.<CommanderCommandSource, String>argument("nickname", StringArgumentType.greedyString())
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             String nickname = c.getArgument("nickname", String.class);
                                             if (nickname.length() > 16) throw NICKNAME_TOO_LARGE.create();
@@ -50,9 +49,9 @@ public class NicknameCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         })))
-                        .then(RequiredArgumentBuilder.argument("nickname", StringArgumentType.greedyString())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, String>argument("nickname", StringArgumentType.greedyString())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     String nickname = c.getArgument("nickname", String.class);
                                     if (nickname.length() > 16) throw NICKNAME_TOO_LARGE.create();
                                     if (nickname.isEmpty()) throw NICKNAME_TOO_SMALL.create();
@@ -69,10 +68,10 @@ public class NicknameCommand {
 
                                     return Command.SINGLE_SUCCESS;
                                 })))
-                .then(LiteralArgumentBuilder.literal("get")
-                        .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.player())
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("get")
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("target", EntityArgumentType.player())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                     List<? extends Entity> entities = entitySelector.get(source);
                                     EntityPlayerMP player = (EntityPlayerMP) entities.get(0);
@@ -80,11 +79,11 @@ public class NicknameCommand {
                                     source.sendTranslatableMessage("commands.commander.nickname.get.success", player.username, player.nickname);
                                     return Command.SINGLE_SUCCESS;
                                 })))
-                .then(LiteralArgumentBuilder.literal("reset")
-                        .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.player())
-                                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("reset")
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("target", EntityArgumentType.player())
+                                .requires(CommanderCommandSource::hasAdmin)
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                     List<? extends Entity> entities = entitySelector.get(source);
 
@@ -102,7 +101,7 @@ public class NicknameCommand {
                                     return Command.SINGLE_SUCCESS;
                                 }))
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
 
                             EntityPlayerMP player = (EntityPlayerMP) source.getSender();
 
@@ -116,7 +115,7 @@ public class NicknameCommand {
 
                             return Command.SINGLE_SUCCESS;
                         })));
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("nick")
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("nick")
                 .redirect(command));
     }
 }

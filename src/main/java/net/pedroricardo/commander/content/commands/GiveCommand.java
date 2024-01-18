@@ -16,15 +16,14 @@ import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class GiveCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("give")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.players())
-                        .then(RequiredArgumentBuilder.argument("item", ItemStackArgumentType.itemStack())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("give")
+                .requires(CommanderCommandSource::hasAdmin)
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("target", EntityArgumentType.players())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, ItemStack>argument("item", ItemStackArgumentType.itemStack())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     ItemStack itemStack = c.getArgument("item", ItemStack.class);
                                     int amount = itemStack.stackSize;
                                     EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
@@ -45,9 +44,9 @@ public class GiveCommand {
 
                                     return Command.SINGLE_SUCCESS;
                                 })
-                                .then(RequiredArgumentBuilder.argument("amount", IntegerArgumentType.integer(1, 6400))
+                                .then(RequiredArgumentBuilder.<CommanderCommandSource, Integer>argument("amount", IntegerArgumentType.integer(1, 6400))
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             ItemStack itemStack = c.getArgument("item", ItemStack.class);
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);

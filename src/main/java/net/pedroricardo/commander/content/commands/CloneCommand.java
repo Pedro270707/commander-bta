@@ -26,148 +26,33 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings("unchecked")
 public class CloneCommand {
     private static final SimpleCommandExceptionType INSIDE_CLONED_AREA = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.clone.exception_inside_cloned_area"));
     private static final SimpleCommandExceptionType DESTINATION_NOT_LOADED = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.clone.exception_destination_not_loaded"));
     private static final SimpleCommandExceptionType SOURCE_NOT_LOADED = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.clone.exception_source_not_loaded"));
     private static final SimpleCommandExceptionType NOWHERE_LOADED = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.clone.exception_nowhere_loaded"));
 
-//    public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-//        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("clone")
-//                .then(LiteralArgumentBuilder.literal("from")
-//                        .then(RequiredArgumentBuilder.argument("sourceDimension", DimensionArgumentType.dimension())
-//                                .then(RequiredArgumentBuilder.argument("begin", IntegerCoordinatesArgumentType.intCoordinates())
-//                                        .then(RequiredArgumentBuilder.argument("end", IntegerCoordinatesArgumentType.intCoordinates())
-//                                                .then(RequiredArgumentBuilder.argument("destination", IntegerCoordinatesArgumentType.intCoordinates())
-//                                                        .executes(c -> {
-//                                                            IntegerCoordinates begin = c.getArgument("begin", IntegerCoordinates.class);
-//                                                            IntegerCoordinates end = c.getArgument("end", IntegerCoordinates.class);
-//                                                            IntegerCoordinates destination = c.getArgument("destination", IntegerCoordinates.class);
-//                                                            Dimension sourceDimension = c.getArgument("sourceDimension", Dimension.class);
-//                                                            if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), begin, end) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-//                                                            int clonedBlocks = clone((CommanderCommandSource) c.getSource(), ((CommanderCommandSource) c.getSource()).getWorld(sourceDimension.id), ((CommanderCommandSource) c.getSource()).getWorld(), begin, end, destination, CloneMode.NORMAL);
-//                                                            ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(clonedBlocks == 1 ? "commands.commander.clone.success_single" : "commands.commander.clone.success_multiple", clonedBlocks);
-//                                                            return clonedBlocks;
-//                                                        })
-//                                                        .then(LiteralArgumentBuilder.literal("filtered")
-//                                                                .then(RequiredArgumentBuilder.argument("filter", BlockArgumentType.block())
-//                                                                        .executes(c -> {
-//                                                                            IntegerCoordinates begin = c.getArgument("begin", IntegerCoordinates.class);
-//                                                                            IntegerCoordinates end = c.getArgument("end", IntegerCoordinates.class);
-//                                                                            IntegerCoordinates destination = c.getArgument("destination", IntegerCoordinates.class);
-//                                                                            Dimension sourceDimension = c.getArgument("sourceDimension", Dimension.class);
-//                                                                            BlockInput filter = c.getArgument("filter", BlockInput.class);
-//                                                                            if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), begin, end) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-//                                                                            int clonedBlocks = clone((CommanderCommandSource) c.getSource(), ((CommanderCommandSource) c.getSource()).getWorld(sourceDimension.id), ((CommanderCommandSource) c.getSource()).getWorld(), begin, end, destination, CloneMode.NORMAL, filter);
-//                                                                            ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(clonedBlocks == 1 ? "commands.commander.clone.success_single" : "commands.commander.clone.success_multiple", clonedBlocks);
-//                                                                            return clonedBlocks;
-//                                                                        })))
-//                                                        .then(LiteralArgumentBuilder.literal("masked")
-//                                                                .executes(c -> {
-//                                                                    IntegerCoordinates begin = c.getArgument("begin", IntegerCoordinates.class);
-//                                                                    IntegerCoordinates end = c.getArgument("end", IntegerCoordinates.class);
-//                                                                    IntegerCoordinates destination = c.getArgument("destination", IntegerCoordinates.class);
-//                                                                    if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), begin, end) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-//                                                                    int clonedBlocks = clone((CommanderCommandSource) c.getSource(), ((CommanderCommandSource) c.getSource()).getWorld(), ((CommanderCommandSource) c.getSource()).getWorld(), begin, end, destination, CloneMode.NORMAL, new BlockInput(null, 0, new CompoundTag()));
-//                                                                    ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(clonedBlocks == 1 ? "commands.commander.clone.success_single" : "commands.commander.clone.success_multiple", clonedBlocks);
-//                                                                    return clonedBlocks;
-//                                                                })))
-//                                                .then(LiteralArgumentBuilder.literal("to")
-//                                                        .then(RequiredArgumentBuilder.argument("targetDimension", DimensionArgumentType.dimension())
-//                                                                .then(RequiredArgumentBuilder.argument("destination", IntegerCoordinatesArgumentType.intCoordinates())
-//                                                                        .executes(c -> {
-//                                                                            IntegerCoordinates begin = c.getArgument("begin", IntegerCoordinates.class);
-//                                                                            IntegerCoordinates end = c.getArgument("end", IntegerCoordinates.class);
-//                                                                            IntegerCoordinates destination = c.getArgument("destination", IntegerCoordinates.class);
-//                                                                            Dimension sourceDimension = c.getArgument("sourceDimension", Dimension.class);
-//                                                                            Dimension targetDimension = c.getArgument("targetDimension", Dimension.class);
-//                                                                            if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), begin, end) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-//                                                                            int clonedBlocks = clone((CommanderCommandSource) c.getSource(), ((CommanderCommandSource) c.getSource()).getWorld(sourceDimension.id), ((CommanderCommandSource) c.getSource()).getWorld(targetDimension.id), begin, end, destination, CloneMode.NORMAL);
-//                                                                            ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(clonedBlocks == 1 ? "commands.commander.clone.success_single" : "commands.commander.clone.success_multiple", clonedBlocks);
-//                                                                            return clonedBlocks;
-//                                                                        })
-//                                                                        .then(LiteralArgumentBuilder.literal("filtered")
-//                                                                                .then(RequiredArgumentBuilder.argument("filter", BlockArgumentType.block())
-//                                                                                        .executes(c -> {
-//                                                                                            IntegerCoordinates begin = c.getArgument("begin", IntegerCoordinates.class);
-//                                                                                            IntegerCoordinates end = c.getArgument("end", IntegerCoordinates.class);
-//                                                                                            IntegerCoordinates destination = c.getArgument("destination", IntegerCoordinates.class);
-//                                                                                            Dimension sourceDimension = c.getArgument("sourceDimension", Dimension.class);
-//                                                                                            Dimension targetDimension = c.getArgument("targetDimension", Dimension.class);
-//                                                                                            BlockInput filter = c.getArgument("filter", BlockInput.class);
-//                                                                                            if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), begin, end) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-//                                                                                            int clonedBlocks = clone((CommanderCommandSource) c.getSource(), ((CommanderCommandSource) c.getSource()).getWorld(sourceDimension.id), ((CommanderCommandSource) c.getSource()).getWorld(targetDimension.id), begin, end, destination, CloneMode.NORMAL, filter);
-//                                                                                            ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(clonedBlocks == 1 ? "commands.commander.clone.success_single" : "commands.commander.clone.success_multiple", clonedBlocks);
-//                                                                                            return clonedBlocks;
-//                                                                                        })))
-//                                                                        .then(LiteralArgumentBuilder.literal("masked")
-//                                                                                .executes(c -> {
-//                                                                                    IntegerCoordinates begin = c.getArgument("begin", IntegerCoordinates.class);
-//                                                                                    IntegerCoordinates end = c.getArgument("end", IntegerCoordinates.class);
-//                                                                                    IntegerCoordinates destination = c.getArgument("destination", IntegerCoordinates.class);
-//                                                                                    if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), begin, end) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-//                                                                                    int clonedBlocks = clone((CommanderCommandSource) c.getSource(), ((CommanderCommandSource) c.getSource()).getWorld(), ((CommanderCommandSource) c.getSource()).getWorld(), begin, end, destination, CloneMode.NORMAL, new BlockInput(null, 0, new CompoundTag()));
-//                                                                                    ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(clonedBlocks == 1 ? "commands.commander.clone.success_single" : "commands.commander.clone.success_multiple", clonedBlocks);
-//                                                                                    return clonedBlocks;
-//                                                                                })))))))))
-//                .then(RequiredArgumentBuilder.argument("begin", IntegerCoordinatesArgumentType.intCoordinates())
-//                        .then(RequiredArgumentBuilder.argument("end", IntegerCoordinatesArgumentType.intCoordinates())
-//                                .then(RequiredArgumentBuilder.argument("destination", IntegerCoordinatesArgumentType.intCoordinates())
-//                                        .executes(c -> {
-//                                            IntegerCoordinates begin = c.getArgument("begin", IntegerCoordinates.class);
-//                                            IntegerCoordinates end = c.getArgument("end", IntegerCoordinates.class);
-//                                            IntegerCoordinates destination = c.getArgument("destination", IntegerCoordinates.class);
-//                                            if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), begin, end) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-//                                            int clonedBlocks = clone((CommanderCommandSource) c.getSource(), ((CommanderCommandSource) c.getSource()).getWorld(), ((CommanderCommandSource) c.getSource()).getWorld(), begin, end, destination, CloneMode.NORMAL);
-//                                            ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(clonedBlocks == 1 ? "commands.commander.clone.success_single" : "commands.commander.clone.success_multiple", clonedBlocks);
-//                                            return clonedBlocks;
-//                                        })
-//                                        .then(LiteralArgumentBuilder.literal("filtered")
-//                                                .then(RequiredArgumentBuilder.argument("filter", BlockArgumentType.block())
-//                                                        .executes(c -> {
-//                                                            IntegerCoordinates begin = c.getArgument("begin", IntegerCoordinates.class);
-//                                                            IntegerCoordinates end = c.getArgument("end", IntegerCoordinates.class);
-//                                                            IntegerCoordinates destination = c.getArgument("destination", IntegerCoordinates.class);
-//                                                            BlockInput filter = c.getArgument("filter", BlockInput.class);
-//                                                            if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), begin, end) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-//                                                            int clonedBlocks = clone((CommanderCommandSource) c.getSource(), ((CommanderCommandSource) c.getSource()).getWorld(), ((CommanderCommandSource) c.getSource()).getWorld(), begin, end, destination, CloneMode.NORMAL, filter);
-//                                                            ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(clonedBlocks == 1 ? "commands.commander.clone.success_single" : "commands.commander.clone.success_multiple", clonedBlocks);
-//                                                            return clonedBlocks;
-//                                                        })))
-//                                        .then(LiteralArgumentBuilder.literal("masked")
-//                                                .executes(c -> {
-//                                                    IntegerCoordinates begin = c.getArgument("begin", IntegerCoordinates.class);
-//                                                    IntegerCoordinates end = c.getArgument("end", IntegerCoordinates.class);
-//                                                    IntegerCoordinates destination = c.getArgument("destination", IntegerCoordinates.class);
-//                                                    if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), begin, end) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-//                                                    int clonedBlocks = clone((CommanderCommandSource) c.getSource(), ((CommanderCommandSource) c.getSource()).getWorld(), ((CommanderCommandSource) c.getSource()).getWorld(), begin, end, destination, CloneMode.NORMAL, new BlockInput(null, 0, new CompoundTag()));
-//                                                    ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(clonedBlocks == 1 ? "commands.commander.clone.success_single" : "commands.commander.clone.success_multiple", clonedBlocks);
-//                                                    return clonedBlocks;
-//                                                }))))));
-//    }
-
     public static void register(CommandDispatcher<CommanderCommandSource> commandDispatcher) {
-        commandDispatcher.register((LiteralArgumentBuilder)(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("clone")
-                .requires((source) -> ((CommanderCommandSource)source).hasAdmin()))
+        commandDispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("clone")
+                .requires(CommanderCommandSource::hasAdmin)
                 .then(beginEndDestinationAndModeSuffix(c -> {
                     return c.getSource().getWorld();
-                })))
-                .then(LiteralArgumentBuilder.literal("from")
-                        .then(((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("sourceDimension", DimensionArgumentType.dimension()))
+                }))
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("from")
+                        .then((RequiredArgumentBuilder.<CommanderCommandSource, Dimension>argument("sourceDimension", DimensionArgumentType.dimension()))
                                 .then(beginEndDestinationAndModeSuffix(c -> {
                                     return c.getSource().getWorld(c.getArgument("sourceDimension", Dimension.class).id);
                                 })))));
     }
 
     private static ArgumentBuilder<CommanderCommandSource, ?> beginEndDestinationAndModeSuffix(CommandFunction<CommandContext<CommanderCommandSource>, World> commandFunction) {
-        return RequiredArgumentBuilder.argument("begin", IntegerCoordinatesArgumentType.intCoordinates())
-                .then((((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("end", IntegerCoordinatesArgumentType.intCoordinates()))
+        return RequiredArgumentBuilder.<CommanderCommandSource, IntegerCoordinates>argument("begin", IntegerCoordinatesArgumentType.intCoordinates())
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, IntegerCoordinates>argument("end", IntegerCoordinatesArgumentType.intCoordinates())
                         .then(destinationAndModeSuffix(commandFunction, c -> {
                             return c.getSource().getWorld();
-                        })))
-                        .then(LiteralArgumentBuilder.literal("to")
-                                .then(((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("targetDimension", DimensionArgumentType.dimension()))
+                        }))
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("to")
+                                .then((RequiredArgumentBuilder.<CommanderCommandSource, Dimension>argument("targetDimension", DimensionArgumentType.dimension()))
                                         .then(destinationAndModeSuffix(commandFunction, c -> {
                                             return c.getSource().getWorld(c.getArgument("targetDimension", Dimension.class).id);
                                         })))));
@@ -179,42 +64,42 @@ public class CloneCommand {
     }
 
     private static ArgumentBuilder<CommanderCommandSource, ?> destinationAndModeSuffix(CommandFunction<CommandContext<CommanderCommandSource>, World> commandFunction, CommandFunction<CommandContext<CommanderCommandSource>, World> commandFunction2) {
-        CommandFunction<CommandContext, WorldAndPosition> commandFunction3 = c -> getWorldAndPosition(c, commandFunction.apply(c), "begin");
-        CommandFunction<CommandContext, WorldAndPosition> commandFunction4 = c -> getWorldAndPosition(c, commandFunction.apply(c), "end");
-        CommandFunction<CommandContext, WorldAndPosition> commandFunction5 = c -> getWorldAndPosition(c, commandFunction2.apply(c), "destination");
-        return ((((RequiredArgumentBuilder)RequiredArgumentBuilder.argument("destination", IntegerCoordinatesArgumentType.intCoordinates())
+        CommandFunction<CommandContext<CommanderCommandSource>, WorldAndPosition> commandFunction3 = c -> getWorldAndPosition(c, commandFunction.apply(c), "begin");
+        CommandFunction<CommandContext<CommanderCommandSource>, WorldAndPosition> commandFunction4 = c -> getWorldAndPosition(c, commandFunction.apply(c), "end");
+        CommandFunction<CommandContext<CommanderCommandSource>, WorldAndPosition> commandFunction5 = c -> getWorldAndPosition(c, commandFunction2.apply(c), "destination");
+        return RequiredArgumentBuilder.<CommanderCommandSource, IntegerCoordinates>argument("destination", IntegerCoordinatesArgumentType.intCoordinates())
                 .executes(c -> {
-                    return clone((CommanderCommandSource)c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), null, CloneMode.NORMAL);
-                }))
-                .then(wrapWithCloneMode(commandFunction3, commandFunction4, commandFunction5, (commandContext) -> null, ((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("replace"))
+                    return clone(c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), null, CloneMode.NORMAL);
+                })
+                .then(wrapWithCloneMode(commandFunction3, commandFunction4, commandFunction5, (commandContext) -> null, LiteralArgumentBuilder.<CommanderCommandSource>literal("replace")
                         .executes(c -> {
-                            return clone((CommanderCommandSource)c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), null, CloneMode.NORMAL);
-                        }))))
-                .then(wrapWithCloneMode(commandFunction3, commandFunction4, commandFunction5, commandContext -> new BlockInput(null, 0, new CompoundTag()), ((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("masked"))
+                            return clone(c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), null, CloneMode.NORMAL);
+                        })))
+                .then(wrapWithCloneMode(commandFunction3, commandFunction4, commandFunction5, commandContext -> new BlockInput(null, 0, new CompoundTag()), LiteralArgumentBuilder.<CommanderCommandSource>literal("masked")
                         .executes(c -> {
-                            return clone((CommanderCommandSource)c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), new BlockInput(null, 0, new CompoundTag()), CloneMode.NORMAL);
-                        }))))
-                .then(((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("filtered"))
+                            return clone(c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), new BlockInput(null, 0, new CompoundTag()), CloneMode.NORMAL);
+                        })))
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("filtered")
                         .then(wrapWithCloneMode(commandFunction3, commandFunction4, commandFunction5, c -> {
-                            return (BlockInput) c.getArgument("filter", BlockInput.class);
-                            }, RequiredArgumentBuilder.argument("filter", BlockArgumentType.block())
+                            return c.getArgument("filter", BlockInput.class);
+                            }, RequiredArgumentBuilder.<CommanderCommandSource, BlockInput>argument("filter", BlockArgumentType.block())
                                 .executes(c -> {
-                                    return clone((CommanderCommandSource)c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), c.getArgument("filter", BlockInput.class), CloneMode.NORMAL);
+                                    return clone(c.getSource(), commandFunction3.apply(c), commandFunction4.apply(c), commandFunction5.apply(c), c.getArgument("filter", BlockInput.class), CloneMode.NORMAL);
                                 }))));
     }
 
-    private static ArgumentBuilder wrapWithCloneMode(CommandFunction<CommandContext, WorldAndPosition> commandFunction, CommandFunction<CommandContext, WorldAndPosition> commandFunction2, CommandFunction<CommandContext, WorldAndPosition> commandFunction3, CommandFunction<CommandContext, BlockInput> commandFunction4, ArgumentBuilder argumentBuilder) {
-        return argumentBuilder.then(LiteralArgumentBuilder.literal("force")
+    private static ArgumentBuilder<CommanderCommandSource, ?> wrapWithCloneMode(CommandFunction<CommandContext<CommanderCommandSource>, WorldAndPosition> commandFunction, CommandFunction<CommandContext<CommanderCommandSource>, WorldAndPosition> commandFunction2, CommandFunction<CommandContext<CommanderCommandSource>, WorldAndPosition> commandFunction3, CommandFunction<CommandContext<CommanderCommandSource>, BlockInput> commandFunction4, ArgumentBuilder<CommanderCommandSource, ?> argumentBuilder) {
+        return argumentBuilder.then(LiteralArgumentBuilder.<CommanderCommandSource>literal("force")
                 .executes(c -> {
-                    return clone((CommanderCommandSource)c.getSource(), commandFunction.apply(c), commandFunction2.apply(c), commandFunction3.apply(c), commandFunction4.apply(c), CloneMode.FORCE);
+                    return clone(c.getSource(), commandFunction.apply(c), commandFunction2.apply(c), commandFunction3.apply(c), commandFunction4.apply(c), CloneMode.FORCE);
                 }))
-                .then(LiteralArgumentBuilder.literal("move")
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("move")
                         .executes(c -> {
-                            return clone((CommanderCommandSource)c.getSource(), commandFunction.apply(c), commandFunction2.apply(c), commandFunction3.apply(c), commandFunction4.apply(c), CloneMode.MOVE);
+                            return clone(c.getSource(), commandFunction.apply(c), commandFunction2.apply(c), commandFunction3.apply(c), commandFunction4.apply(c), CloneMode.MOVE);
                         }))
-                .then(LiteralArgumentBuilder.literal("normal")
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("normal")
                         .executes(c -> {
-                            return clone((CommanderCommandSource)c.getSource(), commandFunction.apply(c), commandFunction2.apply(c), commandFunction3.apply(c), commandFunction4.apply(c), CloneMode.NORMAL);
+                            return clone(c.getSource(), commandFunction.apply(c), commandFunction2.apply(c), commandFunction3.apply(c), commandFunction4.apply(c), CloneMode.NORMAL);
                         }));
     }
 

@@ -17,15 +17,14 @@ import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-@SuppressWarnings("unchecked")
 public class KillCommand {
     private static final SimpleCommandExceptionType FAILURE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.kill.exception_failure"));
 
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("kill")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("kill")
+                .requires(CommanderCommandSource::hasAdmin)
                 .executes(c -> {
-                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                    CommanderCommandSource source = c.getSource();
                     EntityPlayer sender = source.getSender();
 
                     if (sender == null) throw CommanderExceptions.notInWorld().create();
@@ -36,9 +35,9 @@ public class KillCommand {
 
                     return Command.SINGLE_SUCCESS;
                 })
-                .then(RequiredArgumentBuilder.argument("entities", EntityArgumentType.entities())
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("entities", EntityArgumentType.entities())
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             EntitySelector entitySelector = c.getArgument("entities", EntitySelector.class);
                             CopyOnWriteArrayList<? extends Entity> entities = new CopyOnWriteArrayList<>(entitySelector.get(source));
 

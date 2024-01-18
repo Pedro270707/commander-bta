@@ -20,16 +20,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-@SuppressWarnings("unchecked")
 public class ClearCommand {
     private static final SimpleCommandExceptionType FAILURE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.clear.exception_failure"));
 
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("clear")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("clear")
+                .requires(CommanderCommandSource::hasAdmin)
                 .executes(c -> {
-                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
-                    EntityPlayer sender = ((CommanderCommandSource)c.getSource()).getSender();
+                    CommanderCommandSource source = c.getSource();
+                    EntityPlayer sender = source.getSender();
 
                     if (sender == null) throw CommanderExceptions.notInWorld().create();
 
@@ -40,9 +39,9 @@ public class ClearCommand {
 
                     return Command.SINGLE_SUCCESS;
                 })
-                .then(RequiredArgumentBuilder.argument("players", EntityArgumentType.players())
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("players", EntityArgumentType.players())
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             List<? extends Entity> players = c.getArgument("players", EntitySelector.class).get(source);
 
                             int itemsCleared = 0;
@@ -56,9 +55,9 @@ public class ClearCommand {
 
                             return Command.SINGLE_SUCCESS;
                         })
-                        .then(RequiredArgumentBuilder.argument("item", ItemStackArgumentType.itemStack())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, ItemStack>argument("item", ItemStackArgumentType.itemStack())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     List<? extends Entity> players = c.getArgument("players", EntitySelector.class).get(source);
                                     ItemStack itemStack = c.getArgument("item", ItemStack.class);
 

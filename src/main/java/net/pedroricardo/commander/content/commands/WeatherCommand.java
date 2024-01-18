@@ -12,14 +12,13 @@ import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.TimeArgumentType;
 import net.pedroricardo.commander.content.arguments.WeatherArgumentType;
 
-@SuppressWarnings("unchecked")
 public class WeatherCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        CommandNode<Object> command = dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("weather")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then(RequiredArgumentBuilder.argument("weather", WeatherArgumentType.weather())
+        CommandNode<CommanderCommandSource> command = dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("weather")
+                .requires(CommanderCommandSource::hasAdmin)
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, Weather>argument("weather", WeatherArgumentType.weather())
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             World world = source.getWorld();
                             Weather weather = c.getArgument("weather", Weather.class);
 
@@ -27,9 +26,9 @@ public class WeatherCommand {
                             source.sendTranslatableMessage("commands.commander.weather.success", weather.getTranslatedName());
                             return Command.SINGLE_SUCCESS;
                         })
-                        .then(RequiredArgumentBuilder.argument("duration", TimeArgumentType.time())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, Integer>argument("duration", TimeArgumentType.time())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     World world = source.getWorld();
                                     Weather weather = c.getArgument("weather", Weather.class);
 
@@ -37,9 +36,9 @@ public class WeatherCommand {
                                     source.sendTranslatableMessage("commands.commander.weather.success", weather.getTranslatedName());
                                     return Command.SINGLE_SUCCESS;
                                 })
-                                .then(RequiredArgumentBuilder.argument("power", FloatArgumentType.floatArg())
+                                .then(RequiredArgumentBuilder.<CommanderCommandSource, Float>argument("power", FloatArgumentType.floatArg())
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             World world = source.getWorld();
                                             Weather weather = c.getArgument("weather", Weather.class);
 
@@ -47,8 +46,8 @@ public class WeatherCommand {
                                             source.sendTranslatableMessage("commands.commander.weather.success", weather.getTranslatedName());
                                             return Command.SINGLE_SUCCESS;
                                         })))));
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("w")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("w")
+                .requires(CommanderCommandSource::hasAdmin)
                 .redirect(command));
     }
 }

@@ -14,13 +14,12 @@ import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import java.util.Arrays;
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class DifficultyCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("difficulty")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("difficulty")
+                .requires(CommanderCommandSource::hasAdmin)
                 .executes(c -> {
-                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                    CommanderCommandSource source = c.getSource();
                     switch (source.getWorld().difficultySetting) {
                         case 0:
                             source.sendTranslatableMessage("commands.commander.difficulty.query.success", I18n.getInstance().translateKey("options.difficulty.peaceful"));
@@ -40,24 +39,24 @@ public class DifficultyCommand {
                     }
                     return Command.SINGLE_SUCCESS;
                 })
-                .then(LiteralArgumentBuilder.literal("peaceful")
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("peaceful")
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             return setDifficulty(source, 0);
                         }))
-                .then(LiteralArgumentBuilder.literal("easy")
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("easy")
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             return setDifficulty(source, 1);
                         }))
-                .then(LiteralArgumentBuilder.literal("normal")
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("normal")
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             return setDifficulty(source, 2);
                         }))
-                .then(LiteralArgumentBuilder.literal("hard")
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("hard")
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             return setDifficulty(source, 3);
                         })));
     }

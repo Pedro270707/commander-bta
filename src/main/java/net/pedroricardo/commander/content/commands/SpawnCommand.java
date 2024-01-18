@@ -17,13 +17,12 @@ import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class SpawnCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("spawn")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("spawn")
+                .requires(CommanderCommandSource::hasAdmin)
                 .executes(c -> {
-                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                    CommanderCommandSource source = c.getSource();
                     EntityPlayer sender = source.getSender();
                     World world = source.getWorld(0);
                     ChunkCoordinates spawnCoordinates = world.getSpawnPoint();
@@ -35,9 +34,9 @@ public class SpawnCommand {
                     source.sendTranslatableMessage("commands.commander.spawn.success");
                     return Command.SINGLE_SUCCESS;
                 })
-                .then(RequiredArgumentBuilder.argument("players", EntityArgumentType.players())
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("players", EntityArgumentType.players())
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             EntityPlayer sender = source.getSender();
                             World world = source.getWorld(0);
                             ChunkCoordinates spawnCoordinates = world.getSpawnPoint();
@@ -56,9 +55,9 @@ public class SpawnCommand {
                             }
                             return Command.SINGLE_SUCCESS;
                         }))
-                .then(LiteralArgumentBuilder.literal("get")
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("get")
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             ChunkCoordinates spawnCoordinates = source.getWorld(0).getSpawnPoint();
                             source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.spawn.get", spawnCoordinates.x, spawnCoordinates.y, spawnCoordinates.z));
                             return Command.SINGLE_SUCCESS;

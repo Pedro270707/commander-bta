@@ -16,14 +16,13 @@ import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class TeleportCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        CommandNode<Object> command = dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("teleport")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then(RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
+        CommandNode<CommanderCommandSource> command = dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("teleport")
+                .requires(CommanderCommandSource::hasAdmin)
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, DoubleCoordinates>argument("position", Vec3dArgumentType.vec3d())
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             DoubleCoordinates targetCoordinates = c.getArgument("position", DoubleCoordinates.class);
 
                             if (source.getSender() != null) {
@@ -35,10 +34,10 @@ public class TeleportCommand {
 
                             return Command.SINGLE_SUCCESS;
                         }))
-                .then(RequiredArgumentBuilder.argument("entity", EntityArgumentType.entities())
-                        .then(RequiredArgumentBuilder.argument("position", Vec3dArgumentType.vec3d())
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("entity", EntityArgumentType.entities())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, DoubleCoordinates>argument("position", Vec3dArgumentType.vec3d())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     EntitySelector entitySelector = c.getArgument("entity", EntitySelector.class);
                                     DoubleCoordinates targetCoordinates = c.getArgument("position", DoubleCoordinates.class);
 
@@ -56,14 +55,14 @@ public class TeleportCommand {
 
                                     return Command.SINGLE_SUCCESS;
                                 }))
-                .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.entity())
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("target", EntityArgumentType.entity())
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             EntitySelector entitySelector = c.getArgument("entity", EntitySelector.class);
                             EntitySelector targetEntitySelector = c.getArgument("target", EntitySelector.class);
-                            Entity targetEntity = targetEntitySelector.get((CommanderCommandSource) c.getSource()).get(0);
+                            Entity targetEntity = targetEntitySelector.get(c.getSource()).get(0);
 
-                            List<? extends Entity> entities = entitySelector.get((CommanderCommandSource) c.getSource());
+                            List<? extends Entity> entities = entitySelector.get(c.getSource());
                             for (Entity entity : entities) {
                                 entity.moveTo(targetEntity.x, targetEntity.y - targetEntity.heightOffset, targetEntity.z, entity.yRot, entity.xRot);
                             }
@@ -73,8 +72,8 @@ public class TeleportCommand {
 
                             return Command.SINGLE_SUCCESS;
                         }))));
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("tp")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("tp")
+                .requires(CommanderCommandSource::hasAdmin)
                 .redirect(command));
     }
 }

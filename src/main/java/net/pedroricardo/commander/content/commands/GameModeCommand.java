@@ -14,17 +14,17 @@ import net.pedroricardo.commander.content.arguments.EntityArgumentType;
 import net.pedroricardo.commander.content.arguments.GameModeArgumentType;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import net.pedroricardo.commander.content.helpers.EntitySelector;
+import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class GameModeCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("gamemode")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then(RequiredArgumentBuilder.argument("gamemode", GameModeArgumentType.gameMode())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("gamemode")
+                .requires(CommanderCommandSource::hasAdmin)
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, Gamemode>argument("gamemode", GameModeArgumentType.gameMode())
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             Gamemode gameMode = c.getArgument("gamemode", Gamemode.class);
 
                             if (source.getSender() == null) {
@@ -35,13 +35,13 @@ public class GameModeCommand {
                             source.sendTranslatableMessage("commands.commander.gamemode.success_self", I18n.getInstance().translateKey(gameMode.getLanguageKey() + ".name"));
                             return Command.SINGLE_SUCCESS;
                         })
-                        .then(RequiredArgumentBuilder.argument("targets", EntityArgumentType.players())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("targets", EntityArgumentType.players())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     Gamemode gameMode = c.getArgument("gamemode", Gamemode.class);
                                     EntitySelector entitySelector = c.getArgument("targets", EntitySelector.class);
 
-                                    List<? extends Entity> entities = entitySelector.get((CommanderCommandSource)c.getSource());
+                                    List<? extends Entity> entities = entitySelector.get(c.getSource());
 
                                     for (Entity entity : entities) {
                                         ((EntityPlayer)entity).setGamemode(gameMode);

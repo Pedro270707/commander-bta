@@ -19,13 +19,12 @@ import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.List;
 
-@SuppressWarnings("unchecked")
 public class ColorCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        CommandNode<Object> command = dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("color")
-                .then(LiteralArgumentBuilder.literal("get")
+        CommandNode<CommanderCommandSource> command = dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("color")
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("get")
                         .executes(c -> {
-                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                            CommanderCommandSource source = c.getSource();
                             if (!(source instanceof IServerCommandSource)) throw CommanderExceptions.multiplayerWorldOnly().create();
 
                             EntityPlayerMP player = (EntityPlayerMP) source.getSender();
@@ -35,9 +34,9 @@ public class ColorCommand {
                             source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.color.get.success", color + color.getNames()[0]));
                             return Command.SINGLE_SUCCESS;
                         })
-                        .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.player())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("target", EntityArgumentType.player())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     if (!(source instanceof IServerCommandSource)) throw CommanderExceptions.multiplayerWorldOnly().create();
 
                                     EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
@@ -47,92 +46,92 @@ public class ColorCommand {
                                     source.sendMessage(I18n.getInstance().translateKeyAndFormat("commands.commander.color.get.success_other", color + color.getNames()[0]));
                                     return Command.SINGLE_SUCCESS;
                                 })))
-                .then(LiteralArgumentBuilder.literal("set")
-                        .then(LiteralArgumentBuilder.literal("white")
+                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("set")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("white")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 0);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("orange")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("orange")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 1);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("magenta")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("magenta")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 2);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("light_blue")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("light_blue")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 3);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("yellow")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("yellow")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 4);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("lime")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("lime")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 5);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("pink")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("pink")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 6);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("gray")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("gray")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 7);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("light_gray")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("light_gray")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 8);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("cyan")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("cyan")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 9);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("purple")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("purple")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 10);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("blue")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("blue")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 11);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("brown")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("brown")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 12);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("green")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("green")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 13);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("red")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("red")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 14);
                                 }))
-                        .then(LiteralArgumentBuilder.literal("black")
+                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("black")
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     return setColor((EntityPlayerMP) source.getSender(), source, (byte) 15);
                                 }))
-                        .then(RequiredArgumentBuilder.argument("target", EntityArgumentType.players())
-                                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                                .then(LiteralArgumentBuilder.literal("white")
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("target", EntityArgumentType.players())
+                                .requires(CommanderCommandSource::hasAdmin)
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("white")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -140,9 +139,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("orange")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("orange")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -150,9 +149,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("magenta")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("magenta")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -160,9 +159,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("light_blue")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("light_blue")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -170,9 +169,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("yellow")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("yellow")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -180,9 +179,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("lime")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("lime")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -190,9 +189,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("pink")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("pink")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -200,9 +199,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("gray")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("gray")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -210,9 +209,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("light_gray")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("light_gray")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -220,9 +219,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("cyan")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("cyan")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -230,9 +229,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("purple")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("purple")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -240,9 +239,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("blue")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("blue")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -250,9 +249,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("brown")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("brown")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -260,9 +259,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("green")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("green")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -270,9 +269,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("red")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("red")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -280,9 +279,9 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         }))
-                                .then(LiteralArgumentBuilder.literal("black")
+                                .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("black")
                                         .executes(c -> {
-                                            CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                            CommanderCommandSource source = c.getSource();
                                             EntitySelector entitySelector = c.getArgument("target", EntitySelector.class);
                                             List<? extends Entity> entities = entitySelector.get(source);
                                             for (Entity entity : entities) {
@@ -290,7 +289,7 @@ public class ColorCommand {
                                             }
                                             return Command.SINGLE_SUCCESS;
                                         })))));
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("colour")
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("colour")
                 .redirect(command));
     }
 

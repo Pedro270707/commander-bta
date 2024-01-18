@@ -17,17 +17,16 @@ import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 
 import java.util.Map;
 
-@SuppressWarnings("unchecked")
 public class SetBlockCommand {
     private static final SimpleCommandExceptionType FAILURE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("commands.commander.setblock.exception_failure"));
 
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)LiteralArgumentBuilder.literal("setblock")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then(RequiredArgumentBuilder.argument("position", IntegerCoordinatesArgumentType.intCoordinates())
-                        .then(RequiredArgumentBuilder.argument("block", BlockArgumentType.block())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("setblock")
+                .requires(CommanderCommandSource::hasAdmin)
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, IntegerCoordinates>argument("position", IntegerCoordinatesArgumentType.intCoordinates())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, BlockInput>argument("block", BlockArgumentType.block())
                                 .executes(c -> {
-                                    CommanderCommandSource source = (CommanderCommandSource) c.getSource();
+                                    CommanderCommandSource source = c.getSource();
                                     IntegerCoordinates coordinates = c.getArgument("position", IntegerCoordinates.class);
                                     BlockInput blockInput = c.getArgument("block", BlockInput.class);
                                     World world = source.getWorld();

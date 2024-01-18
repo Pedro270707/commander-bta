@@ -13,13 +13,8 @@ import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.BiomeArgumentType;
 import net.pedroricardo.commander.content.arguments.IntegerCoordinatesArgumentType;
 import net.pedroricardo.commander.content.helpers.Coordinates2D;
-import net.pedroricardo.commander.content.helpers.IntegerCoordinate;
 import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 
-import java.util.ArrayDeque;
-import java.util.Queue;
-
-@SuppressWarnings("unchecked")
 public class BiomeCommand {
     private static final DynamicCommandExceptionType FAILURE = new DynamicCommandExceptionType(arg -> () -> I18n.getInstance().translateKeyAndFormat("commands.commander.biome.locate.exception_failure", arg));
 

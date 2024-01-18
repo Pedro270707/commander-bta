@@ -16,82 +16,81 @@ import net.pedroricardo.commander.content.helpers.BlockInput;
 import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings("unchecked")
 public class FillCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal("fill")
-                .requires(source -> ((CommanderCommandSource)source).hasAdmin())
-                .then(RequiredArgumentBuilder.argument("first", IntegerCoordinatesArgumentType.intCoordinates())
-                        .then(RequiredArgumentBuilder.argument("second", IntegerCoordinatesArgumentType.intCoordinates())
-                                .then(RequiredArgumentBuilder.argument("block", BlockArgumentType.block())
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("fill")
+                .requires(CommanderCommandSource::hasAdmin)
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, IntegerCoordinates>argument("first", IntegerCoordinatesArgumentType.intCoordinates())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, IntegerCoordinates>argument("second", IntegerCoordinatesArgumentType.intCoordinates())
+                                .then(RequiredArgumentBuilder.<CommanderCommandSource, BlockInput>argument("block", BlockArgumentType.block())
                                         .executes(c -> {
                                             IntegerCoordinates first = c.getArgument("first", IntegerCoordinates.class);
                                             IntegerCoordinates second = c.getArgument("second", IntegerCoordinates.class);
                                             BlockInput block = c.getArgument("block", BlockInput.class);
-                                            if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-                                            int blocksFilled = fillReplace((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), first, second, block);
-                                            ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
+                                            if (CommanderHelper.getVolume(c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
+                                            int blocksFilled = fillReplace(c.getSource(), c.getSource().getWorld(), first, second, block);
+                                            c.getSource().sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
                                             return blocksFilled;
                                         })
-                                        .then(LiteralArgumentBuilder.literal("replace")
+                                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("replace")
                                                 .executes(c -> {
                                                     IntegerCoordinates first = c.getArgument("first", IntegerCoordinates.class);
                                                     IntegerCoordinates second = c.getArgument("second", IntegerCoordinates.class);
                                                     BlockInput block = c.getArgument("block", BlockInput.class);
-                                                    if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-                                                    int blocksFilled = fillReplace((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), first, second, block);
-                                                    ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
+                                                    if (CommanderHelper.getVolume(c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
+                                                    int blocksFilled = fillReplace(c.getSource(), c.getSource().getWorld(), first, second, block);
+                                                    c.getSource().sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
                                                     return blocksFilled;
                                                 })
-                                                .then(RequiredArgumentBuilder.argument("filter", BlockArgumentType.block())
+                                                .then(RequiredArgumentBuilder.<CommanderCommandSource, BlockInput>argument("filter", BlockArgumentType.block())
                                                         .executes(c -> {
                                                             IntegerCoordinates first = c.getArgument("first", IntegerCoordinates.class);
                                                             IntegerCoordinates second = c.getArgument("second", IntegerCoordinates.class);
                                                             BlockInput block = c.getArgument("block", BlockInput.class);
                                                             BlockInput filter = c.getArgument("filter", BlockInput.class);
-                                                            if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-                                                            int blocksFilled = fillReplace((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), first, second, block, filter);
-                                                            ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
+                                                            if (CommanderHelper.getVolume(c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
+                                                            int blocksFilled = fillReplace(c.getSource(), c.getSource().getWorld(), first, second, block, filter);
+                                                            c.getSource().sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
                                                             return blocksFilled;
                                                         })))
-                                        .then(LiteralArgumentBuilder.literal("hollow")
+                                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("hollow")
                                                 .executes(c -> {
                                                     IntegerCoordinates first = c.getArgument("first", IntegerCoordinates.class);
                                                     IntegerCoordinates second = c.getArgument("second", IntegerCoordinates.class);
                                                     BlockInput block = c.getArgument("block", BlockInput.class);
-                                                    if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-                                                    int blocksFilled = fillHollow((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), first, second, block);
-                                                    ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
+                                                    if (CommanderHelper.getVolume(c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
+                                                    int blocksFilled = fillHollow(c.getSource(), c.getSource().getWorld(), first, second, block);
+                                                    c.getSource().sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
                                                     return blocksFilled;
                                                 }))
-                                        .then(LiteralArgumentBuilder.literal("outline")
+                                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("outline")
                                                 .executes(c -> {
                                                     IntegerCoordinates first = c.getArgument("first", IntegerCoordinates.class);
                                                     IntegerCoordinates second = c.getArgument("second", IntegerCoordinates.class);
                                                     BlockInput block = c.getArgument("block", BlockInput.class);
-                                                    if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-                                                    int blocksFilled = fillOutline((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), first, second, block);
-                                                    ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
+                                                    if (CommanderHelper.getVolume(c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
+                                                    int blocksFilled = fillOutline(c.getSource(), c.getSource().getWorld(), first, second, block);
+                                                    c.getSource().sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
                                                     return blocksFilled;
                                                 }))
-                                        .then(LiteralArgumentBuilder.literal("keep")
+                                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("keep")
                                                 .executes(c -> {
                                                     IntegerCoordinates first = c.getArgument("first", IntegerCoordinates.class);
                                                     IntegerCoordinates second = c.getArgument("second", IntegerCoordinates.class);
                                                     BlockInput block = c.getArgument("block", BlockInput.class);
-                                                    if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-                                                    int blocksFilled = fillKeep((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), first, second, block);
-                                                    ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
+                                                    if (CommanderHelper.getVolume(c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
+                                                    int blocksFilled = fillKeep(c.getSource(), c.getSource().getWorld(), first, second, block);
+                                                    c.getSource().sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
                                                     return blocksFilled;
                                                 }))
-                                        .then(LiteralArgumentBuilder.literal("destroy")
+                                        .then(LiteralArgumentBuilder.<CommanderCommandSource>literal("destroy")
                                                 .executes(c -> {
                                                     IntegerCoordinates first = c.getArgument("first", IntegerCoordinates.class);
                                                     IntegerCoordinates second = c.getArgument("second", IntegerCoordinates.class);
                                                     BlockInput block = c.getArgument("block", BlockInput.class);
-                                                    if (CommanderHelper.getVolume((CommanderCommandSource)c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
-                                                    int blocksFilled = fillDestroy((CommanderCommandSource)c.getSource(), ((CommanderCommandSource)c.getSource()).getWorld(), first, second, block);
-                                                    ((CommanderCommandSource)c.getSource()).sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
+                                                    if (CommanderHelper.getVolume(c.getSource(), first, second) > 32768) throw CommanderExceptions.volumeTooLarge().create();
+                                                    int blocksFilled = fillDestroy(c.getSource(), c.getSource().getWorld(), first, second, block);
+                                                    c.getSource().sendTranslatableMessage(blocksFilled == 1 ? "commands.commander.fill.success_single" : "commands.commander.fill.success_multiple", blocksFilled);
                                                     return blocksFilled;
                                                 }))))));
     }
