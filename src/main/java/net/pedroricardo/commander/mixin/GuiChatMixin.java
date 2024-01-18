@@ -18,6 +18,7 @@ import net.pedroricardo.commander.gui.AlignmentType;
 import net.pedroricardo.commander.gui.GuiChatSuggestions;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,7 +27,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(value = GuiChat.class, remap = false)
-public class GuiChatMixin {
+public abstract class GuiChatMixin {
+    @Shadow public abstract String getText();
+
     @Unique
     private GuiChatSuggestions commander$suggestionsGui;
     @Unique
@@ -110,7 +113,10 @@ public class GuiChatMixin {
 
     @Inject(method = "tick", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILHARD)
     private void tick(CallbackInfo ci, int dWheel) {
-        if (this.commander$suggestionsGui != null) this.commander$suggestionsGui.updateScreen(dWheel);
+        if (this.commander$suggestionsGui != null) {
+            this.commander$suggestionsGui.hidden = !this.getText().startsWith("/");
+            this.commander$suggestionsGui.updateScreen(dWheel);
+        }
     }
 
     @Inject(method = "mouseClicked", at = @At("RETURN"))

@@ -54,6 +54,8 @@ public class GuiChatSuggestions extends Gui {
     private int scroll = 0;
     GuiTooltip tooltip;
 
+    public boolean hidden = false;
+
     public GuiChatSuggestions(Minecraft mc, TextFieldEditor textFieldEditor, ITextField textField, PositionSupplier<Integer> xSupplier, PositionSupplier<Integer> ySupplier, AlignmentType alignmentType) {
         this.mc = mc;
         this.xSupplier = xSupplier;
@@ -74,6 +76,7 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public void drawScreen() {
+        if (this.hidden) return;
         CommandSyntaxException parseException;
 
         if (!this.suggestions.isEmpty()) {
@@ -221,33 +224,28 @@ public class GuiChatSuggestions extends Gui {
         }
 
         StringReader stringReader = new StringReader(text);
-        boolean bl = stringReader.canRead() && stringReader.peek() == '/';
-        if (bl) {
-            if (this.mc.isMultiplayerWorld()) {
-                if (ModVersionHelper.isModPresent("commander", EnumModList.SERVER)) {
-                    this.parseResults = null;
-                    this.mc.getSendQueue().addToSendQueue(new RequestCommandManagerPacket(this.mc.thePlayer.username, text, cursor));
-                } else {
-                    Commander.serverSuggestions = CommanderHelper.getDefaultServerSuggestions();
-                }
+
+        if (this.mc.isMultiplayerWorld()) {
+            if (ModVersionHelper.isModPresent("commander", EnumModList.SERVER)) {
+                this.parseResults = null;
+                this.mc.getSendQueue().addToSendQueue(new RequestCommandManagerPacket(this.mc.thePlayer.username, text, cursor));
             } else {
-                stringReader.skip();
-                CommandDispatcher<CommanderCommandSource> dispatcher = this.getManager().getDispatcher();
-                if (this.parseResults == null) {
-                    this.parseResults = dispatcher.parse(stringReader, this.commandSource);
-                }
-                if (cursor >= 1) {
-                    this.pendingSuggestions = dispatcher.getCompletionSuggestions(this.parseResults, cursor);
-                    this.pendingSuggestions.thenRun(() -> {
-                        if (this.pendingSuggestions.isDone()) {
-                            this.finishUpdatingSuggestions();
-                        }
-                    });
-                }
+                Commander.serverSuggestions = CommanderHelper.getDefaultServerSuggestions();
             }
         } else {
-            this.suggestions = new ArrayList<>();
-            Commander.serverSuggestions = new JsonObject();
+            if (stringReader.canRead() && stringReader.peek() == '/') stringReader.skip();
+            CommandDispatcher<CommanderCommandSource> dispatcher = this.getManager().getDispatcher();
+            if (this.parseResults == null) {
+                this.parseResults = dispatcher.parse(stringReader, this.commandSource);
+            }
+            if (cursor >= 1) {
+                this.pendingSuggestions = dispatcher.getCompletionSuggestions(this.parseResults, cursor);
+                this.pendingSuggestions.thenRun(() -> {
+                    if (this.pendingSuggestions.isDone()) {
+                        this.finishUpdatingSuggestions();
+                    }
+                });
+            }
         }
     }
 
@@ -264,7 +262,7 @@ public class GuiChatSuggestions extends Gui {
 
     private void finishUpdatingSuggestions() {
         this.suggestions = new ArrayList<>();
-        if (!this.tablessMessage.startsWith("/")) return;
+        if (this.hidden) return;
         if (!Commander.serverSuggestions.isEmpty()) {
             for (JsonElement jsonSuggestion : Commander.serverSuggestions.getAsJsonArray(CommandManagerPacketKeys.SUGGESTIONS)) {
                 Suggestion suggestion;
@@ -303,7 +301,7 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public Optional<Integer> getIndexOfSuggestionBeingHoveredOver(int cursorX, int cursorY) {
-        if (this.suggestions.isEmpty()) return Optional.empty();
+        if (this.suggestions.isEmpty() || this.hidden) return Optional.empty();
 
 //        int parameterStart = this.suggestions.get(0).getRange().getStart();
 
