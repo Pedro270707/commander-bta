@@ -63,7 +63,11 @@ public class CommanderHelper {
         if (checkedString.toLowerCase(Locale.ROOT).startsWith(input.toLowerCase(Locale.ROOT))) {
             return Optional.of(checkedString);
         } else {
-            if (checkedString.contains(".") && checkedString.toLowerCase(Locale.ROOT).substring(checkedString.indexOf('.') + 1).startsWith(input.toLowerCase(Locale.ROOT))) {
+            if (checkedString.contains(":") && checkedString.length() - 1 >= checkedString.indexOf(':') + 1) {
+                if (checkedString.toLowerCase(Locale.ROOT).substring(checkedString.indexOf(':') + 1).startsWith(input.toLowerCase(Locale.ROOT)))
+                    return Optional.of(checkedString.substring(checkedString.indexOf(':') + 1));
+                else return Optional.empty();
+            } else if (checkedString.contains(".") && checkedString.length() - 1 >= checkedString.indexOf('.') + 1 && checkedString.toLowerCase(Locale.ROOT).substring(checkedString.indexOf('.') + 1).startsWith(input.toLowerCase(Locale.ROOT))) {
                 return Optional.of(checkedString.substring(checkedString.indexOf('.') + 1));
             }
         }
@@ -74,7 +78,10 @@ public class CommanderHelper {
         if (checkedString.equals(input)) {
             return true;
         }
-        return checkedString.substring(checkedString.indexOf('.') + 1).equals(input);
+        if (checkedString.contains(":") && checkedString.length() - 1 >= checkedString.indexOf(':') + 1) {
+            return checkedString.substring(checkedString.indexOf(':') + 1).equals(input);
+        }
+        return checkedString.contains(".") && checkedString.length() - 1 >= checkedString.indexOf('.') + 1 && checkedString.substring(checkedString.indexOf('.') + 1).equals(input);
     }
 
     public static String getEntityName(Entity entity) {

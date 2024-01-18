@@ -46,6 +46,7 @@ public class CommanderCommandManager {
         GameRuleCommand.register(DISPATCHER);
         FillCommand.register(DISPATCHER);
         CloneCommand.register(DISPATCHER);
+        BiomeCommand.register(DISPATCHER);
 
         if (this.isServer) {
             StopCommand.register(DISPATCHER);

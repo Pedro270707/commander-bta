@@ -17,4 +17,5 @@ public class CommandManagerPacketKeys {
     public static final String SUGGESTIONS = "m";
     public static final String EXCEPTIONS = "n";
     public static final String USAGE = "o";
+    public static final String SUGGESTION_CONTEXT_START_POS = "p";
 }

@@ -73,6 +73,7 @@ public class CommandManagerPacket extends Packet {
             readerJson.addProperty(CommandManagerPacketKeys.READER_REMAINING_TEXT_LENGTH, remainingTextLength);
             readerJson.addProperty(CommandManagerPacketKeys.READER_STRING, parseResults.getReader().getString());
             object.add(CommandManagerPacketKeys.READER, readerJson);
+            object.addProperty(CommandManagerPacketKeys.SUGGESTION_CONTEXT_START_POS, parseResults.getContext().findSuggestionContext(cursor).startPos);
 
             CompletableFuture<Suggestions> pendingSuggestions = getCompletionSuggestions(parseResults, cursor, source);
             pendingSuggestions.thenRun(() -> {
@@ -176,34 +177,6 @@ public class CommandManagerPacket extends Packet {
         lastChild.add(CommandManagerPacketKeys.ARGUMENTS, arguments);
         return lastChild;
     }
-
-//    private static JsonObject getDispatcherSuggestions(CommandDispatcher<CommanderCommandSource> dispatcher, CommanderCommandSource source) {
-//        JsonObject object = new JsonObject();
-//        JsonArray array = new JsonArray();
-//        for (CommandNode<CommanderCommandSource> node : dispatcher.getRoot().getChildren()) {
-//            JsonObject parsedNode = parseNode(node, source);
-//            if (!parsedNode.isEmpty()) array.add(parsedNode);
-//        }
-//        object.add("values", array);
-//        return object;
-//    }
-//
-//    private static JsonObject parseNode(CommandNode<CommanderCommandSource> node, CommanderCommandSource source) {
-//        System.out.println("Parsing node");
-//        JsonObject object = new JsonObject();
-//        if (node.canUse(source)) {
-//            object.addProperty(node instanceof LiteralCommandNode ? "literal" : "required", node.getName());
-//            if (!node.getChildren().isEmpty()) {
-//                JsonArray children = new JsonArray();
-//                for (CommandNode<CommanderCommandSource> child : node.getChildren()) {
-//                    JsonObject parsedNode = parseNode(child, source);
-//                    if (!parsedNode.isEmpty()) children.add(parsedNode);
-//                }
-//                object.add("children", children);
-//            }
-//        }
-//        return object;
-//    }
 
     @Override
     public void processPacket(NetHandler netHandler) {

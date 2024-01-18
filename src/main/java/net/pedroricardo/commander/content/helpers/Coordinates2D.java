@@ -7,13 +7,17 @@ import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import org.jetbrains.annotations.Nullable;
 
-public class ChunkCoordinates {
+public class Coordinates2D {
     private final IntegerCoordinate x;
     private final IntegerCoordinate z;
 
-    public ChunkCoordinates(IntegerCoordinate x, IntegerCoordinate z) {
+    public Coordinates2D(IntegerCoordinate x, IntegerCoordinate z) {
         this.x = x;
         this.z = z;
+    }
+
+    public Coordinates2D(int x, int z) {
+        this(new IntegerCoordinate(false, x), new IntegerCoordinate(false, z));
     }
 
     public int getX(@Nullable Integer sourceX) throws CommandSyntaxException {

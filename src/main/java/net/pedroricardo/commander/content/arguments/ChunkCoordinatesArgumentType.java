@@ -10,16 +10,15 @@ import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.phys.Vec3d;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
-import net.pedroricardo.commander.content.helpers.ChunkCoordinates;
+import net.pedroricardo.commander.content.helpers.Coordinates2D;
 import net.pedroricardo.commander.content.helpers.IntegerCoordinate;
-import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public class ChunkCoordinatesArgumentType implements ArgumentType<ChunkCoordinates> {
+public class ChunkCoordinatesArgumentType implements ArgumentType<Coordinates2D> {
     private static final List<String> EXAMPLES = Arrays.asList("~ ~", "0 0 0", "~60 ~", "~-20 -25");
 
     public static ChunkCoordinatesArgumentType chunkCoordinates() {
@@ -27,7 +26,7 @@ public class ChunkCoordinatesArgumentType implements ArgumentType<ChunkCoordinat
     }
 
     @Override
-    public ChunkCoordinates parse(StringReader reader) throws CommandSyntaxException {
+    public Coordinates2D parse(StringReader reader) throws CommandSyntaxException {
         int i = reader.getCursor();
         IntegerCoordinate x = IntegerCoordinate.parse(reader);
         if (!reader.canRead() || reader.peek() != ' ') {
@@ -44,7 +43,7 @@ public class ChunkCoordinatesArgumentType implements ArgumentType<ChunkCoordinat
         }
         reader.skip();
         IntegerCoordinate z = IntegerCoordinate.parse(reader);
-        return new ChunkCoordinates(x, z);
+        return new Coordinates2D(x, z);
     }
 
     @Override

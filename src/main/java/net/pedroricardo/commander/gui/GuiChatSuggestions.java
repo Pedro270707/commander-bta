@@ -393,6 +393,11 @@ public class GuiChatSuggestions extends Gui {
     }
 
     public int getSuggestionRangeStart() {
-        return !this.suggestions.isEmpty() ? this.suggestions.get(0).getRange().getStart() : 0;
+        if (!this.suggestions.isEmpty()) {
+            return this.suggestions.get(0).getRange().getStart();
+        } else if (Commander.serverSuggestions.has(CommandManagerPacketKeys.SUGGESTION_CONTEXT_START_POS)) {
+            return Commander.serverSuggestions.get(CommandManagerPacketKeys.SUGGESTION_CONTEXT_START_POS).getAsInt();
+        }
+        return this.parseResults != null ? this.parseResults.getContext().findSuggestionContext(this.tablessCursor).startPos : 0;
     }
 }
