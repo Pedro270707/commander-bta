@@ -28,8 +28,6 @@ public abstract class GuiChatMixin {
 
     @Unique
     private GuiChatSuggestions commander$suggestionsGui;
-    @Unique
-    private @Nullable ParseResults<CommanderCommandSource> parseResults;
 
     @Inject(method = "init", at = @At("TAIL"))
     private void initGui(CallbackInfo ci) {
