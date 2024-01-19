@@ -75,8 +75,8 @@ public class CommanderCommandManager {
         this.registerLegacyCommands();
     }
 
-    public void execute(String s, CommanderCommandSource commandSource) throws CommandSyntaxException {
-        this.DISPATCHER.execute(s, commandSource);
+    public int execute(String s, CommanderCommandSource commandSource) throws CommandSyntaxException {
+        return this.DISPATCHER.execute(s, commandSource);
     }
 
     public CommandDispatcher<CommanderCommandSource> getDispatcher() {

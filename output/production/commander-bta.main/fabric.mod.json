@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "commander",
-  "version": "1.2.3",
+  "version": "1.2.6",
 
   "name": "Commander",
   "description": "This mod overhauls the command system.",
@@ -9,8 +9,8 @@
     "Pedro Ricardo"
   ],
   "contact": {
-    "homepage": "",
-    "sources": ""
+    "homepage": "https://pedroricardo.net",
+    "sources": "https://github.com/Pedro270707/commander-bta"
   },
 
   "license": "CC0-1.0",

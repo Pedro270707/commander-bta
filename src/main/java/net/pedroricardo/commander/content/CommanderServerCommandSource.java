@@ -96,7 +96,7 @@ public class CommanderServerCommandSource implements CommanderCommandSource, ISe
     @Override
     public void movePlayerToDimension(EntityPlayer player, int dimension) {
         if (player instanceof EntityPlayerMP) this.server.playerList.sendPlayerToOtherDimension((EntityPlayerMP) player, dimension);
-        throw new IllegalStateException("Player is not an instance of EntityPlayerMP");
+        else throw new IllegalStateException("Player is not an instance of EntityPlayerMP");
     }
 
     @Override
