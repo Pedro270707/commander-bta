@@ -13,8 +13,11 @@ import net.pedroricardo.commander.content.commands.*;
 import net.pedroricardo.commander.content.commands.server.*;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 
+@SuppressWarnings("unused")
 public class CommanderCommandManager {
     private final boolean isServer;
 
@@ -23,6 +26,8 @@ public class CommanderCommandManager {
     }
 
     private final CommandDispatcher<CommanderCommandSource> DISPATCHER = new CommandDispatcher<>();
+    private static final Collection<CommandRegistry> externalCommands = new ArrayList<>();
+    private static final Collection<CommandRegistry> externalServerCommands = new ArrayList<>();
 
     public void init() {
         AchievementCommand.register(DISPATCHER);
@@ -59,8 +64,14 @@ public class CommanderCommandManager {
             ScoreCommand.register(DISPATCHER);
             MeCommand.register(DISPATCHER);
             EmotesCommand.register(DISPATCHER);
+            for (CommandRegistry registry : externalServerCommands) {
+                registry.register(DISPATCHER);
+            }
         }
 
+        for (CommandRegistry registry : externalCommands) {
+            registry.register(DISPATCHER);
+        }
         this.registerLegacyCommands();
     }
 
@@ -108,5 +119,18 @@ public class CommanderCommandManager {
                 }
             }
         }
+    }
+
+    public static void registerCommand(CommandRegistry registry) {
+        externalCommands.add(registry);
+    }
+
+    public static void registerServerCommand(CommandRegistry registry) {
+        externalServerCommands.add(registry);
+    }
+
+    @FunctionalInterface
+    public interface CommandRegistry {
+        void register(CommandDispatcher<CommanderCommandSource> dispatcher);
     }
 }
