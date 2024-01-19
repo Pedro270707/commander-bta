@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.context.CommandContextBuilder;
+import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestion;
@@ -142,7 +144,10 @@ public class GuiChatSuggestions extends Gui {
             } else {
                 colorCode = TextFormatting.LIGHT_GRAY.toString();
             }
-            fontRenderer.drawStringWithShadow(colorCode + suggestionText, leftMargin + 1, minY + suggestionBoxHeight - suggestionHeight + 3, 0xE0E0E0);
+
+            int textX = (int) (leftMargin + 1 + (this.anchor.xPosition * (largestSuggestion - fontRenderer.getStringWidth(suggestionText))));
+
+            fontRenderer.drawStringWithShadow(colorCode + suggestionText, textX, minY + suggestionBoxHeight - suggestionHeight + 3, 0xE0E0E0);
         }
 
         if (this.isHoveringOverSuggestions(mouseX, mouseY) && this.suggestions.get(this.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY).get()).getTooltip() != null) {
@@ -386,5 +391,73 @@ public class GuiChatSuggestions extends Gui {
 
     public void setAnchor(ComponentAnchor anchor) {
         this.anchor = anchor;
+    }
+
+    public String colorCodeText(String text, boolean requireSlash) {
+        if (this.parseResults != null && !this.parseResults.getReader().getString().equals(text)) {
+            this.parseResults = null;
+        }
+
+        StringReader stringReader = new StringReader(text);
+        boolean isCommand = (stringReader.canRead() && stringReader.peek() == '/') || !requireSlash;
+        if (!isCommand) return text;
+        if (!text.isEmpty() && !Commander.serverSuggestions.isEmpty() && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD) != null && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD).getAsJsonObject().get(CommandManagerPacketKeys.ARGUMENTS) != null) {
+            StringBuilder stringToDrawBuilder = new StringBuilder();
+            int currentArgumentEnd = 1;
+            int currentColor = 0;
+            stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.charAt(0));
+            for (JsonElement jsonElement : Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.LAST_CHILD).getAsJsonArray(CommandManagerPacketKeys.ARGUMENTS)) {
+                int rangeStart = jsonElement.getAsJsonObject().getAsJsonObject(CommandManagerPacketKeys.RANGE).get(CommandManagerPacketKeys.RANGE_START).getAsInt();
+                int rangeEnd = jsonElement.getAsJsonObject().getAsJsonObject(CommandManagerPacketKeys.RANGE).get(CommandManagerPacketKeys.RANGE_END).getAsInt();
+
+                stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, Math.min(currentArgumentEnd, text.length()), Math.min(rangeStart, text.length()));
+                stringToDrawBuilder.append(Commander.ARGUMENT_STYLES.get(currentColor)).append(text, Math.min(rangeStart, text.length()), Math.min(rangeEnd, text.length()));
+
+                currentArgumentEnd = rangeEnd;
+                if (++currentColor >= Commander.ARGUMENT_STYLES.size()) {
+                    currentColor = 0;
+                }
+            }
+            if (Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_CAN_READ).getAsBoolean() && currentArgumentEnd < text.length()) {
+                int remainingTextLength = Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_REMAINING_TEXT_LENGTH).getAsInt();
+                stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, currentArgumentEnd, Math.min(Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_CURSOR).getAsInt(), text.length()));
+                stringToDrawBuilder.append(TextFormatting.RED).append(text, Math.min(Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_CURSOR).getAsInt(), text.length()), Math.min(remainingTextLength, text.length()));
+                currentArgumentEnd = remainingTextLength;
+            }
+            stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.substring(Math.min(currentArgumentEnd, text.length())));
+
+            return stringToDrawBuilder.toString();
+        } else {
+            stringReader.skip();
+            CommandDispatcher<CommanderCommandSource> dispatcher = this.getManager().getDispatcher();
+            if (this.parseResults == null) {
+                this.parseResults = dispatcher.parse(stringReader, this.getCommandSource());
+            }
+            StringBuilder stringToDrawBuilder = new StringBuilder();
+            CommandContextBuilder<CommanderCommandSource> builder = this.parseResults.getContext().getLastChild();
+            int readerCursor;
+            int currentArgumentEnd = 0;
+            int currentColor = -1;
+            for (ParsedArgument<CommanderCommandSource, ?> parsedArgument : builder.getArguments().values()) {
+                int rangeStart;
+                if (++currentColor >= Commander.ARGUMENT_STYLES.size()) {
+                    currentColor = 0;
+                }
+                if ((rangeStart = Math.max(parsedArgument.getRange().getStart(), 0)) >= text.length()) break;
+                int rangeEnd = Math.min(parsedArgument.getRange().getEnd(), text.length());
+                if (rangeEnd <= 0) continue;
+                stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, currentArgumentEnd, rangeStart);
+                stringToDrawBuilder.append(Commander.ARGUMENT_STYLES.get(currentColor)).append(text, rangeStart, rangeEnd);
+                currentArgumentEnd = rangeEnd;
+            }
+            if (this.parseResults.getReader().canRead() && (readerCursor = Math.max(this.parseResults.getReader().getCursor(), 0)) < text.length()) {
+                int remainingTextLength = Math.min(readerCursor + this.parseResults.getReader().getRemainingLength(), text.length());
+                stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text, currentArgumentEnd, readerCursor);
+                stringToDrawBuilder.append(TextFormatting.RED).append(text, readerCursor, remainingTextLength);
+                currentArgumentEnd = remainingTextLength;
+            }
+            stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.substring(currentArgumentEnd));
+            return stringToDrawBuilder.toString();
+        }
     }
 }

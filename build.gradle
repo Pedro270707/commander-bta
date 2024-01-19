@@ -94,6 +94,8 @@ dependencies {
 
 	include modImplementation('com.mojang:brigadier:1.0.18')
 
+	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.2.2")))
+
 	implementation "org.slf4j:slf4j-api:1.8.0-beta4"
 	implementation "org.apache.logging.log4j:log4j-slf4j18-impl:2.16.0"
 
