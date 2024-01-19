@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 
-@SuppressWarnings("unchecked")
 public class CommanderCommandManager {
     private final boolean isServer;
 
@@ -87,22 +86,23 @@ public class CommanderCommandManager {
         return CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownArgument().createWithContext(parseResults.getReader());
     }
 
+    @SuppressWarnings("deprecation")
     private void registerLegacyCommands() {
         for (Command command : Commands.commands) {
             if (this.DISPATCHER.findNode(Collections.singletonList(command.getName())) == null) {
-                CommandNode<Object> registeredCommand = this.DISPATCHER.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal(command.getName())
+                CommandNode<CommanderCommandSource> registeredCommand = this.DISPATCHER.register(LiteralArgumentBuilder.<CommanderCommandSource>literal(command.getName())
                         .executes(c -> {
-                            Commands.getCommand(command.getName()).execute(((CommanderCommandSource) c.getSource()).getCommandHandler(), ((CommanderCommandSource) c.getSource()).getCommandSender(), new String[]{});
+                            Commands.getCommand(command.getName()).execute(c.getSource().getCommandHandler(), c.getSource().getCommandSender(), new String[]{});
                             return com.mojang.brigadier.Command.SINGLE_SUCCESS;
                         })
-                        .then(RequiredArgumentBuilder.argument("command", StringArgumentType.greedyString())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, String>argument("command", StringArgumentType.greedyString())
                                 .executes(c -> {
-                                    Commands.getCommand(command.getName()).execute(((CommanderCommandSource) c.getSource()).getCommandHandler(), ((CommanderCommandSource) c.getSource()).getCommandSender(), c.getArgument("command", String.class).split(" "));
+                                    Commands.getCommand(command.getName()).execute(c.getSource().getCommandHandler(), c.getSource().getCommandSender(), c.getArgument("command", String.class).split(" "));
                                     return com.mojang.brigadier.Command.SINGLE_SUCCESS;
                                 })));
                 for (String alias : command.getNames().subList(1, command.getNames().size())) {
                     if (this.DISPATCHER.findNode(Collections.singletonList(alias)) == null) {
-                        this.DISPATCHER.register((LiteralArgumentBuilder) LiteralArgumentBuilder.literal(alias)
+                        this.DISPATCHER.register(LiteralArgumentBuilder.<CommanderCommandSource>literal(alias)
                                 .redirect(registeredCommand));
                     }
                 }
