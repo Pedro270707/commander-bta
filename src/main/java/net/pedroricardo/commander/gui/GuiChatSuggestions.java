@@ -26,6 +26,7 @@ import net.pedroricardo.commander.content.*;
 import net.pedroricardo.commander.duck.ClassWithManager;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
+import org.spongepowered.asm.mixin.Unique;
 import turniplabs.halplibe.helper.ModVersionHelper;
 import turniplabs.halplibe.util.version.EnumModList;
 
@@ -225,12 +226,14 @@ public class GuiChatSuggestions extends Gui {
             if (this.parseResults == null) {
                 this.parseResults = dispatcher.parse(stringReader, this.commandSource);
             }
-            this.pendingSuggestions = dispatcher.getCompletionSuggestions(this.parseResults, cursor);
-            this.pendingSuggestions.thenRun(() -> {
-                if (this.pendingSuggestions.isDone()) {
-                    this.finishUpdatingSuggestions();
-                }
-            });
+            if (cursor >= 1 || text.isEmpty()) {
+                this.pendingSuggestions = dispatcher.getCompletionSuggestions(this.parseResults, cursor);
+                this.pendingSuggestions.thenRun(() -> {
+                    if (this.pendingSuggestions.isDone()) {
+                        this.finishUpdatingSuggestions();
+                    }
+                });
+            }
         }
     }
 
@@ -398,8 +401,8 @@ public class GuiChatSuggestions extends Gui {
 
         StringReader stringReader = new StringReader(text);
         boolean isCommand = (stringReader.canRead() && stringReader.peek() == '/') || !requireSlash;
-        if (!isCommand) return text;
-        if (!text.isEmpty() && !Commander.serverSuggestions.isEmpty() && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD) != null && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD).getAsJsonObject().get(CommandManagerPacketKeys.ARGUMENTS) != null) {
+        if (!isCommand || text.isEmpty()) return text;
+        if (!Commander.serverSuggestions.isEmpty() && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD) != null && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD).getAsJsonObject().get(CommandManagerPacketKeys.ARGUMENTS) != null) {
             StringBuilder stringToDrawBuilder = new StringBuilder();
             int currentArgumentEnd = stringReader.canRead() && stringReader.peek() == '/' ? 1 : 0;
             int currentColor = 0;
@@ -426,7 +429,7 @@ public class GuiChatSuggestions extends Gui {
 
             return stringToDrawBuilder.toString();
         } else {
-            stringReader.skip();
+            if (stringReader.canRead() && stringReader.peek() == '/') stringReader.skip();
             CommandDispatcher<CommanderCommandSource> dispatcher = this.getManager().getDispatcher();
             if (this.parseResults == null) {
                 this.parseResults = dispatcher.parse(stringReader, this.getCommandSource());
@@ -457,5 +460,35 @@ public class GuiChatSuggestions extends Gui {
             stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.substring(currentArgumentEnd));
             return stringToDrawBuilder.toString();
         }
+    }
+
+    public String getSuggestionPreview() {
+        int mouseX = GuiHelper.getScaledMouseX(this.mc);
+        int mouseY = GuiHelper.getScaledMouseY(this.mc) - 1;
+
+        if (this.shouldDrawSuggestionPreview()) {
+            Suggestion suggestionToRender = null;
+            if (this.isHoveringOverSuggestions(mouseX, mouseY)) {
+                suggestionToRender = this.getSuggestions().get(this.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY).get());
+            } else if (!this.getSuggestions().isEmpty()) {
+                suggestionToRender = this.getSuggestions().get(0);
+            }
+
+            if (suggestionToRender != null && suggestionToRender.getText().startsWith(this.editor.getText().substring(Math.min(suggestionToRender.getRange().getStart(), this.editor.getText().length())))) {
+                return TextFormatting.LIGHT_GRAY + suggestionToRender.getText();
+            }
+        }
+        return "";
+    }
+
+    @Unique
+    private boolean shouldDrawSuggestionPreview() {
+        boolean basedOnParseResults = this.parseResults != null && (this.tablessCursor == this.parseResults.getReader().getString().trim().length() || this.tablessCursor == this.parseResults.getReader().getString().length());
+        boolean basedOnServer = Commander.serverSuggestions.has(CommandManagerPacketKeys.READER) && (this.tablessCursor == Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_STRING).getAsString().trim().length() || this.tablessCursor == Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_STRING).getAsString().length());
+        return basedOnParseResults || basedOnServer;
+    }
+
+    public int getDefaultParameterPosition() {
+        return this.fontRenderer.getStringWidth(this.getMessage().substring(0, Math.min(this.getSuggestionRangeStart(), this.getMessage().length()))) + 2;
     }
 }

@@ -2,18 +2,10 @@ package net.pedroricardo.commander.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.brigadier.ParseResults;
-import com.mojang.brigadier.suggestion.Suggestion;
 import net.minecraft.client.gui.hud.ComponentAnchor;
-import net.minecraft.core.net.command.TextFormatting;
-import net.pedroricardo.commander.Commander;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.render.FontRenderer;
-import net.pedroricardo.commander.GuiHelper;
-import net.pedroricardo.commander.content.CommandManagerPacketKeys;
-import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.gui.GuiChatSuggestions;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -31,35 +23,14 @@ public abstract class GuiChatMixin {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void initGui(CallbackInfo ci) {
-        this.commander$suggestionsGui = new GuiChatSuggestions(((GuiScreenAccessor)((GuiChat)(Object)this)).mc(), ((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor(), (GuiChat)(Object)this, (parent, child, minecraft, followParameters) -> 16 + (followParameters ? ((GuiScreenAccessor) this).fontRenderer().getStringWidth(this.commander$suggestionsGui.getMessage().substring(0, Math.min(this.commander$suggestionsGui.getSuggestionRangeStart(), this.commander$suggestionsGui.getMessage().length()))) + 1 : 0), (parent, child, minecraft, followParameters) -> minecraft.resolution.scaledHeight - 14, ComponentAnchor.BOTTOM_LEFT);
-        this.commander$suggestionsGui.updateSuggestions();
+        this.commander$suggestionsGui = new GuiChatSuggestions(((GuiScreenAccessor)((GuiChat)(Object)this)).mc(), ((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor(), (GuiChat)(Object)this, (parent, child, minecraft, followParameters) -> 16 + (followParameters ? this.commander$suggestionsGui.getDefaultParameterPosition() - 1 : 0), (parent, child, minecraft, followParameters) -> minecraft.resolution.scaledHeight - 14, ComponentAnchor.BOTTOM_LEFT);
+        if (!this.getText().startsWith("/")) this.commander$suggestionsGui.hidden = true;
+        else this.commander$suggestionsGui.updateSuggestions();
     }
 
     @Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiChat;drawString(Lnet/minecraft/client/render/FontRenderer;Ljava/lang/String;III)V", ordinal = 0, shift = At.Shift.BEFORE))
     private void drawSuggestionPreview(int x, int y, float renderPartialTicks, CallbackInfo ci) {
-        int mouseX = GuiHelper.getScaledMouseX(((GuiScreenAccessor)((GuiChat)(Object)this)).mc());
-        int mouseY = GuiHelper.getScaledMouseY(((GuiScreenAccessor)((GuiChat)(Object)this)).mc()) - 1;
-
-        if (this.shouldDrawSuggestionPreview()) {
-            Suggestion suggestionToRender = null;
-            if (this.commander$suggestionsGui.isHoveringOverSuggestions(mouseX, mouseY)) {
-                suggestionToRender = this.commander$suggestionsGui.getSuggestions().get(this.commander$suggestionsGui.getIndexOfSuggestionBeingHoveredOver(mouseX, mouseY).get());
-            } else if (!this.commander$suggestionsGui.getSuggestions().isEmpty()) {
-                suggestionToRender = this.commander$suggestionsGui.getSuggestions().get(0);
-            }
-
-            if (suggestionToRender != null && suggestionToRender.getText().startsWith(((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor().getText().substring(Math.min(suggestionToRender.getRange().getStart(), ((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor().getText().length())))) {
-                int leftMargin = 17 + ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().getStringWidth(this.commander$suggestionsGui.getMessage().substring(0, Math.min(suggestionToRender.getRange().getStart(), this.commander$suggestionsGui.getMessage().length())));
-                ((GuiScreenAccessor) ((GuiChat) (Object) this)).fontRenderer().drawStringWithShadow(TextFormatting.LIGHT_GRAY + suggestionToRender.getText(), leftMargin + 1, ((GuiChat) (Object) this).height - 12, 0xE0E0E0);
-            }
-        }
-    }
-
-    @Unique
-    private boolean shouldDrawSuggestionPreview() {
-        boolean basedOnParseResults = this.commander$suggestionsGui.getParseResults() != null && (this.commander$suggestionsGui.getCursor() == this.commander$suggestionsGui.getParseResults().getReader().getString().trim().length() || this.commander$suggestionsGui.getCursor() == this.commander$suggestionsGui.getParseResults().getReader().getString().length());
-        boolean basedOnServer = Commander.serverSuggestions.has(CommandManagerPacketKeys.READER) && (this.commander$suggestionsGui.getCursor() == Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_STRING).getAsString().trim().length() || this.commander$suggestionsGui.getCursor() == Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.READER).get(CommandManagerPacketKeys.READER_STRING).getAsString().length());
-        return basedOnParseResults || basedOnServer;
+        ((GuiScreenAccessor)(Object)this).fontRenderer().drawStringWithShadow(this.commander$suggestionsGui.getSuggestionPreview(), 16 + this.commander$suggestionsGui.getDefaultParameterPosition(), ((GuiScreenAccessor)((GuiChat)(Object)this)).mc().resolution.scaledHeight - 12, 16777215);
     }
 
     @Inject(method = "drawScreen", at = @At("TAIL"))
