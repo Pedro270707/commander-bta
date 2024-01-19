@@ -14,6 +14,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTooltip;
+import net.minecraft.client.gui.hud.ComponentAnchor;
 import net.minecraft.client.gui.text.ITextField;
 import net.minecraft.client.gui.text.TextFieldEditor;
 import net.minecraft.client.render.FontRenderer;
@@ -33,16 +34,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-@SuppressWarnings("OptionalGetWithoutIsPresent")
+@SuppressWarnings({"OptionalGetWithoutIsPresent", "unused"})
 public class GuiChatSuggestions extends Gui {
     private final TextFieldEditor editor;
     private final ITextField textField;
     private final Minecraft mc;
     private final FontRenderer fontRenderer;
     private final CommanderCommandSource commandSource;
-    private PositionSupplier<Integer> xSupplier;
-    private PositionSupplier<Integer> ySupplier;
-    private AlignmentType alignmentType;
+    private final PositionSupplier<Integer> xSupplier;
+    private final PositionSupplier<Integer> ySupplier;
+    private ComponentAnchor anchor;
     @Nullable
     private ParseResults<CommanderCommandSource> parseResults;
     @Nullable
@@ -56,11 +57,11 @@ public class GuiChatSuggestions extends Gui {
 
     public boolean hidden = false;
 
-    public GuiChatSuggestions(Minecraft mc, TextFieldEditor textFieldEditor, ITextField textField, PositionSupplier<Integer> xSupplier, PositionSupplier<Integer> ySupplier, AlignmentType alignmentType) {
+    public GuiChatSuggestions(Minecraft mc, TextFieldEditor textFieldEditor, ITextField textField, PositionSupplier<Integer> xSupplier, PositionSupplier<Integer> ySupplier, ComponentAnchor anchor) {
         this.mc = mc;
         this.xSupplier = xSupplier;
         this.ySupplier = ySupplier;
-        this.alignmentType = alignmentType;
+        this.anchor = anchor;
         this.fontRenderer = this.mc.fontRenderer;
         this.commandSource = new CommanderClientCommandSource(this.mc);
         this.editor = textFieldEditor;
@@ -121,18 +122,12 @@ public class GuiChatSuggestions extends Gui {
         for (Suggestion suggestion : this.suggestions)
             if (fontRenderer.getStringWidth(suggestion.getText()) > largestSuggestion) largestSuggestion = fontRenderer.getStringWidth(suggestion.getText());
 
-        if (!this.alignmentType.isLeft()) {
-            leftMargin -= largestSuggestion + 2;
-        }
+        leftMargin -= (int) (this.anchor.xPosition * (largestSuggestion + 2));
 
         int minY = this.ySupplier.get(this.textField, this, this.mc, Commander.suggestionsFollowParameters);
         int suggestionBoxHeight = Math.min(this.suggestions.size(), Commander.maxSuggestions) * 12;
 
-        if (!this.alignmentType.isTop()) {
-            minY -= Math.min(this.suggestions.size(), Commander.maxSuggestions) * 12 + 1;
-        } else {
-            minY += 1;
-        }
+        minY += (int) CommanderHelper.linearInterpolation(this.anchor.yPosition, 1, -suggestionBoxHeight - 1);
 
         this.drawRect(leftMargin, minY, largestSuggestion + leftMargin + 1, minY + suggestionBoxHeight, Integer.MIN_VALUE);
         if (this.scroll < this.suggestions.size() - Commander.maxSuggestions) GuiHelper.drawDottedRect(this, leftMargin, minY + suggestionBoxHeight, largestSuggestion + leftMargin + 1, minY + suggestionBoxHeight + 1, Color.WHITE.getRGB(), 1);
@@ -159,17 +154,11 @@ public class GuiChatSuggestions extends Gui {
         int leftMargin = this.xSupplier.get(this.textField, this, this.mc, Commander.suggestionsFollowParameters && followParameters);
         int stringWidth = fontRenderer.getStringWidth(text);
 
-        if (!this.alignmentType.isLeft()) {
-            leftMargin -= stringWidth + 2;
-        }
+        leftMargin -= (int) (this.anchor.xPosition * (stringWidth + 2));
 
         int minY = this.ySupplier.get(this.textField, this, this.mc, Commander.suggestionsFollowParameters && followParameters);
 
-        if (!this.alignmentType.isTop()) {
-            minY -= 12 + heightIndex * 12;
-        } else {
-            minY += heightIndex * 12;
-        }
+        minY += (int) CommanderHelper.linearInterpolation(this.anchor.yPosition, heightIndex * 12, -12 - heightIndex * 12);
 
         this.drawRect(leftMargin, minY, stringWidth + leftMargin + 1, minY + 12, Integer.MIN_VALUE);
         fontRenderer.drawStringWithShadow(text, leftMargin + 1, minY + 2, 0xE0E0E0);
@@ -302,18 +291,12 @@ public class GuiChatSuggestions extends Gui {
         for (Suggestion suggestion : this.suggestions)
             if (this.fontRenderer.getStringWidth(suggestion.getText()) > largestSuggestion) largestSuggestion = this.fontRenderer.getStringWidth(suggestion.getText());
 
-        if (!this.alignmentType.isLeft()) {
-            minX -= largestSuggestion + 2;
-        }
+        minX -= (int) (this.anchor.xPosition * (largestSuggestion + 2));
 
         int minY = this.ySupplier.get(this.textField, this, this.mc, Commander.suggestionsFollowParameters);
         int suggestionBoxHeight = Math.min(this.suggestions.size(), Commander.maxSuggestions) * 12;
 
-        if (!this.alignmentType.isTop()) {
-            minY -= Math.min(this.suggestions.size(), Commander.maxSuggestions) * 12 + 1;
-        } else {
-            minY += 1;
-        }
+        minY += (int) CommanderHelper.linearInterpolation(this.anchor.yPosition, 1, -suggestionBoxHeight - 1);
 
         int maxX = largestSuggestion + minX + 1;
         for (int i = 0; i < Math.min(this.suggestions.size(), Commander.maxSuggestions); i++) {
@@ -399,5 +382,9 @@ public class GuiChatSuggestions extends Gui {
             return Commander.serverSuggestions.get(CommandManagerPacketKeys.SUGGESTION_CONTEXT_START_POS).getAsInt();
         }
         return this.parseResults != null ? this.parseResults.getContext().findSuggestionContext(this.tablessCursor).startPos : 0;
+    }
+
+    public void setAnchor(ComponentAnchor anchor) {
+        this.anchor = anchor;
     }
 }

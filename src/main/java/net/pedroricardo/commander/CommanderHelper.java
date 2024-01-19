@@ -110,6 +110,10 @@ public class CommanderHelper {
         return (int) (MathHelper.abs(first.getX(source) - second.getX(source)) * MathHelper.abs(first.getY(source, true) - second.getY(source, true)) * MathHelper.abs(first.getZ(source) - second.getZ(source)));
     }
 
+    public static float linearInterpolation(float factor, float min, float max) {
+        return min + factor * (max - min);
+    }
+
     public static void init() {
         try {
             for (Class<?> clazz : CommanderReflectionHelper.getAllClasses(className -> className.startsWith("net.minecraft.core.world.generate.feature"))) {

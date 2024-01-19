@@ -7,6 +7,7 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.context.CommandContextBuilder;
 import com.mojang.brigadier.context.ParsedArgument;
 import com.mojang.brigadier.suggestion.Suggestion;
+import net.minecraft.client.gui.hud.ComponentAnchor;
 import net.minecraft.core.net.command.TextFormatting;
 import net.pedroricardo.commander.Commander;
 import net.minecraft.client.gui.GuiChat;
@@ -14,7 +15,6 @@ import net.minecraft.client.render.FontRenderer;
 import net.pedroricardo.commander.GuiHelper;
 import net.pedroricardo.commander.content.CommandManagerPacketKeys;
 import net.pedroricardo.commander.content.CommanderCommandSource;
-import net.pedroricardo.commander.gui.AlignmentType;
 import net.pedroricardo.commander.gui.GuiChatSuggestions;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -37,7 +37,7 @@ public abstract class GuiChatMixin {
 
     @Inject(method = "init", at = @At("TAIL"))
     private void initGui(CallbackInfo ci) {
-        this.commander$suggestionsGui = new GuiChatSuggestions(((GuiScreenAccessor)((GuiChat)(Object)this)).mc(), ((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor(), (GuiChat)(Object)this, (parent, child, minecraft, followParameters) -> 16 + (followParameters ? ((GuiScreenAccessor) this).fontRenderer().getStringWidth(this.commander$suggestionsGui.getMessage().substring(0, Math.min(this.commander$suggestionsGui.getSuggestionRangeStart(), this.commander$suggestionsGui.getMessage().length()))) + 1 : 0), (parent, child, minecraft, followParameters) -> minecraft.resolution.scaledHeight - 14, AlignmentType.BOTTOM_LEFT);
+        this.commander$suggestionsGui = new GuiChatSuggestions(((GuiScreenAccessor)((GuiChat)(Object)this)).mc(), ((TextFieldEditorAccessor)((GuiChat)(Object)this)).editor(), (GuiChat)(Object)this, (parent, child, minecraft, followParameters) -> 16 + (followParameters ? ((GuiScreenAccessor) this).fontRenderer().getStringWidth(this.commander$suggestionsGui.getMessage().substring(0, Math.min(this.commander$suggestionsGui.getSuggestionRangeStart(), this.commander$suggestionsGui.getMessage().length()))) + 1 : 0), (parent, child, minecraft, followParameters) -> minecraft.resolution.scaledHeight - 14, ComponentAnchor.BOTTOM_CENTER);
     }
 
     @Inject(method = "drawScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiChat;drawString(Lnet/minecraft/client/render/FontRenderer;Ljava/lang/String;III)V", ordinal = 0, shift = At.Shift.BEFORE))
