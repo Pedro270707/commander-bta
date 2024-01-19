@@ -225,14 +225,12 @@ public class GuiChatSuggestions extends Gui {
             if (this.parseResults == null) {
                 this.parseResults = dispatcher.parse(stringReader, this.commandSource);
             }
-            if (cursor >= 1) {
-                this.pendingSuggestions = dispatcher.getCompletionSuggestions(this.parseResults, cursor);
-                this.pendingSuggestions.thenRun(() -> {
-                    if (this.pendingSuggestions.isDone()) {
-                        this.finishUpdatingSuggestions();
-                    }
-                });
-            }
+            this.pendingSuggestions = dispatcher.getCompletionSuggestions(this.parseResults, cursor);
+            this.pendingSuggestions.thenRun(() -> {
+                if (this.pendingSuggestions.isDone()) {
+                    this.finishUpdatingSuggestions();
+                }
+            });
         }
     }
 
@@ -403,7 +401,7 @@ public class GuiChatSuggestions extends Gui {
         if (!isCommand) return text;
         if (!text.isEmpty() && !Commander.serverSuggestions.isEmpty() && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD) != null && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD).getAsJsonObject().get(CommandManagerPacketKeys.ARGUMENTS) != null) {
             StringBuilder stringToDrawBuilder = new StringBuilder();
-            int currentArgumentEnd = 1;
+            int currentArgumentEnd = stringReader.canRead() && stringReader.peek() == '/' ? 1 : 0;
             int currentColor = 0;
             stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.charAt(0));
             for (JsonElement jsonElement : Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.LAST_CHILD).getAsJsonArray(CommandManagerPacketKeys.ARGUMENTS)) {
