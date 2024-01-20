@@ -82,7 +82,7 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
 
     @Override
     public void sendMessage(String message) {
-        this.mc.ingameGUI.addChatMessage(message);
+        if (!this.mc.isMultiplayerWorld()) this.mc.ingameGUI.addChatMessage(message);
     }
 
     @Override

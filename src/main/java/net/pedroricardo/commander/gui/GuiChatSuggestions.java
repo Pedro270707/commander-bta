@@ -259,7 +259,7 @@ public class GuiChatSuggestions extends Gui {
                 } else {
                     suggestion = new Suggestion(new StringRange(jsonSuggestion.getAsJsonObject().get(CommandManagerPacketKeys.RANGE).getAsJsonObject().get(CommandManagerPacketKeys.RANGE_START).getAsInt(), jsonSuggestion.getAsJsonObject().get(CommandManagerPacketKeys.RANGE).getAsJsonObject().get(CommandManagerPacketKeys.RANGE_END).getAsInt()), jsonSuggestion.getAsJsonObject().get(CommandManagerPacketKeys.VALUE).getAsString());
                 }
-                if (suggestion.getRange().getStart() > 0 && this.tablessCursor <= this.tablessMessage.length() && suggestion.getText().startsWith(this.tablessMessage.substring(Math.min(suggestion.getRange().getStart(), this.tablessMessage.length()), Math.min(this.tablessMessage.length(), this.tablessCursor)))) {
+                if (suggestion.getRange().getStart() > 0 && this.tablessCursor <= this.tablessMessage.length() && suggestion.getText().startsWith(this.tablessMessage.substring(Math.min(suggestion.getRange().getStart(), this.tablessMessage.length()), Math.min(Math.min(suggestion.getRange().getStart(), this.tablessMessage.length()), this.tablessCursor)))) {
                     this.suggestions.add(suggestion);
                 }
             }
@@ -403,11 +403,9 @@ public class GuiChatSuggestions extends Gui {
         boolean isCommand = (stringReader.canRead() && stringReader.peek() == '/') || !requireSlash;
         if (!isCommand || text.isEmpty()) return text;
         if (!Commander.serverSuggestions.isEmpty() && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD) != null && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD).getAsJsonObject().get(CommandManagerPacketKeys.ARGUMENTS) != null) {
-            if (stringReader.canRead() && stringReader.peek() == '/') stringReader.skip();
             StringBuilder stringToDrawBuilder = new StringBuilder();
             int currentArgumentEnd = 0;
             int currentColor = 0;
-            stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.charAt(0));
             for (JsonElement jsonElement : Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.LAST_CHILD).getAsJsonArray(CommandManagerPacketKeys.ARGUMENTS)) {
                 int rangeStart = jsonElement.getAsJsonObject().getAsJsonObject(CommandManagerPacketKeys.RANGE).get(CommandManagerPacketKeys.RANGE_START).getAsInt();
                 int rangeEnd = jsonElement.getAsJsonObject().getAsJsonObject(CommandManagerPacketKeys.RANGE).get(CommandManagerPacketKeys.RANGE_END).getAsInt();
@@ -428,6 +426,7 @@ public class GuiChatSuggestions extends Gui {
             }
             stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.substring(Math.min(currentArgumentEnd, text.length())));
 
+            System.out.println(stringToDrawBuilder);
             return stringToDrawBuilder.toString();
         } else {
             if (stringReader.canRead() && stringReader.peek() == '/') stringReader.skip();
