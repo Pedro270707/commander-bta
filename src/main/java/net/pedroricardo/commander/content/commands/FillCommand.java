@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.nbt.CompoundTag;
+import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.enums.EnumDropCause;
 import net.minecraft.core.world.World;
 import net.pedroricardo.commander.CommanderHelper;
@@ -116,7 +117,10 @@ public class FillCommand {
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
-                    if ((block.getBlockId() != world.getBlockId(x, y, z) || block.getMetadata() != world.getBlockMetadata(x, y, z)) && (filter == null || (world.getBlockId(x, y, z) == filter.getBlockId() && world.getBlockMetadata(x, y, z) == filter.getMetadata()))) {
+                    CompoundTag blockTag = new CompoundTag();
+                    TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
+                    if (tileEntity != null) tileEntity.writeToNBT(blockTag);
+                    if ((block.getBlockId() != world.getBlockId(x, y, z) || block.getMetadata() != world.getBlockMetadata(x, y, z)) && (filter == null || (world.getBlockId(x, y, z) == filter.getBlockId() && world.getBlockMetadata(x, y, z) == filter.getMetadata() && (filter.getTag().getValues().isEmpty() || CommanderHelper.blockEntitiesAreEqual(blockTag, filter.getTag()))))) {
                         ++blocksFilled;
                         if (destroy && world.getBlock(x, y, z) != null) world.getBlock(x, y, z).getBreakResult(world, EnumDropCause.WORLD, x, y, z, world.getBlockMetadata(x, y, z), world.getBlockTileEntity(x, y, z));
                     }

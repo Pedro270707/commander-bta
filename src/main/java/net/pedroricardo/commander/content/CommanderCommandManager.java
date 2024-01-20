@@ -52,6 +52,8 @@ public class CommanderCommandManager {
         CloneCommand.register(DISPATCHER);
         BiomeCommand.register(DISPATCHER);
         SayCommand.register(DISPATCHER);
+        TellRawCommand.register(DISPATCHER);
+        TestForCommand.register(DISPATCHER);
 
         if (this.isServer) {
             StopCommand.register(DISPATCHER);

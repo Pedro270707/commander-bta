@@ -13,6 +13,7 @@ import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 public class SayCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("say")
+                .requires(CommanderCommandSource::hasAdmin)
                 .then(RequiredArgumentBuilder.<CommanderCommandSource, String>argument("message", StringArgumentType.greedyString())
                         .executes(c -> {
                             CommanderCommandSource source = c.getSource();

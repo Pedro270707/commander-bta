@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.Tag;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityDispatcher;
@@ -112,6 +114,22 @@ public class CommanderHelper {
 
     public static float linearInterpolation(float factor, float min, float max) {
         return min + factor * (max - min);
+    }
+
+    public static boolean blockEntitiesAreEqual(CompoundTag first, CompoundTag second) {
+        for (Map.Entry<String, Tag<?>> entry : first.getValue().entrySet()) {
+            if (entry.getKey().equals("x") || entry.getKey().equals("y") || entry.getKey().equals("z")) continue;
+            if (!second.getValue().containsKey(entry.getKey()) || (second.getValue().get(entry.getKey()) != entry.getValue() && !second.getValue().get(entry.getKey()).equals(entry.getValue()) && !second.getValue().get(entry.getKey()).getValue().equals(entry.getValue().getValue()))) {
+                return false;
+            }
+        }
+        for (Map.Entry<String, Tag<?>> entry : second.getValue().entrySet()) {
+            if (entry.getKey().equals("x") || entry.getKey().equals("y") || entry.getKey().equals("z")) continue;
+            if (!first.getValue().containsKey(entry.getKey()) || (first.getValue().get(entry.getKey()) != entry.getValue() && !first.getValue().get(entry.getKey()).equals(entry.getValue()) && !first.getValue().get(entry.getKey()).getValue().equals(entry.getValue().getValue()))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static void init() {

@@ -8,11 +8,13 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.nbt.CompoundTag;
+import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.core.world.Dimension;
 import net.minecraft.core.world.World;
+import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.BlockArgumentType;
 import net.pedroricardo.commander.content.arguments.DimensionArgumentType;
@@ -167,7 +169,10 @@ public class CloneCommand {
             int offsetDestinationX = destinationX + entry.getKey().getX(source);
             int offsetDestinationY = destinationY + entry.getKey().getY(source, true);
             int offsetDestinationZ = destinationZ + entry.getKey().getZ(source);
-            if (filter == null || (destination.getWorld().getBlockId(offsetDestinationX, offsetDestinationY, offsetDestinationZ) == filter.getBlockId() && destination.getWorld().getBlockMetadata(offsetDestinationX, offsetDestinationY, offsetDestinationZ) == filter.getMetadata())) {
+            CompoundTag blockTag = new CompoundTag();
+            TileEntity tileEntity = destination.getWorld().getBlockTileEntity(offsetDestinationX, offsetDestinationY, offsetDestinationZ);
+            if (tileEntity != null) tileEntity.writeToNBT(blockTag);
+            if (filter == null || (destination.getWorld().getBlockId(offsetDestinationX, offsetDestinationY, offsetDestinationZ) == filter.getBlockId() && destination.getWorld().getBlockMetadata(offsetDestinationX, offsetDestinationY, offsetDestinationZ) == filter.getMetadata() && (filter.getTag().getValues().isEmpty() || CommanderHelper.blockEntitiesAreEqual(blockTag, filter.getTag())))) {
                 if (destination.getWorld().getBlockId(offsetDestinationX, offsetDestinationY, offsetDestinationZ) != entry.getValue().getBlockId() || destination.getWorld().getBlockMetadata(offsetDestinationX, offsetDestinationY, offsetDestinationZ) != entry.getValue().getMetadata()) ++clonedBlocks;
                 destination.getWorld().setBlockAndMetadataWithNotify(offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getBlockId(), entry.getValue().getMetadata());
                 if (entry.getValue().getTileEntity() != null) destination.getWorld().setBlockTileEntity(offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getTileEntity());
