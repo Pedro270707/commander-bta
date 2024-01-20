@@ -130,6 +130,11 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     }
 
     @Override
+    public String getName() {
+        return this.mc.thePlayer.username;
+    }
+
+    @Override
     public @Deprecated CommandHandler getCommandHandler() {
         return this.mc.commandHandler;
     }

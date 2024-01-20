@@ -21,7 +21,7 @@ public class MeCommand {
                                     String message = StringArgumentType.getString(c, "message");
                                     boolean asterisk = BoolArgumentType.getBool(c, "asterisk");
                                     if (!(source instanceof IServerCommandSource)) throw CommanderExceptions.multiplayerWorldOnly().create();
-                                    String senderName = source.getSender() == null ? "Server" : CommanderHelper.getEntityName(source.getSender());
+                                    String senderName = source.getName();
                                     ((IServerCommandSource) source).getServer().playerList.sendEncryptedChatToAllPlayers((asterisk ? "* " : "") + senderName + message);
                                     return Command.SINGLE_SUCCESS;
                                 })))
@@ -30,7 +30,7 @@ public class MeCommand {
                             CommanderCommandSource source = c.getSource();
                             String message = StringArgumentType.getString(c, "message");
                             if (!(source instanceof IServerCommandSource)) throw CommanderExceptions.multiplayerWorldOnly().create();
-                            String senderName = source.getSender() == null ? "Server" : CommanderHelper.getEntityName(source.getSender());
+                            String senderName = source.getName();
                             ((IServerCommandSource) source).getServer().playerList.sendEncryptedChatToAllPlayers(senderName + message);
                             return Command.SINGLE_SUCCESS;
                         })));

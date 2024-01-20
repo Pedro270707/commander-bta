@@ -28,7 +28,7 @@ public class MessageCommand {
                                     EntitySelector entitySelector = c.getArgument("targets", EntitySelector.class);
                                     String message = c.getArgument("message", String.class);
 
-                                    String senderName = source.getSender() == null ? "Server" : CommanderHelper.getEntityName(source.getSender());
+                                    String senderName = source.getName();
 
                                     List<? extends Entity> players = entitySelector.get(source);
 

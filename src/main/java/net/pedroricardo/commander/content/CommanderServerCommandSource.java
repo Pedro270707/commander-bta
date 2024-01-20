@@ -100,6 +100,11 @@ public class CommanderServerCommandSource implements CommanderCommandSource, ISe
     }
 
     @Override
+    public String getName() {
+        return this.player.username;
+    }
+
+    @Override
     public @Deprecated CommandHandler getCommandHandler() {
         return this.server.serverCommandHandler;
     }

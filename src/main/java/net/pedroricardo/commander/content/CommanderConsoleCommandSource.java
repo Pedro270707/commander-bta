@@ -98,6 +98,11 @@ public class CommanderConsoleCommandSource implements CommanderCommandSource, IS
     }
 
     @Override
+    public String getName() {
+        return "Server";
+    }
+
+    @Override
     public @Deprecated CommandHandler getCommandHandler() {
         return this.server.serverCommandHandler;
     }
