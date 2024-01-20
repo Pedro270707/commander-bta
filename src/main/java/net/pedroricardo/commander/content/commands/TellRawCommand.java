@@ -15,7 +15,7 @@ import java.util.List;
 
 public class TellRawCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
-        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("message")
+        dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("tellraw")
                 .requires(CommanderCommandSource::hasAdmin)
                 .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("targets", EntityArgumentType.players())
                         .then(RequiredArgumentBuilder.<CommanderCommandSource, String>argument("message", StringArgumentType.greedyString())
