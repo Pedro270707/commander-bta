@@ -403,8 +403,9 @@ public class GuiChatSuggestions extends Gui {
         boolean isCommand = (stringReader.canRead() && stringReader.peek() == '/') || !requireSlash;
         if (!isCommand || text.isEmpty()) return text;
         if (!Commander.serverSuggestions.isEmpty() && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD) != null && Commander.serverSuggestions.get(CommandManagerPacketKeys.LAST_CHILD).getAsJsonObject().get(CommandManagerPacketKeys.ARGUMENTS) != null) {
+            if (stringReader.canRead() && stringReader.peek() == '/') stringReader.skip();
             StringBuilder stringToDrawBuilder = new StringBuilder();
-            int currentArgumentEnd = stringReader.canRead() && stringReader.peek() == '/' ? 1 : 0;
+            int currentArgumentEnd = 0;
             int currentColor = 0;
             stringToDrawBuilder.append(TextFormatting.LIGHT_GRAY).append(text.charAt(0));
             for (JsonElement jsonElement : Commander.serverSuggestions.getAsJsonObject(CommandManagerPacketKeys.LAST_CHILD).getAsJsonArray(CommandManagerPacketKeys.ARGUMENTS)) {
