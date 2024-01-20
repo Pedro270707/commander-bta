@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+import net.minecraft.core.net.packet.Packet3Chat;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.IServerCommandSource;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
@@ -21,7 +22,7 @@ public class MeCommand {
                                     boolean asterisk = BoolArgumentType.getBool(c, "asterisk");
                                     if (!(source instanceof IServerCommandSource)) throw CommanderExceptions.multiplayerWorldOnly().create();
                                     String senderName = source.getName();
-                                    ((IServerCommandSource) source).getServer().playerList.sendEncryptedChatToAllPlayers((asterisk ? "* " : "") + senderName + message);
+                                    ((IServerCommandSource) source).getServer().playerList.sendPacketToAllPlayers(new Packet3Chat((asterisk ? "* " : "") + senderName + message));
                                     return Command.SINGLE_SUCCESS;
                                 })))
                 .then(RequiredArgumentBuilder.<CommanderCommandSource, String>argument("message", StringArgumentType.greedyString())
@@ -30,7 +31,7 @@ public class MeCommand {
                             String message = StringArgumentType.getString(c, "message");
                             if (!(source instanceof IServerCommandSource)) throw CommanderExceptions.multiplayerWorldOnly().create();
                             String senderName = source.getName();
-                            ((IServerCommandSource) source).getServer().playerList.sendEncryptedChatToAllPlayers(senderName + message);
+                            ((IServerCommandSource) source).getServer().playerList.sendPacketToAllPlayers(new Packet3Chat("* " + senderName + message));
                             return Command.SINGLE_SUCCESS;
                         })));
     }
