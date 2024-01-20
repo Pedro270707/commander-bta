@@ -62,58 +62,56 @@ public class CommandManagerPacket extends Packet {
         final JsonArray exceptions = new JsonArray();
         final JsonArray usage = new JsonArray();
         StringReader reader = new StringReader(text);
-        if (reader.canRead()) {
-            if (reader.peek() == '/') reader.skip();
-            ParseResults<CommanderCommandSource> parseResults = dispatcher.parse(reader, source);
-            JsonObject readerJson = new JsonObject();
-            readerJson.addProperty(CommandManagerPacketKeys.READER_CAN_READ, parseResults.getReader().canRead());
-            int readerCursor = Math.max(parseResults.getReader().getCursor(), 0);
-            readerJson.addProperty(CommandManagerPacketKeys.READER_CURSOR, readerCursor);
-            int remainingTextLength = Math.min(readerCursor + parseResults.getReader().getRemainingLength(), text.length());
-            readerJson.addProperty(CommandManagerPacketKeys.READER_REMAINING_TEXT_LENGTH, remainingTextLength);
-            readerJson.addProperty(CommandManagerPacketKeys.READER_STRING, parseResults.getReader().getString());
-            object.add(CommandManagerPacketKeys.READER, readerJson);
-            object.addProperty(CommandManagerPacketKeys.SUGGESTION_CONTEXT_START_POS, parseResults.getContext().findSuggestionContext(cursor).startPos);
+        if (reader.canRead() && reader.peek() == '/') reader.skip();
+        ParseResults<CommanderCommandSource> parseResults = dispatcher.parse(reader, source);
+        JsonObject readerJson = new JsonObject();
+        readerJson.addProperty(CommandManagerPacketKeys.READER_CAN_READ, parseResults.getReader().canRead());
+        int readerCursor = Math.max(parseResults.getReader().getCursor(), 0);
+        readerJson.addProperty(CommandManagerPacketKeys.READER_CURSOR, readerCursor);
+        int remainingTextLength = Math.min(readerCursor + parseResults.getReader().getRemainingLength(), text.length());
+        readerJson.addProperty(CommandManagerPacketKeys.READER_REMAINING_TEXT_LENGTH, remainingTextLength);
+        readerJson.addProperty(CommandManagerPacketKeys.READER_STRING, parseResults.getReader().getString());
+        object.add(CommandManagerPacketKeys.READER, readerJson);
+        object.addProperty(CommandManagerPacketKeys.SUGGESTION_CONTEXT_START_POS, parseResults.getContext().findSuggestionContext(cursor).startPos);
 
-            CompletableFuture<Suggestions> pendingSuggestions = getCompletionSuggestions(parseResults, cursor, source);
-            pendingSuggestions.thenRun(() -> {
-                if (pendingSuggestions.isDone()) {
-                    for (Suggestion suggestion : pendingSuggestions.join().getList()) {
-                        JsonObject suggestionJson = new JsonObject();
-                        suggestionJson.addProperty(CommandManagerPacketKeys.VALUE, suggestion.getText());
-                        JsonObject range = new JsonObject();
-                        range.addProperty(CommandManagerPacketKeys.RANGE_START, suggestion.getRange().getStart());
-                        range.addProperty(CommandManagerPacketKeys.RANGE_END, suggestion.getRange().getEnd());
-                        suggestionJson.add(CommandManagerPacketKeys.RANGE, range);
-                        if (suggestion.getTooltip() != null)
-                            suggestionJson.addProperty(CommandManagerPacketKeys.TOOLTIP, suggestion.getTooltip().getString());
-                        suggestions.add(suggestionJson);
-                    }
-                }
-            });
-            CommandSyntaxException parseException = CommanderCommandManager.getParseException(parseResults);
-            if (!parseResults.getExceptions().isEmpty()) {
-                for (CommandSyntaxException entry : parseResults.getExceptions().values()) {
-                    JsonObject exceptionJson = new JsonObject();
-                    exceptionJson.addProperty(CommandManagerPacketKeys.VALUE, entry.getMessage());
-                    exceptions.add(exceptionJson);
-                }
-            } else if (parseException != null) {
-                JsonObject exceptionJson = new JsonObject();
-                exceptionJson.addProperty(CommandManagerPacketKeys.VALUE, parseException.getMessage());
-                exceptions.add(exceptionJson);
-            } else if (parseResults.getContext().getRootNode() != null && parseResults.getContext().getRange().getStart() <= cursor) {
-                JsonObject commandUsage = new JsonObject();
-                for (Map.Entry<CommandNode<CommanderCommandSource>, String> entry : dispatcher.getSmartUsage(parseResults.getContext().findSuggestionContext(cursor).parent, source).entrySet()) {
-                    if (entry.getKey() instanceof LiteralCommandNode) continue;
-                    commandUsage.addProperty(CommandManagerPacketKeys.VALUE, entry.getValue());
-                    usage.add(commandUsage);
+        CompletableFuture<Suggestions> pendingSuggestions = getCompletionSuggestions(parseResults, cursor, source);
+        pendingSuggestions.thenRun(() -> {
+            if (pendingSuggestions.isDone()) {
+                for (Suggestion suggestion : pendingSuggestions.join().getList()) {
+                    JsonObject suggestionJson = new JsonObject();
+                    suggestionJson.addProperty(CommandManagerPacketKeys.VALUE, suggestion.getText());
+                    JsonObject range = new JsonObject();
+                    range.addProperty(CommandManagerPacketKeys.RANGE_START, suggestion.getRange().getStart());
+                    range.addProperty(CommandManagerPacketKeys.RANGE_END, suggestion.getRange().getEnd());
+                    suggestionJson.add(CommandManagerPacketKeys.RANGE, range);
+                    if (suggestion.getTooltip() != null)
+                        suggestionJson.addProperty(CommandManagerPacketKeys.TOOLTIP, suggestion.getTooltip().getString());
+                    suggestions.add(suggestionJson);
                 }
             }
-
-            JsonObject lastChild = getLastChild(parseResults);
-            object.add(CommandManagerPacketKeys.LAST_CHILD, lastChild);
+        });
+        CommandSyntaxException parseException = CommanderCommandManager.getParseException(parseResults);
+        if (!parseResults.getExceptions().isEmpty()) {
+            for (CommandSyntaxException entry : parseResults.getExceptions().values()) {
+                JsonObject exceptionJson = new JsonObject();
+                exceptionJson.addProperty(CommandManagerPacketKeys.VALUE, entry.getMessage());
+                exceptions.add(exceptionJson);
+            }
+        } else if (parseException != null) {
+            JsonObject exceptionJson = new JsonObject();
+            exceptionJson.addProperty(CommandManagerPacketKeys.VALUE, parseException.getMessage());
+            exceptions.add(exceptionJson);
+        } else if (parseResults.getContext().getRootNode() != null && parseResults.getContext().getRange().getStart() <= cursor) {
+            JsonObject commandUsage = new JsonObject();
+            for (Map.Entry<CommandNode<CommanderCommandSource>, String> entry : dispatcher.getSmartUsage(parseResults.getContext().findSuggestionContext(cursor).parent, source).entrySet()) {
+                if (entry.getKey() instanceof LiteralCommandNode) continue;
+                commandUsage.addProperty(CommandManagerPacketKeys.VALUE, entry.getValue());
+                usage.add(commandUsage);
+            }
         }
+
+        JsonObject lastChild = getLastChild(parseResults);
+        object.add(CommandManagerPacketKeys.LAST_CHILD, lastChild);
         object.add(CommandManagerPacketKeys.SUGGESTIONS, suggestions);
         object.add(CommandManagerPacketKeys.EXCEPTIONS, exceptions);
         object.add(CommandManagerPacketKeys.USAGE, usage);
