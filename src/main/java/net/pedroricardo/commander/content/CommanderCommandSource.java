@@ -46,6 +46,8 @@ public interface CommanderCommandSource {
         this.sendMessage(player, I18n.getInstance().translateKeyAndFormat(message, args));
     }
 
+    void sendMessageToAllPlayers(String message);
+
     World getWorld();
 
     World getWorld(int dimension);

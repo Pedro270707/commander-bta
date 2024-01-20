@@ -93,6 +93,11 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     }
 
     @Override
+    public void sendMessageToAllPlayers(String message) {
+        this.mc.thePlayer.addChatMessage(message);
+    }
+
+    @Override
     public World getWorld() {
         return this.mc.theWorld;
     }

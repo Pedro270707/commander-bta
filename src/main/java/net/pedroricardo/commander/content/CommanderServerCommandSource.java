@@ -84,6 +84,11 @@ public class CommanderServerCommandSource implements CommanderCommandSource, ISe
     }
 
     @Override
+    public void sendMessageToAllPlayers(String message) {
+        this.getServer().playerList.sendPacketToAllPlayers(new Packet3Chat(message));
+    }
+
+    @Override
     public World getWorld() {
         return this.player == null ? this.server.getDimensionWorld(0) : this.player.world;
     }

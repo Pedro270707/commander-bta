@@ -82,6 +82,11 @@ public class CommanderConsoleCommandSource implements CommanderCommandSource, IS
     }
 
     @Override
+    public void sendMessageToAllPlayers(String message) {
+        this.getServer().playerList.sendPacketToAllPlayers(new Packet3Chat(message));
+    }
+
+    @Override
     public World getWorld() {
         return this.server.getDimensionWorld(0);
     }
