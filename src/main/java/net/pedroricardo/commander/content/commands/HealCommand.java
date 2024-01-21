@@ -18,6 +18,7 @@ import java.util.List;
 public class HealCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("heal")
+                .requires(CommanderCommandSource::hasAdmin)
                 .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("entities", EntityArgumentType.entities())
                         .then(RequiredArgumentBuilder.<CommanderCommandSource, Integer>argument("amount", IntegerArgumentType.integer(0, 32768))
                                 .executes(c -> {

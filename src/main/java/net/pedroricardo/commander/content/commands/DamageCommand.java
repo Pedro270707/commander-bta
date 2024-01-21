@@ -16,6 +16,7 @@ import java.util.List;
 public class DamageCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("damage")
+                .requires(CommanderCommandSource::hasAdmin)
                 .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("entities", EntityArgumentType.entities())
                         .then(RequiredArgumentBuilder.<CommanderCommandSource, DamageType>argument("type", DamageTypeArgumentType.damageType())
                                 .then(RequiredArgumentBuilder.<CommanderCommandSource, Integer>argument("amount", IntegerArgumentType.integer(0, 32768))
