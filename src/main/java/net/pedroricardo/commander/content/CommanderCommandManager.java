@@ -54,6 +54,7 @@ public class CommanderCommandManager {
         SayCommand.register(DISPATCHER);
         TellRawCommand.register(DISPATCHER);
         TestForCommand.register(DISPATCHER);
+        DamageCommand.register(DISPATCHER);
 
         if (this.isServer) {
             StopCommand.register(DISPATCHER);

@@ -16,7 +16,7 @@ public class SayCommand {
                             CommanderCommandSource source = c.getSource();
                             String message = StringArgumentType.getString(c, "message");
                             String senderName = source.getName();
-                            source.sendMessageToAllPlayers("[" + senderName + "§r]" + message);
+                            source.sendMessageToAllPlayers("[" + senderName + "§r] " + message);
                             return Command.SINGLE_SUCCESS;
                         })));
     }
