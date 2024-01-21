@@ -151,3 +151,7 @@ commands.commander.testfor.entity.single=%s entity matches the given selector
 commands.commander.testfor.entity.plural=%s entities match the given selector
 commands.commander.testfor.block.success=The two blocks are equal
 commands.commander.testfor.block.failure=The two blocks are not equal
+commands.commander.damage.success_single=Damaged %s entity
+commands.commander.damage.success_multiple=Damaged %s entities
+commands.commander.heal.success_single=Healed %s entity
+commands.commander.heal.success_multiple=Healed %s entities

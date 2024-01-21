@@ -27,6 +27,7 @@ public class DamageCommand {
                                             for (Entity entity : entities) {
                                                 if (entity.hurt(null, amount, type)) ++entitiesAffected;
                                             }
+                                            c.getSource().sendTranslatableMessage("commands.commander.damage.success_" + (entitiesAffected == 1 ? "single" : "multiple"), entitiesAffected);
                                             return entitiesAffected;
                                         })))));
     }
