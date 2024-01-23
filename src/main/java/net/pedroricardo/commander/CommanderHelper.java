@@ -119,6 +119,8 @@ public class CommanderHelper {
     }
 
     public static boolean blockEntitiesAreEqual(CompoundTag first, CompoundTag second) {
+        if (first == null && second == null) return true;
+        if (first == null || second == null) return false;
         for (Map.Entry<String, Tag<?>> entry : first.getValue().entrySet()) {
             if (entry.getKey().equals("x") || entry.getKey().equals("y") || entry.getKey().equals("z")) continue;
             if (!second.getValue().containsKey(entry.getKey()) || (second.getValue().get(entry.getKey()) != entry.getValue() && !second.getValue().get(entry.getKey()).equals(entry.getValue()) && !second.getValue().get(entry.getKey()).getValue().equals(entry.getValue().getValue()))) {
@@ -148,7 +150,7 @@ public class CommanderHelper {
 
     public static CompoundTag tagFrom(TileEntity tileEntity) {
         CompoundTag tag = new CompoundTag();
-        tileEntity.writeToNBT(tag);
+        if (tileEntity != null) tileEntity.writeToNBT(tag);
         return tag;
     }
 
