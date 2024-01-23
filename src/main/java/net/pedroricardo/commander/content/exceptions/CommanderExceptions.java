@@ -1,5 +1,6 @@
 package net.pedroricardo.commander.content.exceptions;
 
+import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.core.lang.I18n;
 
@@ -14,6 +15,9 @@ public class CommanderExceptions {
     private static final SimpleCommandExceptionType SINGLE_PLAYER_WORLD_ONLY = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("exceptions.commander.single_player_world_only"));
     private static final SimpleCommandExceptionType MULTIPLAYER_WORLD_ONLY = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("exceptions.commander.multiplayer_world_only"));
     private static final SimpleCommandExceptionType VOLUME_TOO_LARGE = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKey("exceptions.commander.volume_too_large"));
+    private static final SimpleCommandExceptionType EXPECTED_END_OF_METADATA = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKeyAndFormat("argument_types.commander.item_stack.metadata.unterminated"));
+    private static final SimpleCommandExceptionType EXPECTED_END_OF_TAG = new SimpleCommandExceptionType(() -> I18n.getInstance().translateKeyAndFormat("argument_types.commander.item_stack.tag.unterminated"));
+    private static final DynamicCommandExceptionType EXPECTED_TAG_KEY_VALUE = new DynamicCommandExceptionType((value) -> () -> I18n.getInstance().translateKeyAndFormat("argument_types.commander.item_stack.tag.valueless", value));
 
     public static SimpleCommandExceptionType incomplete() {
         return INCOMPLETE_ARGUMENT;
@@ -53,5 +57,17 @@ public class CommanderExceptions {
 
     public static SimpleCommandExceptionType volumeTooLarge() {
         return VOLUME_TOO_LARGE;
+    }
+
+    public static SimpleCommandExceptionType expectedEndOfTag() {
+        return EXPECTED_END_OF_TAG;
+    }
+
+    public static SimpleCommandExceptionType expectedEndOfMetadata() {
+        return EXPECTED_END_OF_METADATA;
+    }
+
+    public static DynamicCommandExceptionType expectedTagKeyValue() {
+        return EXPECTED_TAG_KEY_VALUE;
     }
 }

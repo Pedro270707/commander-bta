@@ -2,21 +2,24 @@ package net.pedroricardo.commander;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import com.mojang.nbt.CompoundTag;
-import com.mojang.nbt.Tag;
+import com.mojang.nbt.*;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityDispatcher;
+import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.util.helper.LogPrintStream;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.world.WorldSource;
 import net.minecraft.core.world.generate.feature.WorldFeature;
 import net.pedroricardo.commander.content.CommanderCommandSource;
+import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
+import net.pedroricardo.commander.content.helpers.ArgumentParser;
 import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
 
 import java.util.*;
@@ -93,6 +96,8 @@ public class CommanderHelper {
             if (!LogPrintStream.removeColorCodes(((EntityLiving) entity).getDisplayName()).isEmpty()) {
                 return LogPrintStream.removeColorCodes(((EntityLiving) entity).getDisplayName());
             }
+        } else if (entity instanceof EntityItem && ((EntityItem)entity).item != null) {
+            return LogPrintStream.removeColorCodes(((EntityItem)entity).item.getDisplayName());
         }
         return EntityDispatcher.getEntityString(entity);
     }

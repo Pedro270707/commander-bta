@@ -45,10 +45,10 @@ public class ItemStackArgumentParser extends ArgumentParser {
         }
 
         if (this.reader.canRead() && this.reader.peek() == '{') {
+            this.suggestions = CommanderHelper.NO_SUGGESTIONS;
             this.tag = this.parseCompound();
         }
 
-        System.out.println(this.tag);
         if (this.item != null) {
             return new ItemStack(this.item, 1, this.metadata, this.tag);
         }

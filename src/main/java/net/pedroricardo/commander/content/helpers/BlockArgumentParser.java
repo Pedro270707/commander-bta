@@ -42,6 +42,8 @@ public class BlockArgumentParser extends ArgumentParser {
         }
 
         if (this.reader.canRead() && this.reader.peek() == '{') {
+            this.reader.skip();
+            this.suggestions = CommanderHelper.NO_SUGGESTIONS;
             this.tag = this.parseCompound();
         }
 

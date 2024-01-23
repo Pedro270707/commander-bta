@@ -9,6 +9,7 @@ import net.minecraft.client.lang.text.ChainText;
 import net.minecraft.client.lang.text.Text;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityDispatcher;
+import net.minecraft.core.entity.EntityItem;
 import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.lang.I18n;
@@ -82,7 +83,7 @@ public class EntitySelectorOptions {
                         parser.setHasNameEquals(true);
                     }
                     parser.addPredicate(entity -> {
-                        if (!(entity instanceof EntityLiving)) return bl;
+                        if (!(entity instanceof EntityLiving)) return entity instanceof EntityItem && ((EntityItem)entity).item != null ? LogPrintStream.removeColorCodes(((EntityItem)entity).item.getDisplayName()).equals(string) : bl;
                         else if (entity instanceof EntityPlayer) return ((EntityPlayer)entity).username.equals(string) != bl;
                         else return LogPrintStream.removeColorCodes(((EntityLiving)entity).getDisplayName()).equals(string) != bl;
                     });
