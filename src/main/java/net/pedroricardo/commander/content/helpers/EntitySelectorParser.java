@@ -298,6 +298,8 @@ public class EntitySelectorParser {
     private boolean hasType = false;
     private boolean hasNameEquals = false;
     private boolean hasNameNotEquals = false;
+    private boolean hasNbt = false;
+    private boolean hasNotNbt = false;
 
     public boolean hasGamemodeEquals() {
         return this.hasGamemodeEquals;
@@ -385,6 +387,22 @@ public class EntitySelectorParser {
 
     public void setCurrentEntity(boolean currentEntity) {
         this.currentEntity = currentEntity;
+    }
+
+    public boolean hasNbt() {
+        return this.hasNbt;
+    }
+
+    public void setHasNbt(boolean bl) {
+        this.hasNbt = bl;
+    }
+
+    public boolean hasNotNbt() {
+        return this.hasNotNbt;
+    }
+
+    public void setHasNotNbt(boolean bl) {
+        this.hasNotNbt = bl;
     }
 
     public void setX(double x) {

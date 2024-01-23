@@ -5,6 +5,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
+import com.mojang.nbt.CompoundTag;
+import com.mojang.nbt.Tag;
 import net.minecraft.client.lang.text.ChainText;
 import net.minecraft.client.lang.text.Text;
 import net.minecraft.core.entity.Entity;
@@ -16,6 +18,7 @@ import net.minecraft.core.lang.I18n;
 import net.minecraft.core.player.gamemode.Gamemode;
 import net.minecraft.core.util.helper.LogPrintStream;
 import net.pedroricardo.commander.CommanderHelper;
+import net.pedroricardo.commander.NbtHelper;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -224,6 +227,26 @@ public class EntitySelectorOptions {
                 parser.setHasGamemodeEquals(true);
             }
         }, parser -> !parser.hasGamemodeEquals(), ChainText.text().trans("argument_types.commander.entity.selector.options.gamemode.description"));
+        register("nbt", (parser) -> {
+            boolean invert = parser.shouldInvertValue();
+            CompoundTag nbt = NbtHelper.parseNbt(parser.getReader());
+            parser.addPredicate((entity) -> {
+                if (nbt.getValue().isEmpty()) return !invert;
+                CompoundTag entityNbt = new CompoundTag();
+                entity.addAdditionalSaveData(entityNbt);
+                for (Map.Entry<String, Tag<?>> entry : nbt.getValue().entrySet()) {
+                    if (!entityNbt.getValue().containsKey(entry.getKey()) || (entityNbt.getValue().get(entry.getKey()) != entry.getValue() && !entityNbt.getValue().get(entry.getKey()).equals(entry.getValue()) && !entityNbt.getValue().get(entry.getKey()).getValue().equals(entry.getValue().getValue()))) {
+                        if (!invert) return false;
+                    }
+                }
+                return true;
+            });
+            if (invert) {
+                parser.setHasNotNbt(true);
+            } else {
+                parser.setHasNbt(true);
+            }
+        }, parser -> !parser.hasNbt(), ChainText.text().trans("argument_types.commander.entity.selector.options.nbt.description"));
     }
 
     public static Modifier get(EntitySelectorParser entitySelectorParser, String string, int i) throws CommandSyntaxException {

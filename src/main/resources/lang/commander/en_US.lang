@@ -23,6 +23,7 @@ argument_types.commander.entity.selector.options.unterminated=Expected end of op
 argument_types.commander.entity.selector.options.valueless=Expected value for option '%s'
 argument_types.commander.entity.selector.options.gamemode.invalid=Invalid or unknown game mode '%s'
 argument_types.commander.entity.selector.options.gamemode.description=Players with game mode
+argument_types.commander.entity.selector.options.nbt.description=Entities with NBT
 argument_types.commander.entity.selector.options.sort.description=Sort the entities
 argument_types.commander.entity.selector.options.sort.invalid=Invalid or unknown sort type '%s'
 argument_types.commander.entity.selector.options.limit.description=Maximum number of entities to return

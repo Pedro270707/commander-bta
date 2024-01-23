@@ -70,23 +70,8 @@ public abstract class ArgumentParser {
         return suggestionsBuilder.buildFuture();
     }
 
-    protected CompletableFuture<Suggestions> suggestOpenMetadata(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-        if (!this.reader.canRead()) suggestionsBuilder.suggest(String.valueOf('['));
-        return suggestionsBuilder.buildFuture();
-    }
-
     private CompletableFuture<Suggestions> suggestCloseMetadata(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
         if (!this.reader.canRead()) suggestionsBuilder.suggest(String.valueOf(']'));
-        return suggestionsBuilder.buildFuture();
-    }
-
-    private CompletableFuture<Suggestions> suggestCloseTag(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-        if (!this.reader.canRead()) suggestionsBuilder.suggest(String.valueOf('}'));
-        return suggestionsBuilder.buildFuture();
-    }
-
-    private CompletableFuture<Suggestions> suggestTagSeparator(SuggestionsBuilder suggestionsBuilder, Consumer<SuggestionsBuilder> consumer) {
-        if (!this.reader.canRead()) suggestionsBuilder.suggest(String.valueOf(':'));
         return suggestionsBuilder.buildFuture();
     }
 }
