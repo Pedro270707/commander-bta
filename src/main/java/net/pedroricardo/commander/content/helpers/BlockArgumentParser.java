@@ -7,7 +7,6 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.nbt.CompoundTag;
 import net.minecraft.core.block.Block;
-import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
 import net.pedroricardo.commander.CommanderHelper;
 
@@ -43,7 +42,7 @@ public class BlockArgumentParser extends ArgumentParser {
         }
 
         if (this.reader.canRead() && this.reader.peek() == '{') {
-            this.tag = this.parseTag();
+            this.tag = this.parseCompound();
         }
 
         return new BlockInput(this.block, this.metadata, this.tag);

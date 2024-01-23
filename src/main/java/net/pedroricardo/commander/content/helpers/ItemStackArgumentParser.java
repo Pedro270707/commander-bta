@@ -2,22 +2,16 @@ package net.pedroricardo.commander.content.helpers;
 
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.nbt.CompoundTag;
-import net.minecraft.core.block.Block;
 import net.minecraft.core.item.Item;
-import net.minecraft.core.item.ItemLabel;
 import net.minecraft.core.item.ItemStack;
 import net.minecraft.core.lang.I18n;
-import net.minecraft.core.util.collection.Pair;
-import net.pedroricardo.commander.Commander;
 import net.pedroricardo.commander.CommanderHelper;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 public class ItemStackArgumentParser extends ArgumentParser {
@@ -51,9 +45,10 @@ public class ItemStackArgumentParser extends ArgumentParser {
         }
 
         if (this.reader.canRead() && this.reader.peek() == '{') {
-            this.tag = this.parseTag();
+            this.tag = this.parseCompound();
         }
 
+        System.out.println(this.tag);
         if (this.item != null) {
             return new ItemStack(this.item, 1, this.metadata, this.tag);
         }
