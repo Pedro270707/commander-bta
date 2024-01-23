@@ -10,6 +10,7 @@ import com.mojang.nbt.Tag;
 import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.world.World;
+import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.*;
 import net.pedroricardo.commander.content.helpers.BlockInput;
@@ -38,16 +39,9 @@ public class SetBlockCommand {
                                     if (!world.isBlockLoaded(x, y, z)) {
                                         throw FAILURE.create();
                                     } else {
-                                        world.setBlockAndMetadataWithNotify(x, y, z, blockInput.getBlockId(), blockInput.getMetadata());
-                                        TileEntity tileEntity = source.getWorld().getBlockTileEntity(x, y, z);
-                                        if (tileEntity != null) {
-                                            CompoundTag tag = new CompoundTag();
-                                            tileEntity.writeToNBT(tag);
-                                            for (Map.Entry<String, Tag<?>> entry : blockInput.getTag().getValue().entrySet()) {
-                                                tag.put(entry.getKey(), entry.getValue());
-                                            }
-                                            tileEntity.readFromNBT(tag);
-                                        }
+                                        world.setBlockWithNotify(x, y, z, blockInput.getBlockId());
+                                        world.setBlockMetadataWithNotify(x, y, z, blockInput.getMetadata());
+                                        CommanderHelper.setTileEntity(world, x, y, z, blockInput.getTag());
                                         source.sendTranslatableMessage("commands.commander.setblock.success", coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source));
                                     }
 

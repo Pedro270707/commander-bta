@@ -120,11 +120,14 @@ public class FillCommand {
                     CompoundTag blockTag = new CompoundTag();
                     TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
                     if (tileEntity != null) tileEntity.writeToNBT(blockTag);
-                    if ((block.getBlockId() != world.getBlockId(x, y, z) || block.getMetadata() != world.getBlockMetadata(x, y, z)) && (filter == null || (world.getBlockId(x, y, z) == filter.getBlockId() && world.getBlockMetadata(x, y, z) == filter.getMetadata() && (filter.getTag().getValues().isEmpty() || CommanderHelper.blockEntitiesAreEqual(blockTag, filter.getTag()))))) {
+                    if ((block.getBlockId() != world.getBlockId(x, y, z) || block.getMetadata() != world.getBlockMetadata(x, y, z) || !CommanderHelper.blockEntitiesAreEqual(block.getTag(), CommanderHelper.tagFrom(world.getBlockTileEntity(x, y, z)))) && (filter == null || (world.getBlockId(x, y, z) == filter.getBlockId() && world.getBlockMetadata(x, y, z) == filter.getMetadata() && (filter.getTag().getValues().isEmpty() || CommanderHelper.blockEntitiesAreEqual(blockTag, filter.getTag()))))) {
                         ++blocksFilled;
                         if (destroy && world.getBlock(x, y, z) != null) world.getBlock(x, y, z).getBreakResult(world, EnumDropCause.WORLD, x, y, z, world.getBlockMetadata(x, y, z), world.getBlockTileEntity(x, y, z));
                     }
-                    if (filter == null || (world.getBlockId(x, y, z) == filter.getBlockId() && world.getBlockMetadata(x, y, z) == filter.getMetadata())) world.setBlockAndMetadataWithNotify(x, y, z, block.getBlockId(), block.getMetadata());
+                    if (filter == null || (world.getBlockId(x, y, z) == filter.getBlockId() && world.getBlockMetadata(x, y, z) == filter.getMetadata() && (!filter.getTag().getValue().isEmpty() || CommanderHelper.blockEntitiesAreEqual(CommanderHelper.tagFrom(world.getBlockTileEntity(x, y, z)), filter.getTag())))) {
+                        world.setBlockWithNotify(x, y, z, block.getBlockId());
+                        world.setBlockMetadataWithNotify(x, y, z, block.getMetadata());
+                    }
                 }
             }
         }
@@ -147,11 +150,12 @@ public class FillCommand {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
                     boolean isOutline = x == minX || x == maxX || y == minY || y == maxY || z == minZ || z == maxZ;
-                    if ((isOutline && (block.getBlockId() != world.getBlockId(x, y, z) || block.getMetadata() != world.getBlockMetadata(x, y, z))) || (!isOutline && world.getBlockId(x, y, z) != 0)) {
+                    if ((isOutline && (block.getBlockId() != world.getBlockId(x, y, z) || block.getMetadata() != world.getBlockMetadata(x, y, z) || !CommanderHelper.blockEntitiesAreEqual(block.getTag(), CommanderHelper.tagFrom(world.getBlockTileEntity(x, y, z))))) || (!isOutline && world.getBlockId(x, y, z) != 0)) {
                         ++blocksFilled;
                         if (!isOutline && world.getBlock(x, y, z) != null) world.getBlock(x, y, z).getBreakResult(world, EnumDropCause.WORLD, x, y, z, world.getBlockMetadata(x, y, z), world.getBlockTileEntity(x, y, z));
                     }
-                    world.setBlockAndMetadataWithNotify(x, y, z, isOutline ? block.getBlockId() : 0, isOutline ? block.getMetadata() : 0);
+                    world.setBlockWithNotify(x, y, z, isOutline ? block.getBlockId() : 0);
+                    world.setBlockMetadataWithNotify(x, y, z, isOutline ? block.getMetadata() : 0);
                 }
             }
         }
@@ -174,8 +178,12 @@ public class FillCommand {
             for (int y = minY; y <= maxY; y++) {
                 for (int z = minZ; z <= maxZ; z++) {
                     boolean isOutline = x == minX || x == maxX || y == minY || y == maxY || z == minZ || z == maxZ;
-                    if (isOutline && (block.getBlockId() != world.getBlockId(x, y, z) || block.getMetadata() != world.getBlockMetadata(x, y, z))) ++blocksFilled;
-                    if (isOutline) world.setBlockAndMetadataWithNotify(x, y, z, block.getBlockId(), block.getMetadata());
+                    if (isOutline && (block.getBlockId() != world.getBlockId(x, y, z) || block.getMetadata() != world.getBlockMetadata(x, y, z) || !CommanderHelper.blockEntitiesAreEqual(block.getTag(), CommanderHelper.tagFrom(world.getBlockTileEntity(x, y, z))))) ++blocksFilled;
+                    if (isOutline) {
+                        world.setBlockWithNotify(x, y, z, block.getBlockId());
+                        world.setBlockMetadataWithNotify(x, y, z, block.getMetadata());
+                        CommanderHelper.setTileEntity(world, x, y, z, block.getTag());
+                    }
                 }
             }
         }

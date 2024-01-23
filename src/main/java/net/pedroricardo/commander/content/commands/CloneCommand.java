@@ -9,6 +9,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.nbt.CompoundTag;
 import net.minecraft.core.block.entity.TileEntity;
+import net.minecraft.core.data.tag.Tag;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.util.phys.AABB;
 import net.minecraft.core.util.phys.Vec3d;
@@ -174,8 +175,11 @@ public class CloneCommand {
             if (tileEntity != null) tileEntity.writeToNBT(blockTag);
             if (filter == null || (destination.getWorld().getBlockId(offsetDestinationX, offsetDestinationY, offsetDestinationZ) == filter.getBlockId() && destination.getWorld().getBlockMetadata(offsetDestinationX, offsetDestinationY, offsetDestinationZ) == filter.getMetadata() && (filter.getTag().getValues().isEmpty() || CommanderHelper.blockEntitiesAreEqual(blockTag, filter.getTag())))) {
                 if (destination.getWorld().getBlockId(offsetDestinationX, offsetDestinationY, offsetDestinationZ) != entry.getValue().getBlockId() || destination.getWorld().getBlockMetadata(offsetDestinationX, offsetDestinationY, offsetDestinationZ) != entry.getValue().getMetadata()) ++clonedBlocks;
-                destination.getWorld().setBlockAndMetadataWithNotify(offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getBlockId(), entry.getValue().getMetadata());
-                if (entry.getValue().getTileEntity() != null) destination.getWorld().setBlockTileEntity(offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getTileEntity());
+                destination.getWorld().setBlockWithNotify(offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getBlockId());
+                destination.getWorld().setBlockMetadataWithNotify(offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getMetadata());
+                if (entry.getValue().getTileEntity() != null) {
+                    CommanderHelper.setTileEntity(destination.getWorld(), offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getTileEntity());
+                }
             }
         }
         destination.getWorld().editingBlocks = false;

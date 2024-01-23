@@ -8,11 +8,13 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.nbt.CompoundTag;
 import com.mojang.nbt.Tag;
 import net.minecraft.core.block.Block;
+import net.minecraft.core.block.entity.TileEntity;
 import net.minecraft.core.entity.Entity;
 import net.minecraft.core.entity.EntityDispatcher;
 import net.minecraft.core.entity.EntityLiving;
 import net.minecraft.core.util.helper.LogPrintStream;
 import net.minecraft.core.util.helper.MathHelper;
+import net.minecraft.core.world.WorldSource;
 import net.minecraft.core.world.generate.feature.WorldFeature;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.helpers.IntegerCoordinates;
@@ -130,6 +132,24 @@ public class CommanderHelper {
             }
         }
         return true;
+    }
+
+    public static void setTileEntity(WorldSource world, int x, int y, int z, CompoundTag tag) {
+        if (tag == null || world.getBlockTileEntity(x, y, z) == null) return;
+        tag.putInt("x", x);
+        tag.putInt("y", y);
+        tag.putInt("z", z);
+        world.getBlockTileEntity(x, y, z).readFromNBT(tag);
+    }
+
+    public static void setTileEntity(WorldSource world, int x, int y, int z, TileEntity tileEntity) {
+        setTileEntity(world, x, y, z, tagFrom(tileEntity));
+    }
+
+    public static CompoundTag tagFrom(TileEntity tileEntity) {
+        CompoundTag tag = new CompoundTag();
+        tileEntity.writeToNBT(tag);
+        return tag;
     }
 
     public static void init() {
