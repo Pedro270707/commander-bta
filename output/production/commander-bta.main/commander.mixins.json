@@ -4,6 +4,7 @@
   "package": "net.pedroricardo.commander.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "FixItemStackCrashMixin",
     "GuiChatMixin",
     "PreferCommanderCommandPlayerSPMixin",
     "PreferCommanderCommandPlayerSPMixin$EntityPlayerSPAccessor",
