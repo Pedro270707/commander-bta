@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "commander",
-  "version": "1.2.11",
+  "version": "1.2.12",
 
   "name": "Commander",
   "description": "This mod overhauls the command system.",

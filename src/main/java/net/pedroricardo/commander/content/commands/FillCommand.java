@@ -127,6 +127,7 @@ public class FillCommand {
                     if (filter == null || (world.getBlockId(x, y, z) == filter.getBlockId() && world.getBlockMetadata(x, y, z) == filter.getMetadata() && (!filter.getTag().getValue().isEmpty() || CommanderHelper.blockEntitiesAreEqual(CommanderHelper.tagFrom(world.getBlockTileEntity(x, y, z)), filter.getTag())))) {
                         world.setBlockWithNotify(x, y, z, block.getBlockId());
                         world.setBlockMetadataWithNotify(x, y, z, block.getMetadata());
+                        CommanderHelper.setTileEntity(world, x, y, z, block.getTag());
                     }
                 }
             }
@@ -156,6 +157,7 @@ public class FillCommand {
                     }
                     world.setBlockWithNotify(x, y, z, isOutline ? block.getBlockId() : 0);
                     world.setBlockMetadataWithNotify(x, y, z, isOutline ? block.getMetadata() : 0);
+                    CommanderHelper.setTileEntity(world, x, y, z, block.getTag());
                 }
             }
         }

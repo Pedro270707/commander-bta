@@ -177,9 +177,7 @@ public class CloneCommand {
                 if (destination.getWorld().getBlockId(offsetDestinationX, offsetDestinationY, offsetDestinationZ) != entry.getValue().getBlockId() || destination.getWorld().getBlockMetadata(offsetDestinationX, offsetDestinationY, offsetDestinationZ) != entry.getValue().getMetadata()) ++clonedBlocks;
                 destination.getWorld().setBlockWithNotify(offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getBlockId());
                 destination.getWorld().setBlockMetadataWithNotify(offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getMetadata());
-                if (entry.getValue().getTileEntity() != null) {
-                    CommanderHelper.setTileEntity(destination.getWorld(), offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getTileEntity());
-                }
+                CommanderHelper.setTileEntity(destination.getWorld(), offsetDestinationX, offsetDestinationY, offsetDestinationZ, entry.getValue().getTileEntity());
             }
         }
         destination.getWorld().editingBlocks = false;
