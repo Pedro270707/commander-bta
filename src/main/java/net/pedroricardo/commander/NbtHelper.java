@@ -4,7 +4,6 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.nbt.*;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
-import net.pedroricardo.commander.content.helpers.ArgumentParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,8 +135,13 @@ public class NbtHelper {
                 while (reader.canRead() && reader.peek() != ']') {
                     reader.skipWhitespace();
                     String doubleAsString = reader.readString();
-                    if (!SHORT_PATTERN.matcher(doubleAsString).matches()) throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedSymbol().create("short");
-                    double parsedDouble = Double.parseDouble(doubleAsString.substring(0, doubleAsString.length() - 1));
+                    double parsedDouble;
+                    if (DOUBLE_PATTERN.matcher(doubleAsString).matches()) {
+                        parsedDouble = Double.parseDouble(doubleAsString.substring(0, doubleAsString.length() - 1));
+                    } else if (DOUBLE_PATTERN_NO_SUFFIX.matcher(doubleAsString).matches()) {
+                        parsedDouble = Double.parseDouble(doubleAsString);
+                    }
+                    else throw CommandSyntaxException.BUILT_IN_EXCEPTIONS.readerExpectedDouble().create();
                     doubles.add(parsedDouble);
                     reader.skipWhitespace();
                     if (!reader.canRead() || reader.peek() != ',') break;
