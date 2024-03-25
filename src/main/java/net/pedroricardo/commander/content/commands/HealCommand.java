@@ -28,14 +28,10 @@ public class HealCommand {
                                     int entitiesAffected = 0;
                                     for (Entity entity : entities) {
                                         if (entity instanceof EntityLiving) {
-                                            int maxHealth = 20;
-                                            try {
-                                                maxHealth = ((EntityLiving)entity.getClass().getConstructor(World.class).newInstance(c.getSource().getWorld())).health;
-                                            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException ignored) {
-                                            }
-                                            int originalHealth = ((EntityLiving)entity).health;
-                                            ((EntityLiving)entity).health = MathHelper.clamp(((EntityLiving)entity).health + amount, 0, maxHealth);
-                                            if (((EntityLiving)entity).health != originalHealth) ++entitiesAffected;
+                                            int maxHealth = ((EntityLiving) entity).getMaxHealth();
+                                            int originalHealth = ((EntityLiving) entity).getHealth();
+                                            ((EntityLiving)entity).setHealthRaw(MathHelper.clamp(((EntityLiving)entity).getHealth() + amount, 0, maxHealth));
+                                            if (((EntityLiving)entity).getHealth() != originalHealth) ++entitiesAffected;
                                         }
                                     }
                                     c.getSource().sendTranslatableMessage("commands.commander.heal.success_" + (entitiesAffected == 1 ? "single" : "multiple"), entitiesAffected);

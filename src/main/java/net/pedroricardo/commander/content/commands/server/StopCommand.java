@@ -23,7 +23,7 @@ public class StopCommand {
                         server.playerList.savePlayerStates();
                     }
                     for (int i = 0; i < server.dimensionWorlds.length; ++i) {
-                        server.dimensionWorlds[i].saveWorld(true, null);
+                        server.dimensionWorlds[i].saveWorld(true, null, true);
                     }
                     server.initiateShutdown();
                     return Command.SINGLE_SUCCESS;
