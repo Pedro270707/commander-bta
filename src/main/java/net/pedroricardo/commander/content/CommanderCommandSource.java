@@ -4,6 +4,7 @@ import net.minecraft.core.entity.player.EntityPlayer;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
+import net.minecraft.core.sound.SoundCategory;
 import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.core.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -53,6 +54,10 @@ public interface CommanderCommandSource {
     World getWorld(int dimension);
 
     void movePlayerToDimension(EntityPlayer player, int dimension);
+
+    Iterable<String> getSoundList();
+
+    boolean playSound(String sound, SoundCategory category, float x, float y, float z, float volume, float pitch);
 
     String getName();
 

@@ -5,9 +5,13 @@ import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
 import net.minecraft.core.net.command.ServerPlayerCommandSender;
 import net.minecraft.core.net.packet.Packet3Chat;
+import net.minecraft.core.net.packet.Packet62PlaySoundDirect;
+import net.minecraft.core.sound.SoundCategory;
+import net.minecraft.core.sound.SoundTypes;
 import net.minecraft.core.util.helper.AES;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.phys.Vec3d;
+import net.minecraft.core.world.Dimension;
 import net.minecraft.core.world.World;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.entity.player.EntityPlayerMP;
@@ -102,6 +106,21 @@ public class CommanderServerCommandSource implements CommanderCommandSource, ISe
     public void movePlayerToDimension(EntityPlayer player, int dimension) {
         if (player instanceof EntityPlayerMP) this.server.playerList.sendPlayerToOtherDimension((EntityPlayerMP) player, dimension);
         else throw new IllegalStateException("Player is not an instance of EntityPlayerMP");
+    }
+
+    @Override
+    public Iterable<String> getSoundList() {
+        return SoundTypes.getSoundIds().keySet();
+    }
+
+    @Override
+    public boolean playSound(String sound, SoundCategory category, float x, float y, float z, float volume, float pitch) {
+        int soundId = SoundTypes.getSoundId(sound);
+        if (soundId < 0) return false;
+        for (Dimension dimension : Dimension.getDimensionList().values()) {
+            this.server.playerList.sendPacketToPlayersAroundPoint(x, y, z, 128.0, dimension.id, new Packet62PlaySoundDirect(soundId, category, x, y, z, volume, pitch));
+        }
+        return true;
     }
 
     @Override

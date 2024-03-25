@@ -7,6 +7,7 @@ import net.minecraft.core.net.command.ClientCommandHandler;
 import net.minecraft.core.net.command.ClientPlayerCommandSender;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
+import net.minecraft.core.sound.SoundCategory;
 import net.minecraft.core.util.helper.MathHelper;
 import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.core.world.Dimension;
@@ -107,6 +108,12 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
         return this.mc.theWorld.dimension.id == dimension ? this.mc.theWorld : new World(this.mc.theWorld, Dimension.getDimensionList().get(dimension));
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public Iterable<String> getSoundList() {
+        return this.mc.sndManager.soundPoolSounds.nameToSoundPoolEntriesMapping.keySet();
+    }
+
     public void movePlayerToDimension(EntityPlayer player, int dimension) {
         Dimension lastDim = Dimension.getDimensionList().get(player.dimension);
         Dimension newDim = Dimension.getDimensionList().get(dimension);
@@ -132,6 +139,12 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
             player.moveTo(x, y, z, player.yRot, player.xRot);
             this.mc.theWorld.updateEntityWithOptionalForce(player, false);
         }
+    }
+
+    @Override
+    public boolean playSound(String sound, SoundCategory category, float x, float y, float z, float volume, float pitch) {
+        this.mc.sndManager.playSound(sound, category, x, y, z, volume, pitch);
+        return true;
     }
 
     @Override

@@ -56,6 +56,7 @@ public class CommanderCommandManager {
         TestForCommand.register(DISPATCHER);
         DamageCommand.register(DISPATCHER);
         HealCommand.register(DISPATCHER);
+        PlaySoundCommand.register(DISPATCHER);
 
         if (this.isServer) {
             StopCommand.register(DISPATCHER);
