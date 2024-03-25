@@ -12,9 +12,12 @@ import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 import net.pedroricardo.commander.content.helpers.DoubleCoordinate;
 import net.pedroricardo.commander.content.helpers.DoubleCoordinates;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
 public class Vec3dArgumentType implements ArgumentType<DoubleCoordinates> {
@@ -67,6 +70,9 @@ public class Vec3dArgumentType implements ArgumentType<DoubleCoordinates> {
         if (coordinates == null) return builder.buildFuture();
 
         if (string.isEmpty()) {
+            coordinates.xCoord = roundToSixDecimals(coordinates.xCoord);
+            coordinates.yCoord = roundToSixDecimals(coordinates.yCoord);
+            coordinates.zCoord = roundToSixDecimals(coordinates.zCoord);
             String allCoordinates = coordinates.xCoord + " " + coordinates.yCoord + " " + coordinates.zCoord;
             try {
                 this.parse(new StringReader(allCoordinates));
@@ -96,6 +102,11 @@ public class Vec3dArgumentType implements ArgumentType<DoubleCoordinates> {
             }
         }
         return builder.buildFuture();
+    }
+
+    private static double roundToSixDecimals(double value) {
+        DecimalFormat df = new DecimalFormat("#.######", DecimalFormatSymbols.getInstance(Locale.ROOT));
+        return Double.parseDouble(df.format(value));
     }
 
     @Override
