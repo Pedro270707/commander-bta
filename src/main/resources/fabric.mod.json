@@ -13,7 +13,7 @@
     "sources": "https://github.com/Pedro270707/commander-bta"
   },
 
-  "license": "CC0-1.0",
+  "license": "GPL-3.0",
 
   "environment": "*",
   "entrypoints": {
