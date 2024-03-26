@@ -3,7 +3,6 @@ package net.pedroricardo.commander.content.commands;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -13,6 +12,7 @@ import net.minecraft.core.util.phys.Vec3d;
 import net.minecraft.core.world.Dimension;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.DimensionArgumentType;
+import net.pedroricardo.commander.content.arguments.ParticleArgumentType;
 import net.pedroricardo.commander.content.arguments.PositionArgumentType;
 import net.pedroricardo.commander.content.arguments.Vec3dArgumentType;
 import net.pedroricardo.commander.content.helpers.DoublePos;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 public class SpawnParticleCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         CommandNode<CommanderCommandSource> command = dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("spawnparticle")
-                .then(RequiredArgumentBuilder.<CommanderCommandSource, String>argument("particle", StringArgumentType.word())
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, String>argument("particle", ParticleArgumentType.particle())
                         .then(RequiredArgumentBuilder.<CommanderCommandSource, DoublePos>argument("position", PositionArgumentType.pos())
                                 .executes(c -> {
                                     execute(c, c.getArgument("particle", String.class), c.getArgument("position", DoublePos.class), Vec3d.createVector(0.0, 0.0, 0.0), null, null);
