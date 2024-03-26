@@ -9,7 +9,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.core.lang.I18n;
 import net.minecraft.core.sound.SoundTypes;
 import net.pedroricardo.commander.CommanderHelper;
-import net.pedroricardo.commander.content.CommanderCommandSource;
 
 import java.util.Arrays;
 import java.util.Collection;

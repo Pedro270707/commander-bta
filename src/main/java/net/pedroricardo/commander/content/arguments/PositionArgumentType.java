@@ -20,44 +20,54 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 
-public class Vec3dArgumentType implements ArgumentType<Vec3d> {
-    private static final List<String> EXAMPLES = Arrays.asList("0 0 0", "15.0 6.0 12.5", "3.141 59.26 58.97");
+public class PositionArgumentType implements ArgumentType<DoublePos> {
+    private static final List<String> EXAMPLES = Arrays.asList("~ ~ ~", "0 0 0", "~ ~60 ~", "~-20 ~10 ~-25.5");
 
-    public static ArgumentType<Vec3d> vec3d() {
-        return new Vec3dArgumentType();
+    public static PositionArgumentType pos() {
+        return new PositionArgumentType();
     }
 
     @Override
-    public Vec3d parse(StringReader reader) throws CommandSyntaxException {
+    public DoublePos parse(StringReader reader) throws CommandSyntaxException {
         int i = reader.getCursor();
-        if (!reader.canRead()) throw CommanderExceptions.incomplete().createWithContext(reader);
-        double x;
-        double y;
-        double z;
-        if (reader.peek() != ' ') {
-            x = reader.readDouble();
-            if (reader.canRead() && reader.peek() == ' ') {
+        DoubleCoordinate x = DoubleCoordinate.parse(reader);
+        if (!reader.canRead() || reader.peek() != ' ') {
+            if (reader.peek() == 'f' || reader.peek() == 'd') {
                 reader.skip();
-                if (reader.canRead() && reader.peek() != ' ') {
-                    y = reader.readDouble();
-                    if (reader.canRead() && reader.peek() == ' ') {
-                        reader.skip();
-                        if (reader.canRead() && reader.peek() != ' ') {
-                            z = reader.readDouble();
-                            return Vec3d.createVector(x, y, z);
-                        }
-                    }
+                if (!reader.canRead() || reader.peek() != ' ') {
+                    reader.setCursor(i);
+                    throw CommanderExceptions.incomplete().createWithContext(reader);
                 }
+            } else {
+                reader.setCursor(i);
+                throw CommanderExceptions.incomplete().createWithContext(reader);
             }
         }
-        reader.setCursor(i);
-        throw CommanderExceptions.incomplete().createWithContext(reader);
+        reader.skip();
+        DoubleCoordinate y = DoubleCoordinate.parse(reader);
+        if (!reader.canRead() || reader.peek() != ' ') {
+            if (reader.peek() == 'f' || reader.peek() == 'd') {
+                reader.skip();
+                if (!reader.canRead() || reader.peek() != ' ') {
+                    reader.setCursor(i);
+                    throw CommanderExceptions.incomplete().createWithContext(reader);
+                }
+            } else {
+                reader.setCursor(i);
+                throw CommanderExceptions.incomplete().createWithContext(reader);
+            }
+        }
+        reader.skip();
+        DoubleCoordinate z = DoubleCoordinate.parse(reader);
+        return new DoublePos(x, y, z);
     }
 
     @Override
     public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
         String string = builder.getRemaining();
-        Vec3d coordinates = Vec3d.createVector(0.0, 0.0, 0.0);
+        Vec3d coordinates = ((CommanderCommandSource)context.getSource()).getCoordinates(true);
+
+        if (coordinates == null) return builder.buildFuture();
 
         if (string.isEmpty()) {
             coordinates.xCoord = roundToSixDecimals(coordinates.xCoord);

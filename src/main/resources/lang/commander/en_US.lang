@@ -158,5 +158,6 @@ commands.commander.damage.success_single=Damaged %s entity
 commands.commander.damage.success_multiple=Damaged %s entities
 commands.commander.heal.success_single=Healed %s entity
 commands.commander.heal.success_multiple=Healed %s entities
-commands.commander.playsound.success=Played sound %s in category %s
+commands.commander.playsound.success=Played sound %s in category %s at %s, %s, %s
 commands.commander.playsound.exception_failure=Could not play sound %s
+commands.commander.spawnparticle.success=Spawned particle %s at %s, %s, %s

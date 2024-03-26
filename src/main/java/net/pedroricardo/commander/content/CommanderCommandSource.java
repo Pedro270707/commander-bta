@@ -6,7 +6,9 @@ import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
 import net.minecraft.core.sound.SoundCategory;
 import net.minecraft.core.util.phys.Vec3d;
+import net.minecraft.core.world.Dimension;
 import net.minecraft.core.world.World;
+import net.pedroricardo.commander.content.helpers.DoublePos;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -58,6 +60,12 @@ public interface CommanderCommandSource {
     Iterable<String> getSoundList();
 
     boolean playSound(String sound, SoundCategory category, float x, float y, float z, float volume, float pitch);
+
+    boolean playSound(String sound, SoundCategory category, float x, float y, float z, float volume, float pitch, int dimension);
+
+    void addParticle(String particle, double x, double y, double z, double motionX, double motionY, double motionZ);
+    void addParticle(String particle, double x, double y, double z, double motionX, double motionY, double motionZ, @Nullable Double maxDistance);
+    void addParticle(String particle, double x, double y, double z, double motionX, double motionY, double motionZ, @Nullable Double maxDistance, int dimension);
 
     String getName();
 

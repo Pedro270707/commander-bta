@@ -9,9 +9,9 @@ import net.minecraft.core.entity.Entity;
 import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.EntityArgumentType;
-import net.pedroricardo.commander.content.arguments.Vec3dArgumentType;
+import net.pedroricardo.commander.content.arguments.PositionArgumentType;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
-import net.pedroricardo.commander.content.helpers.DoubleCoordinates;
+import net.pedroricardo.commander.content.helpers.DoublePos;
 import net.pedroricardo.commander.content.helpers.EntitySelector;
 
 import java.util.List;
@@ -20,10 +20,10 @@ public class TeleportCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
         CommandNode<CommanderCommandSource> command = dispatcher.register(LiteralArgumentBuilder.<CommanderCommandSource>literal("teleport")
                 .requires(CommanderCommandSource::hasAdmin)
-                .then(RequiredArgumentBuilder.<CommanderCommandSource, DoubleCoordinates>argument("position", Vec3dArgumentType.vec3d())
+                .then(RequiredArgumentBuilder.<CommanderCommandSource, DoublePos>argument("position", PositionArgumentType.pos())
                         .executes(c -> {
                             CommanderCommandSource source = c.getSource();
-                            DoubleCoordinates targetCoordinates = c.getArgument("position", DoubleCoordinates.class);
+                            DoublePos targetCoordinates = c.getArgument("position", DoublePos.class);
 
                             if (source.getSender() != null) {
                                 source.getSender().moveTo(targetCoordinates.getX(source), targetCoordinates.getY(source, true), targetCoordinates.getZ(source), source.getSender().yRot, source.getSender().xRot);
@@ -35,11 +35,11 @@ public class TeleportCommand {
                             return Command.SINGLE_SUCCESS;
                         }))
                 .then(RequiredArgumentBuilder.<CommanderCommandSource, EntitySelector>argument("entity", EntityArgumentType.entities())
-                        .then(RequiredArgumentBuilder.<CommanderCommandSource, DoubleCoordinates>argument("position", Vec3dArgumentType.vec3d())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, DoublePos>argument("position", PositionArgumentType.pos())
                                 .executes(c -> {
                                     CommanderCommandSource source = c.getSource();
                                     EntitySelector entitySelector = c.getArgument("entity", EntitySelector.class);
-                                    DoubleCoordinates targetCoordinates = c.getArgument("position", DoubleCoordinates.class);
+                                    DoublePos targetCoordinates = c.getArgument("position", DoublePos.class);
 
                                     List<? extends Entity> entities = entitySelector.get(source);
                                     for (Entity entity : entities) {

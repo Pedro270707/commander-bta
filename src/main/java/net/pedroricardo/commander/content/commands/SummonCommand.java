@@ -12,9 +12,9 @@ import net.minecraft.core.world.World;
 import net.pedroricardo.commander.CommanderHelper;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.arguments.EntitySummonArgumentType;
-import net.pedroricardo.commander.content.arguments.Vec3dArgumentType;
+import net.pedroricardo.commander.content.arguments.PositionArgumentType;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
-import net.pedroricardo.commander.content.helpers.DoubleCoordinates;
+import net.pedroricardo.commander.content.helpers.DoublePos;
 
 public class SummonCommand {
     public static void register(CommandDispatcher<CommanderCommandSource> dispatcher) {
@@ -32,10 +32,10 @@ public class SummonCommand {
 
                             return Command.SINGLE_SUCCESS;
                         })
-                        .then(RequiredArgumentBuilder.<CommanderCommandSource, DoubleCoordinates>argument("position", Vec3dArgumentType.vec3d())
+                        .then(RequiredArgumentBuilder.<CommanderCommandSource, DoublePos>argument("position", PositionArgumentType.pos())
                                 .executes(c -> {
                                     CommanderCommandSource source = c.getSource();
-                                    DoubleCoordinates coordinates = c.getArgument("position", DoubleCoordinates.class);
+                                    DoublePos coordinates = c.getArgument("position", DoublePos.class);
 
                                     Entity entity = summonEntityAt(c, coordinates.getX(source), coordinates.getY(source, true), coordinates.getZ(source), 0.0f, 0.0f);
 
@@ -46,7 +46,7 @@ public class SummonCommand {
                                 .then(RequiredArgumentBuilder.<CommanderCommandSource, Integer>argument("amount", IntegerArgumentType.integer(1, 255))
                                         .executes(c -> {
                                             CommanderCommandSource source = c.getSource();
-                                            DoubleCoordinates coordinates = c.getArgument("position", DoubleCoordinates.class);
+                                            DoublePos coordinates = c.getArgument("position", DoublePos.class);
                                             int amount = c.getArgument("amount", Integer.class);
 
                                             for (int i = 0; i < amount; i++) {

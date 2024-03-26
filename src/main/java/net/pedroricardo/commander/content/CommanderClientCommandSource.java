@@ -2,9 +2,6 @@ package net.pedroricardo.commander.content;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.entity.player.EntityPlayer;
-import net.minecraft.core.lang.I18n;
-import net.minecraft.core.net.command.ClientCommandHandler;
-import net.minecraft.core.net.command.ClientPlayerCommandSender;
 import net.minecraft.core.net.command.CommandHandler;
 import net.minecraft.core.net.command.CommandSender;
 import net.minecraft.core.sound.SoundCategory;
@@ -145,6 +142,30 @@ public class CommanderClientCommandSource implements CommanderCommandSource {
     public boolean playSound(String sound, SoundCategory category, float x, float y, float z, float volume, float pitch) {
         this.mc.sndManager.playSound(sound, category, x, y, z, volume, pitch);
         return true;
+    }
+
+    @Override
+    public boolean playSound(String sound, SoundCategory category, float x, float y, float z, float volume, float pitch, int dimension) {
+        return dimension == this.mc.theWorld.dimension.id && this.playSound(sound, category, x, y, z, volume, pitch);
+    }
+
+    @Override
+    public void addParticle(String particle, double x, double y, double z, double motionX, double motionY, double motionZ) {
+        this.addParticle(particle, x, y, z, motionX, motionY, motionZ, null);
+    }
+
+    @Override
+    public void addParticle(String particle, double x, double y, double z, double motionX, double motionY, double motionZ, @Nullable Double maxDistance) {
+        if (maxDistance == null) {
+            this.mc.renderGlobal.addParticle(particle, x, y, z, motionX, motionY, motionZ);
+        } else {
+            this.mc.renderGlobal.addParticle(particle, x, y, z, motionX, motionY, motionZ, maxDistance);
+        }
+    }
+
+    @Override
+    public void addParticle(String particle, double x, double y, double z, double motionX, double motionY, double motionZ, @Nullable Double maxDistance, int dimension) {
+        if (dimension == this.mc.theWorld.dimension.id) this.addParticle(particle, x, y, z, motionX, motionY, motionZ, maxDistance);
     }
 
     @Override

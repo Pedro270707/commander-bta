@@ -57,6 +57,7 @@ public class CommanderCommandManager {
         DamageCommand.register(DISPATCHER);
         HealCommand.register(DISPATCHER);
         PlaySoundCommand.register(DISPATCHER);
+        SpawnParticleCommand.register(DISPATCHER);
 
         if (this.isServer) {
             StopCommand.register(DISPATCHER);

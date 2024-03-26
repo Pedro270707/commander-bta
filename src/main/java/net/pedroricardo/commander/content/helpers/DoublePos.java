@@ -4,12 +4,12 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.pedroricardo.commander.content.CommanderCommandSource;
 import net.pedroricardo.commander.content.exceptions.CommanderExceptions;
 
-public class DoubleCoordinates {
+public class DoublePos {
     private final DoubleCoordinate x;
     private final DoubleCoordinate y;
     private final DoubleCoordinate z;
 
-    public DoubleCoordinates(DoubleCoordinate x, DoubleCoordinate y, DoubleCoordinate z) {
+    public DoublePos(DoubleCoordinate x, DoubleCoordinate y, DoubleCoordinate z) {
         this.x = x;
         this.y = y;
         this.z = z;

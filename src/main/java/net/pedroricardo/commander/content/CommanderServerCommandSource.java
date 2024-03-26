@@ -6,6 +6,7 @@ import net.minecraft.core.net.command.CommandSender;
 import net.minecraft.core.net.command.ServerPlayerCommandSender;
 import net.minecraft.core.net.packet.Packet3Chat;
 import net.minecraft.core.net.packet.Packet62PlaySoundDirect;
+import net.minecraft.core.net.packet.Packet63SpawnParticleEffect;
 import net.minecraft.core.sound.SoundCategory;
 import net.minecraft.core.sound.SoundTypes;
 import net.minecraft.core.util.helper.AES;
@@ -16,6 +17,7 @@ import net.minecraft.core.world.World;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.entity.player.EntityPlayerMP;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -121,6 +123,31 @@ public class CommanderServerCommandSource implements CommanderCommandSource, ISe
             this.server.playerList.sendPacketToPlayersAroundPoint(x, y, z, 128.0, dimension.id, new Packet62PlaySoundDirect(soundId, category, x, y, z, volume, pitch));
         }
         return true;
+    }
+
+    @Override
+    public boolean playSound(String sound, SoundCategory category, float x, float y, float z, float volume, float pitch, int dimension) {
+        int soundId = SoundTypes.getSoundId(sound);
+        if (soundId < 0) return false;
+        this.server.playerList.sendPacketToPlayersAroundPoint(x, y, z, 128.0, dimension, new Packet62PlaySoundDirect(soundId, category, x, y, z, volume, pitch));
+        return true;
+    }
+
+    @Override
+    public void addParticle(String particle, double x, double y, double z, double motionX, double motionY, double motionZ) {
+        this.addParticle(particle, x, y, z, motionX, motionY, motionZ, 16.0);
+    }
+
+    @Override
+    public void addParticle(String particle, double x, double y, double z, double motionX, double motionY, double motionZ, @Nullable Double maxDistance) {
+        for (Dimension dimension : Dimension.getDimensionList().values()) {
+            this.addParticle(particle, x, y, z, motionX, motionY, motionZ, maxDistance, dimension.id);
+        }
+    }
+
+    @Override
+    public void addParticle(String particle, double x, double y, double z, double motionX, double motionY, double motionZ, @Nullable Double maxDistance, int dimension) {
+        this.server.playerList.sendPacketToPlayersAroundPoint(x, y, z, maxDistance == null ? 16.0 : maxDistance, dimension, new Packet63SpawnParticleEffect(particle, x, y, z, motionX, motionY, motionZ));
     }
 
     @Override
