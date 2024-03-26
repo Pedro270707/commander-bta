@@ -44,14 +44,14 @@ public class BeautifulNbt {
         boolean comma = false;
         if (o instanceof byte[]) {
             result.append("B; ");
-            for (double element : ((byte[])o)) {
+            for (byte element : ((byte[])o)) {
                 if (comma) result.append(", ");
                 result.append(element(element));
                 comma = true;
             }
         } else if (o instanceof short[]) {
             result.append("S; ");
-            for (double element : ((short[])o)) {
+            for (short element : ((short[])o)) {
                 if (comma) result.append(", ");
                 result.append(element(element));
                 comma = true;
